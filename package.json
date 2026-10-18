@@ -33,6 +33,7 @@
     "@payloadcms/ui": "3.91.0",
     "graphql": "^16.14.2",
     "next": "15.4.11",
+    "next-intl": "4.14.9",
     "otplib": "13.5.0",
     "payload": "3.91.0",
     "qrcode": "1.5.4",

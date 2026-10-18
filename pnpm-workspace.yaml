@@ -1,5 +1,8 @@
-# Packages allowed to run install scripts (native binaries for Next/Payload tooling).
+# Packages allowed (true) or explicitly denied (false) to run install scripts. See docs/DECISIONS.md D-002.
 allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+  # Pulled in by next-intl for its optional message-extraction feature, which we don't use.
+  "@parcel/watcher": false
+  "@swc/core": false

@@ -1,0 +1,40 @@
+{
+  "common": {
+    "skipToContent": "ወደ ዋናው ይዘት ይዝለሉ",
+    "language": "ቋንቋ",
+    "changeLanguage": "ቋንቋ ይቀይሩ",
+    "currentLanguage": "የአሁኑ ቋንቋ",
+    "menu": "ማውጫ",
+    "openMenu": "ማውጫውን ይክፈቱ",
+    "closeMenu": "ማውጫውን ይዝጉ",
+    "mainNavigation": "ዋና ማውጫ",
+    "home": "መነሻ ገጽ"
+  },
+  "header": {
+    "serviceTimes": "የአገልግሎት ሰዓታት",
+    "requestBaptism": "የክርስትና ጥያቄ"
+  },
+  "nav": {
+    "home": "መነሻ ገጽ",
+    "ourChurch": "ቤተ ክርስቲያናችን",
+    "ourFaith": "ትምህርቶች",
+    "worship": "አገልግሎትና የቀን መቁጠሪያ",
+    "sundaySchool": "ሰንበት ት/ቤት",
+    "sacraments": "ምሥጢራትና ጥያቄዎች",
+    "newsMedia": "ዜናና ሚዲያ",
+    "support": "ድጋፍ",
+    "visit": "ያግኙን"
+  },
+  "footer": {
+    "footerNavigation": "የግርጌ ማውጫ",
+    "diocese": "የኖርዲክና የግሪክ ሀገረ ስብከት",
+    "privacy": "የግላዊነት መመሪያ",
+    "cookies": "ኩኪዎች",
+    "copyright": "© {year} {churchName}"
+  },
+  "notFound": {
+    "title": "ገጹ አልተገኘም",
+    "description": "የሚፈልጉት ገጽ የለም ወይም ወደ ሌላ ቦታ ተዛውሯል።",
+    "backHome": "ወደ መነሻ ገጽ ይመለሱ"
+  }
+}

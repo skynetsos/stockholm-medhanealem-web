@@ -2,6 +2,13 @@
 
 ## Open questions
 
+### Q-004 — Language selection on "/" and UI string review (2026-10-18)
+- **Question 1:** Should the site guess the visitor's language from their browser?
+- **Default applied:** No. `/` always redirects to `/am`; visitors switch language explicitly. Reasons: Amharic is the primary audience, Swedish isn't public until Phase 3, and it means no locale cookie (no consent banner needed). Can be turned on later (`localeDetection` in `src/i18n/routing.ts`).
+- **Question 2:** Who reviews the Amharic and Swedish UI strings (`src/messages/am.json`, `sv.json`)?
+- **Default applied:** Amharic navigation labels reuse the names on dev.medhanealem.se where they exist (መነሻ ገጽ, ትምህርቶች, ሰንበት ት/ቤት, ያግኙን); everything else is a draft for a native speaker to correct before launch. Tracked in docs/CONTENT-CHECKLIST.md.
+- **Note:** CLAUDE.md says UI strings live in `/messages/{locale}.json`; spec §1.1 places them under `src/messages/`. We follow the spec layout (`src/messages/`).
+
 ## Deferred work (by phase)
 
 ### Phase 3 — polish
@@ -41,6 +48,7 @@
 
 ### D-002 — pnpm build-script allow-list (2026-10-18)
 - pnpm blocks dependency install scripts by default. `pnpm-workspace.yaml` allows only `esbuild`, `sharp` and `unrs-resolver`, which download native binaries needed by Next, Payload and ESLint.
+- Explicitly denied: `@parcel/watcher` and `@swc/core` (pulled in by next-intl for its optional message-extraction feature, which we don't use).
 
 ## Dependencies added beyond the stack
 
