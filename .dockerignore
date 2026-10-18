@@ -1,0 +1,24 @@
+# Keep the build context small and free of secrets.
+.git
+.github
+.next
+node_modules
+coverage
+playwright-report
+test-results
+blob-report
+backups
+*.log
+
+# Local env files and secrets (production values come from the server's .env.production at runtime)
+.env
+.env.*
+!.env.example
+!.env.production.example
+*.pem
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db

@@ -78,13 +78,8 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Prepare database for e2e (schema, base seed, an admin user)
-        env:
-          ADMIN_EMAIL: ci-admin@example.org
-          ADMIN_NAME: CI Admin
-        run: |
-          pnpm seed:base
-          pnpm user:create-super-admin
+      - name: Prepare e2e database (migrations, base seed, an admin user)
+        run: pnpm test:e2e:prepare
 
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium

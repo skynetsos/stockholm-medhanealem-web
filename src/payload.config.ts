@@ -11,6 +11,7 @@ import { Footer } from "./globals/Footer";
 import { Navigation } from "./globals/Navigation";
 import { SiteSettings } from "./globals/SiteSettings";
 import { adminTranslations } from "./i18n/admin";
+import { migrations } from "./migrations";
 import { defaultLocale, localeNames, locales } from "./i18n/locales";
 import { requireEnv } from "./lib/env";
 
@@ -49,6 +50,9 @@ export default buildConfig({
     pool: {
       connectionString: requireEnv("DATABASE_URI"),
     },
+    // Development syncs the schema automatically ("push"). Production never does: it applies these
+    // versioned migrations on startup. After any schema change: `pnpm payload migrate:create <name>`.
+    prodMigrations: migrations,
   }),
   plugins: [
     s3Storage({

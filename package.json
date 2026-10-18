@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
+    "test:e2e:prepare": "node scripts/e2e-prepare.mjs",
     "test:e2e": "playwright test",
     "services:up": "docker compose up -d",
     "services:down": "docker compose down",

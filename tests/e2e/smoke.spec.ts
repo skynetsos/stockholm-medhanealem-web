@@ -70,9 +70,10 @@ test("unknown file-like paths get a localized 404, not a server error", async ({
 });
 
 test("public pages are cached (ISR, spec §4)", async ({ request }) => {
-  await request.get("/en");
-  const second = await request.get("/en");
-  // HIT = fresh from cache; STALE = cached copy served while it refreshes in the background.
-  expect(["HIT", "STALE"]).toContain(second.headers()["x-nextjs-cache"]);
-  expect(second.headers()["x-nextjs-stale-time"]).toBe("300");
+  // After a fresh build the first requests generate the page (MISS); other tests may be doing that
+  // concurrently, so poll briefly. HIT = from cache; STALE = cached copy refreshed in the background.
+  await expect
+    .poll(async () => (await request.get("/en")).headers()["x-nextjs-cache"], { timeout: 15_000 })
+    .toMatch(/^(HIT|STALE)$/);
+  expect((await request.get("/en")).headers()["x-nextjs-stale-time"]).toBe("300");
 });

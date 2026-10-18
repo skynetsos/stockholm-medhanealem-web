@@ -1,0 +1,86 @@
+# Production stack: app (Next.js + Payload), PostgreSQL 16 and Caddy (HTTPS).
+# Media lives in external EU S3-compatible storage (Hetzner Object Storage / Cloudflare R2).
+#
+#   cp .env.production.example .env.production   # fill in real values
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# One-off commands (seed, create admin, reset MFA) use the "tools" image, e.g.:
+#   docker compose -f docker-compose.prod.yml --env-file .env.production run --rm tools seed:base
+# Full procedures: docs/RUNBOOK.md.
+name: medhanealem-prod
+
+x-app-env: &app-env
+  env_file: ${APP_ENV_FILE:-.env.production}
+  environment:
+    NODE_ENV: production
+    TZ: Europe/Stockholm
+    DATABASE_URI: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+
+services:
+  app:
+    <<: *app-env
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    image: medhanealem-web:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "3000"
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: UTC
+      PGTZ: UTC
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    # Not published: only the app and backup jobs (docker compose exec) can reach it.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+  # One-off maintenance commands; never started by `up`.
+  tools:
+    <<: *app-env
+    profiles: ["tools"]
+    build:
+      context: .
+      target: tools
+      args:
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    image: medhanealem-web-tools:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  caddy-data:
+  caddy-config:

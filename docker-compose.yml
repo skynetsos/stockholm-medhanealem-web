@@ -38,7 +38,7 @@ services:
     volumes:
       - s3-data:/data
 
-  # One-off job: creates the media bucket, then exits.
+  # One-off job: creates the media bucket and the local stand-in for the off-server backup bucket.
   s3-init:
     image: amazon/aws-cli:2.38.1
     depends_on:
@@ -47,16 +47,19 @@ services:
       AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       AWS_DEFAULT_REGION: ${S3_REGION}
-      S3_BUCKET: ${S3_BUCKET}
+      BUCKETS: ${S3_BUCKET} ${BACKUP_S3_BUCKET:-medhanealem-backups}
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        for i in $$(seq 1 30); do
-          aws --endpoint-url http://s3:9000 s3api head-bucket --bucket "$$S3_BUCKET" 2>/dev/null && echo "bucket $$S3_BUCKET exists" && exit 0
-          aws --endpoint-url http://s3:9000 s3api create-bucket --bucket "$$S3_BUCKET" && echo "bucket $$S3_BUCKET created" && exit 0
-          sleep 2
+        for bucket in $$BUCKETS; do
+          ok=""
+          for i in $$(seq 1 30); do
+            aws --endpoint-url http://s3:9000 s3api head-bucket --bucket "$$bucket" 2>/dev/null && echo "bucket $$bucket exists" && ok=1 && break
+            aws --endpoint-url http://s3:9000 s3api create-bucket --bucket "$$bucket" >/dev/null && echo "bucket $$bucket created" && ok=1 && break
+            sleep 2
+          done
+          [ -n "$$ok" ] || { echo "could not create bucket $$bucket"; exit 1; }
         done
-        echo "could not create bucket $$S3_BUCKET" && exit 1
     restart: "no"
 
   # Catches all outgoing email locally. Web UI: http://localhost:8025

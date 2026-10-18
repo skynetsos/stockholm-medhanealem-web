@@ -1,10 +1,44 @@
 # Runbook
 
+Operating guide for the Stockholm Medhanealem website. Decisions behind these procedures are in
+[DECISIONS.md](DECISIONS.md); the build plan is [STOCKHOLM-MEDHANEALEM-BUILD-SPEC.md](../STOCKHOLM-MEDHANEALEM-BUILD-SPEC.md).
+
+Commands are shown for bash. On Windows PowerShell, set variables first instead of prefixing them,
+e.g. `$env:ADMIN_EMAIL="x@y.se"; pnpm user:reset-mfa`.
+
 ## Prerequisites
+
+| Tool | Version | Used for |
+|---|---|---|
+| Node.js | 22 LTS | app, scripts |
+| pnpm | 12 (`packageManager` in package.json) | dependencies, scripts |
+| Docker + Docker Compose | Docker Desktop (Windows/macOS) or Docker Engine (Linux) | Postgres, S3 storage, Mailpit, production stack |
+| Git (+ Git Bash on Windows) | any recent | source control; Git Bash runs the backup scripts locally |
+| GnuPG (`gpg`) | 2.x | backup encryption (included with Git for Windows and most Linux servers) |
 
 ## Local setup
 
+```bash
+git clone https://github.com/skynetsos/stockholm-medhanealem-web.git
+cd stockholm-medhanealem-web
+pnpm install
+cp .env.example .env              # then generate PAYLOAD_SECRET, MFA_ENCRYPTION_KEY, IP_HASH_SALT, CRON_SECRET
+pnpm services:up                  # Postgres 16, RustFS (S3), Mailpit
+pnpm seed:base                    # church name, address, menu, footer (safe to re-run)
+ADMIN_EMAIL=you@example.org ADMIN_NAME="Your Name" pnpm user:create-super-admin
+pnpm dev                          # http://localhost:3000  (admin: /admin)
+```
+
+The create-admin script prints a one-time link to set your password (valid 1 hour). At first sign-in
+you set up two-factor authentication (MFA) and save your 8 recovery codes.
+
+Local service UIs: Mailpit (all outgoing email) http://localhost:8025 · RustFS console http://localhost:9001.
+
 ## Environment variables
+
+Every variable is documented in [`.env.example`](../.env.example) (local) and
+[`.env.production.example`](../.env.production.example) (server), including which phase first uses it.
+`NEXT_PUBLIC_SERVER_URL` is compiled into the app: rebuild after changing it.
 
 ### Secrets that must be backed up
 
@@ -14,23 +48,211 @@ Keep these in the church's password manager. Back them up together, and hand the
 |---|---|
 | `PAYLOAD_SECRET` | Everyone is signed out (sessions and reset links become invalid). Users can sign in again. |
 | `MFA_ENCRYPTION_KEY` | **Every user's two-factor authentication stops working.** Stored authenticator secrets and recovery codes can no longer be checked, so nobody can complete MFA. A super_admin must reset MFA for each user and everyone re-enrols. If no super_admin can get in, a server operator must run the break-glass reset (see below) first. |
-| `DATABASE_URI` password, S3 keys, `RESEND_API_KEY`, `CRON_SECRET`, `IP_HASH_SALT` | Can be rotated with the provider; update `.env` and restart. |
+| `BACKUP_PASSPHRASE` | **Every existing database backup becomes unreadable.** New backups work again after setting a new passphrase. |
+| `POSTGRES_PASSWORD`, S3 keys, `RESEND_API_KEY`, `CRON_SECRET`, `IP_HASH_SALT` | Can be rotated with the provider; update the env file and restart. |
 
-**Rotating secrets at handover:** `PAYLOAD_SECRET` can be rotated freely. Only rotate `MFA_ENCRYPTION_KEY` if it may have leaked, and plan the re-enrolment of all privileged users when you do.
+**Rotating secrets at handover:** `PAYLOAD_SECRET` can be rotated freely. Only rotate `MFA_ENCRYPTION_KEY` if it may have leaked, and plan the re-enrolment of all privileged users when you do. If you rotate `BACKUP_PASSPHRASE`, keep the old one as long as backups made with it are retained (30 days).
 
 ### Recovering from a lost `MFA_ENCRYPTION_KEY`
 
 1. Put a new 64-hex-char key in `MFA_ENCRYPTION_KEY` and restart the app.
-2. On the server, reset the first super_admin: `ADMIN_EMAIL=<email> pnpm user:reset-mfa`.
+2. On the server, reset the first super_admin (see [Accounts and MFA](#accounts-and-mfa)).
 3. That super_admin signs in, re-enrols, then uses **Reset MFA** on each other user's page in /admin → Users.
 4. Each user re-enrols at their next sign-in and stores their new recovery codes.
 
 ## Common commands
 
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Development server with hot reload (http://localhost:3000) |
+| `pnpm lint` / `pnpm typecheck` / `pnpm test` | ESLint / TypeScript / unit + integration tests (need the local Postgres) |
+| `pnpm build && pnpm test:e2e:prepare && pnpm test:e2e` | Production build, fresh migrated `<db>_e2e` database, Playwright smoke tests (stop `pnpm dev` first: same port) |
+| `pnpm services:up` / `services:down` / `services:logs` | Local Docker services |
+| `pnpm seed:base` | Fill Site settings, Navigation and Footer if empty. `SEED_FORCE=1` overwrites |
+| `pnpm user:create-super-admin` | Create a super_admin (or re-issue a set-password link). Needs `ADMIN_EMAIL`, `ADMIN_NAME` |
+| `pnpm user:reset-mfa` | Break-glass MFA reset. Needs `ADMIN_EMAIL` |
+| `pnpm generate:types` / `generate:importmap` | Regenerate Payload types / admin import map after config changes |
+| `pnpm payload migrate:create <name>` | Create a database migration after changing collections, globals or fields |
+
+Every change follows the project rule: `pnpm lint && pnpm typecheck && pnpm test` before committing.
+CI (`.github/workflows/ci.yml`) also builds and runs the Playwright smoke tests on every push to `main` and every pull request.
+
+## Database migrations
+
+- **Development** syncs the schema automatically ("push"): change a collection, restart `pnpm dev`.
+- **Production never pushes.** It applies the versioned migrations in `src/migrations/` when the app starts.
+- **After any schema change** (new collection, field, global, `localized` flag, …):
+  ```bash
+  pnpm payload migrate:create describe-the-change
+  ```
+  Review the generated SQL, commit it with the change, and deploy as usual; the app migrates on startup.
+- Check status on the server: `docker compose -f docker-compose.prod.yml run --rm tools payload migrate:status`.
+- **Never run `pnpm start` (production mode) against the dev database.** The dev database was built by
+  push; the production server then stops at an interactive "you've run Payload in dev mode" prompt and
+  hangs. E2E tests use their own database (`pnpm test:e2e:prepare`) for exactly this reason.
+
 ## Database backup and restore
+
+Scripts: [`scripts/backup/backup-db.sh`](../scripts/backup/backup-db.sh) and
+[`scripts/backup/restore-db.sh`](../scripts/backup/restore-db.sh). They run on the server (or locally
+with Git Bash) and need Docker and `gpg`.
+
+**What a backup is:** `pg_dump` (custom format) → encrypted with GPG AES-256 using `BACKUP_PASSPHRASE`
+→ saved in `./backups/` with a SHA-256 checksum → copied to the off-server bucket `BACKUP_S3_BUCKET`.
+Local copies older than 30 days are pruned; give the bucket a 30-day lifecycle rule and versioning.
+
+### Daily backup (server)
+
+```bash
+# from the repository folder on the server
+scripts/backup/backup-db.sh
+```
+
+Schedule it daily at 02:30 with cron (`crontab -e` as the deploy user):
+
+```cron
+30 2 * * * cd /opt/medhanealem && scripts/backup/backup-db.sh >> /var/log/medhanealem-backup.log 2>&1
+```
+
+Check the log weekly (or let uptime monitoring alert on it, Phase 0 task 12).
+
+### Restore drill (quarterly) — safe, does not touch the live site
+
+```bash
+scripts/backup/restore-db.sh s3://medhanealem-backups/db/<file>.dump.gpg
+```
+
+It downloads the backup, verifies the checksum, restores into a scratch database
+`<POSTGRES_DB>_restore_check`, prints the number of tables, users, applied migrations and the church
+name, then drops the scratch database. Record the date and output in this runbook's drill log below.
+
+### Disaster recovery — restore over the live database
+
+```bash
+docker compose -f docker-compose.prod.yml stop app
+TARGET_DB=medhanealem CONFIRM_LIVE_RESTORE=yes scripts/backup/restore-db.sh s3://medhanealem-backups/db/<file>.dump.gpg
+docker compose -f docker-compose.prod.yml start app
+```
+
+On a **new server**: install as in [First deployment](#first-deployment), start only Postgres
+(`docker compose -f docker-compose.prod.yml up -d postgres`), run the restore above, then `up -d`.
+You need `BACKUP_PASSPHRASE` and the backup bucket keys from the password manager.
+
+### Restore drill log
+
+| Date | Backup restored | Result | By |
+|---|---|---|---|
+| 2026-10-18 | local dev DB → local backup bucket (`s3://medhanealem-backups/db/…`) | OK: checksum, 29 tables, 1 user, 1 migration, church name intact | Claude Code (Phase 0 task 10) |
 
 ## Production build and deployment
 
+Files: [`Dockerfile`](../Dockerfile) (multi-stage, Next.js standalone server),
+[`docker-compose.prod.yml`](../docker-compose.prod.yml) (app + Postgres 16 + Caddy with automatic HTTPS),
+[`Caddyfile`](../Caddyfile), [`.env.production.example`](../.env.production.example).
+Media goes to external EU object storage; Postgres runs on the server and is not exposed to the internet.
+
+### First deployment
+
+On a fresh Ubuntu 24.04 server in the EU (e.g. Hetzner Falkenstein/Helsinki, 2 vCPU / 4 GB RAM):
+
+1. **Server basics:** create a non-root deploy user with SSH key login, disable password login,
+   enable the firewall for ports 22, 80, 443 only (`ufw allow OpenSSH; ufw allow 80,443/tcp; ufw allow 443/udp; ufw enable`),
+   turn on unattended security upgrades.
+2. **Install Docker Engine + Compose plugin** (docs.docker.com/engine/install/ubuntu) and `gpg`, `git`.
+3. **Get the code:**
+   ```bash
+   sudo mkdir -p /opt/medhanealem && sudo chown $USER /opt/medhanealem
+   git clone https://github.com/skynetsos/stockholm-medhanealem-web.git /opt/medhanealem
+   cd /opt/medhanealem
+   ```
+4. **Configure:** `cp .env.production.example .env.production && chmod 600 .env.production`, then fill in
+   every value (generate secrets with `openssl rand -hex 32`). Store the secrets in the password manager now.
+5. **Storage:** create two buckets in EU object storage: `medhanealem-media` (site uploads) and
+   `medhanealem-backups` (versioning on, 30-day lifecycle; ideally a different provider or region).
+6. **DNS (Cloudflare):** point `medhanealem.se` (A/AAAA) to the server. For the first certificate set the
+   record to "DNS only" (grey cloud); after Caddy has issued the certificate, switch to "Proxied" and set
+   Cloudflare SSL/TLS to **Full (strict)**.
+7. **Start:**
+   ```bash
+   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+   docker compose -f docker-compose.prod.yml logs -f app      # wait for "Ready"; migrations run first
+   curl -fsS https://medhanealem.se/api/health                 # {"status":"ok"}
+   ```
+8. **Seed and first admin** (do this before announcing the URL, so nobody else can register first):
+   ```bash
+   docker compose -f docker-compose.prod.yml --env-file .env.production run --rm tools seed:base
+   docker compose -f docker-compose.prod.yml --env-file .env.production run --rm \
+     -e ADMIN_EMAIL=you@example.org -e ADMIN_NAME="Your Name" tools user:create-super-admin
+   ```
+   Open the printed link, set the password, enrol MFA.
+9. **Backups:** add the cron line from [Daily backup](#daily-backup-server), run it once by hand, then run a
+   restore drill and log it.
+
+### Updating the site
+
+```bash
+cd /opt/medhanealem
+git pull
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+```
+
+The new container applies any new migrations before serving. Take a backup first when the release
+contains migrations (`scripts/backup/backup-db.sh`).
+
+### Rolling back
+
+```bash
+git checkout <previous-tag-or-commit>
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+```
+
+If the release ran a migration that the old code can't handle, restore the backup taken before the update.
+
+### Testing the production stack locally
+
+The same files run on a developer machine with Docker. Make `.env.production.localtest` from the example
+(gitignored), with `SITE_DOMAIN=localhost`, `NEXT_PUBLIC_SERVER_URL=https://localhost:8443`,
+`HTTP_PORT=8080`, `HTTPS_PORT=8443`, `APP_ENV_FILE=.env.production.localtest` and the local RustFS as S3
+(`S3_ENDPOINT=http://host.docker.internal:9000`). Then:
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env.production.localtest up -d --build
+curl -k https://localhost:8443/api/health
+docker compose -f docker-compose.prod.yml --env-file .env.production.localtest down -v   # remove when done
+```
+
+Caddy uses its own local certificate for `localhost`, so browsers show a warning; that is expected.
+
+## Accounts and MFA
+
+- **New staff account:** a super_admin creates the user in /admin → Users with the right roles and a
+  temporary password, gives it to them in person (never by email), and they change it under Account
+  after signing in. Once email is configured (Phase 1), "Forgot password" on the login page also works.
+- **New super_admin:** use `user:create-super-admin` (prints a one-time set-password link).
+- **Lost phone:** a super_admin opens the user in /admin → Users → **Reset MFA** (sidebar). The user is
+  signed out everywhere and enrols again at next sign-in.
+- **Break-glass (the only super_admin is locked out):** on the server
+  ```bash
+  docker compose -f docker-compose.prod.yml --env-file .env.production run --rm \
+    -e ADMIN_EMAIL=you@example.org tools user:reset-mfa
+  ```
+  Locally: `ADMIN_EMAIL=you@example.org pnpm user:reset-mfa`.
+- Privileged roles (super_admin, clergy_approver, office_coordinator) must complete MFA every session;
+  sessions last 8 hours. Five wrong MFA codes lock MFA for 15 minutes.
+
 ## Editor guide
 
+Added in Phase 1 (how to add an event, announcement and gallery), per spec §6 Phase 1 task 12.
+
 ## Troubleshooting
+
+| Symptom | Likely cause / fix |
+|---|---|
+| App container restarts, logs say `Missing required environment variable X` | Add `X` to the env file (see `.env.production.example`) and `up -d` again. |
+| `/api/health` returns 503 | The app can't reach Postgres: `docker compose -f docker-compose.prod.yml ps`, check `postgres` is healthy and `POSTGRES_*` match. |
+| Caddy can't get a certificate | DNS doesn't point at the server yet, port 80/443 is blocked, or Cloudflare proxy is on before the first certificate (set "DNS only" first). |
+| Header/footer changes don't show | Pages are cached for 5 minutes; saving in /admin refreshes them immediately. Changes made by scripts (`seed:base`) appear within 5 minutes, or restart the app. |
+| Unknown file paths like `/robots.txt` redirect to `/am/...` | A file was added to `public/` or a new file route without adding it to the middleware skip list in `src/middleware.ts`. |
+| `pnpm test` fails with connection errors | Local Postgres isn't running: `pnpm services:up`. |
+| Dev server shows stale header data after a script changed globals | Restart `pnpm dev` (the 5-minute cache only clears on admin saves). |
+| Backup script: `gpg: command not found` | Install GnuPG (`sudo apt install gnupg`). On Windows run the script from Git Bash. |

@@ -13,6 +13,13 @@
 
 ## Resolved decisions
 
+### D-008 — Production packaging, migrations and backups (2026-10-18)
+- **Image:** multi-stage `Dockerfile`; the `runner` target is Next.js `standalone` (342 MB, non-root user, health check on `/api/health`). A `tools` target (full source) runs one-off commands on the server (`seed:base`, `user:create-super-admin`, `user:reset-mfa`, `payload migrate:status`) because the standalone image has no Payload CLI. `output: "standalone"` is only set in the Docker build (`NEXT_OUTPUT`), so local Windows builds are unaffected.
+- **Stack:** `docker-compose.prod.yml` = app + Postgres 16 (not published) + Caddy 2 (automatic HTTPS, HSTS, basic security headers). Media stays in external EU object storage. Hosting choice is still open (spec §10 #3: Hetzner default); the stack runs the same on any Docker host.
+- **Migrations:** production never auto-syncs the schema. `src/migrations/` holds versioned migrations (initial one created now) and the app applies them on startup (`prodMigrations`). Every schema change needs `pnpm payload migrate:create`.
+- **Backups:** `scripts/backup/backup-db.sh` (pg_dump → GPG AES-256 → SHA-256 → separate off-server bucket, 30-day local retention) and `restore-db.sh` (safe scratch-database drill by default; live restore needs `CONFIRM_LIVE_RESTORE=yes`). Run daily by cron on the server. Tested locally against both the dev and the production stack.
+- **New secret:** `BACKUP_PASSPHRASE` (password manager; losing it makes old backups unreadable).
+
 ### D-007 — 404 pages and page caching in Next.js 15.4 (2026-10-18)
 Found by the production-build check deferred from task 5.
 - **Problem 1:** a page calling `notFound()` (our former `[locale]/[...rest]` catch-all) is only rendered in the browser in Next 15.4: the server sends an empty `<html id="__next_error__">` shell with no `lang` and no text.
