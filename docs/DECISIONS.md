@@ -12,6 +12,18 @@
 
 ## Resolved decisions
 
+### D-007 — 404 pages and page caching in Next.js 15.4 (2026-10-18)
+Found by the production-build check deferred from task 5.
+- **Problem 1:** a page calling `notFound()` (our former `[locale]/[...rest]` catch-all) is only rendered in the browser in Next 15.4: the server sends an empty `<html id="__next_error__">` shell with no `lang` and no text.
+- **Problem 2:** public pages were not cached at all (`Cache-Control: no-store`); a `[locale]` segment needs `generateStaticParams` (empty list = nothing built ahead) to get ISR.
+- **Solution:**
+  - `[locale]/layout.tsx` exports an empty `generateStaticParams` → pages are cached for 5 min on first visit (verified: `x-nextjs-cache: HIT`), no database needed at build time.
+  - The catch-all and `[locale]/not-found.tsx` are removed. Unknown URLs fall through to the root `app/not-found.tsx`, which Next server-renders. It is a **client component** that takes the language from the URL; a server component there would read the request and make every cached page dynamic (Next renders it into every page's tree).
+  - A pass-through `app/layout.tsx` exists only so the root not-found works; the real root layouts are still `[locale]/layout.tsx` and Payload's.
+  - The locale middleware now also handles "file-like" paths (e.g. `/wp-login.php` → `/am/wp-login.php` → Amharic 404) instead of letting them 500. Skipped: admin, API, Next internals, and Next's own file routes (favicon, robots.txt, sitemap.xml, manifest, icons). Any file added to `public/` must be added to that skip list.
+- **Trade-off:** the 404 page shows the translated message and a home link, but no CMS header/footer.
+- **Phase 1 note:** a page that calls `notFound()` (e.g. an unknown CMS slug) will still get the client-rendered shell. Prefer making such pages unmatched routes (generateStaticParams + `dynamicParams = false` where the slugs are known), and re-check this behaviour when upgrading Next.js.
+
 ### Q-005 — Globals before layout; logo before Media (2026-10-18) — approved by Biruk
 - The three globals (spec §2.15) were defined in task 7; task 8 is the `pnpm seed:base` script.
 - `SiteSettings.logo` arrives with Media in Phase 1; until then the header shows the church name as a text wordmark.
@@ -81,3 +93,4 @@
 | `qrcode`, `@types/qrcode` | Render the otpauth:// URI as a QR code (server-side PNG data URL) on the MFA enrolment screen. |
 | `@payloadcms/ui`, `@payloadcms/translations` | Payload's own admin UI kit and translation types, needed for the custom MFA view and reset button. Same version as Payload. |
 | `pg`, `@types/pg` (dev) | Integration tests create/drop the `<db>_test` database. Same `pg` version Payload already uses. |
+| `@playwright/test` (dev) | E2E smoke tests named in spec §9 (Phase 0 task 9). |

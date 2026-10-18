@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build, e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: medhanealem
+          POSTGRES_PASSWORD: medhanealem_ci
+          POSTGRES_DB: medhanealem
+          TZ: UTC
+          PGTZ: UTC
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medhanealem -d medhanealem"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # CI-only values. Nothing here is a real secret; S3 is configured but never contacted
+    # (no upload collections are exercised in CI).
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      SITE_ENV: development
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+      DATABASE_URI: postgres://medhanealem:medhanealem_ci@localhost:5432/medhanealem
+      PAYLOAD_SECRET: ci-payload-secret-not-used-anywhere-else-0000000000000000
+      MFA_ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000001"
+      S3_ENDPOINT: http://localhost:9000
+      S3_REGION: us-east-1
+      S3_BUCKET: medhanealem-media
+      S3_ACCESS_KEY_ID: ci
+      S3_SECRET_ACCESS_KEY: ci-secret
+      S3_FORCE_PATH_STYLE: "true"
+      EMAIL_FROM: no-reply@medhanealem.se
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit + integration tests (vitest, real Postgres)
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Prepare database for e2e (schema, base seed, an admin user)
+        env:
+          ADMIN_EMAIL: ci-admin@example.org
+          ADMIN_NAME: CI Admin
+        run: |
+          pnpm seed:base
+          pnpm user:create-super-admin
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: E2E smoke tests (production server)
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
