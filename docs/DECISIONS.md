@@ -8,6 +8,7 @@
 - **Add `SiteSettings.logo`** (upload, Media collection) and show it in the header instead of the text wordmark (Q-005).
 
 ### Phase 3 — polish
+- **404 page with the CMS header and footer.** Today the 404 shows only the translated message and a home link (D-007). Requested by Biruk 2026-10-18.
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
