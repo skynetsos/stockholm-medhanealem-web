@@ -9,7 +9,7 @@ Read STOCKHOLM-MEDHANEALEM-BUILD-SPEC.md before any work. Follow the current pha
 - Email: Resend. Storage: S3-compatible (EU). Error tracking: Sentry.
 
 ## Rules
-- Locales: am (default), en, sv. All CMS text fields are localized. UI strings live in /messages/{locale}.json.
+- Locales: am (default), en, sv. All CMS text fields are localized. UI strings live in src/messages/{locale}.json.
 - Never hardcode Ethiopic or English copy in components; use next-intl keys or CMS content.
 - Timezone everywhere: Europe/Stockholm. Store UTC, display local.
 - Request records (baptism, inquiries) are PRIVATE: enforced in Payload access control, never exposed via REST/GraphQL to the public, never server-rendered into public pages.
