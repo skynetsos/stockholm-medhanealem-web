@@ -14,6 +14,7 @@
     "services:up": "docker compose up -d",
     "services:down": "docker compose down",
     "services:logs": "docker compose logs -f",
+    "seed:base": "payload run scripts/seed-base.ts",
     "user:create-super-admin": "payload run scripts/create-super-admin.ts",
     "user:reset-mfa": "payload run scripts/reset-mfa.ts",
     "payload": "payload",

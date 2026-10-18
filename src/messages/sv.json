@@ -1,35 +1,13 @@
 {
   "common": {
     "skipToContent": "Hoppa till huvudinnehållet",
-    "language": "Språk",
     "changeLanguage": "Byt språk",
-    "currentLanguage": "Nuvarande språk",
     "menu": "Meny",
-    "openMenu": "Öppna menyn",
     "closeMenu": "Stäng menyn",
-    "mainNavigation": "Huvudnavigering",
-    "home": "Hem"
-  },
-  "header": {
-    "serviceTimes": "Gudstjänsttider",
-    "requestBaptism": "Ansök om dop"
-  },
-  "nav": {
-    "home": "Hem",
-    "ourChurch": "Vår kyrka",
-    "ourFaith": "Vår tro",
-    "worship": "Gudstjänst & kalender",
-    "sundaySchool": "Söndagsskola",
-    "sacraments": "Sakrament & förfrågningar",
-    "newsMedia": "Nyheter & media",
-    "support": "Stöd oss",
-    "visit": "Besök & kontakt"
+    "mainNavigation": "Huvudnavigering"
   },
   "footer": {
     "footerNavigation": "Sidfotsnavigering",
-    "diocese": "Stiftet för Norden och Grekland",
-    "privacy": "Integritetspolicy",
-    "cookies": "Kakor",
     "copyright": "© {year} {churchName}"
   },
   "notFound": {

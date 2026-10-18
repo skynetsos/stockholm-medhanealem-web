@@ -6,7 +6,7 @@ import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "@/i18n/navigation";
 
 /**
- * Wraps the main navigation: inline on large screens, a toggled drawer on small screens.
+ * Wraps the main navigation: a full-width row on xl screens, a toggled drawer below that.
  * The menu content is server-rendered and passed in as children (one nav, no duplicate markup).
  */
 export function MobileMenu({ children }: { children: ReactNode }) {
@@ -35,7 +35,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
       <button
         ref={buttonRef}
         type="button"
-        className="flex min-h-11 min-w-11 items-center justify-center gap-2 rounded border border-primary px-3 text-primary lg:hidden"
+        className="flex min-h-11 min-w-11 items-center justify-center gap-2 rounded border border-primary px-3 text-primary xl:hidden"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen(!open)}
@@ -48,7 +48,7 @@ export function MobileMenu({ children }: { children: ReactNode }) {
       <nav
         id={panelId}
         aria-label={t("mainNavigation")}
-        className={`${open ? "block" : "hidden"} absolute inset-x-0 top-full z-40 border-b-4 border-gold bg-white px-gutter pb-6 shadow-lg lg:static lg:block lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none`}
+        className={`${open ? "block" : "hidden"} absolute inset-x-0 top-full z-40 border-b-4 border-gold bg-white px-gutter pb-6 shadow-lg xl:static xl:block xl:basis-full xl:border-0 xl:bg-transparent xl:p-0 xl:shadow-none`}
       >
         {children}
       </nav>

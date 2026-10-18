@@ -2,19 +2,27 @@
 
 ## Open questions
 
-### Q-005 — Globals before layout; logo before Media (2026-10-18)
-- **Question 1:** Phase 0 task 7 (header/footer read SiteSettings + Navigation) comes before task 8 (create those globals).
-- **Default applied:** the three globals (fields per spec §2.15) are defined in task 7 so the layout reads real CMS data; task 8 is then the `pnpm seed:base` script.
-- **Question 2:** `SiteSettings.logo` is an image upload, but the Media collection (with permission flags) is Phase 1.
-- **Default applied:** the logo field is added together with Media in Phase 1. Until then the header shows the church name as a text wordmark (no placeholder graphic).
-- **Also added:** `SiteSettings.swedishPublic` (default off). The language switcher shows Swedish only when it is on (spec Phase 3 task 2 calls for this flag); `/sv` URLs still work directly.
-
 ## Deferred work (by phase)
+
+### Phase 1
+- **Add `SiteSettings.logo`** (upload, Media collection) and show it in the header instead of the text wordmark (Q-005).
 
 ### Phase 3 — polish
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### Q-005 — Globals before layout; logo before Media (2026-10-18) — approved by Biruk
+- The three globals (spec §2.15) were defined in task 7; task 8 is the `pnpm seed:base` script.
+- `SiteSettings.logo` arrives with Media in Phase 1; until then the header shows the church name as a text wordmark.
+- `SiteSettings.swedishPublic` (default off) controls whether Swedish appears in the language switcher.
+
+### D-006 — Base seed content (2026-10-18) — values from Biruk
+- **Church name:** am = the title of dev.medhanealem.se (በኢትዮጵያ ኦርቶዶክስ ተዋህዶ የደብረ ሰላም መንበረ ጵጵስና መድኃኔ ዓለም ቤተ ክርስቲያን, verified on the site 2026-10-18); en = spec title (Debre Selam Menbere Papasat Medhanealem Ethiopian Orthodox Tewahedo Church, Stockholm); sv = left empty (falls back to Amharic until the Phase 3 reviewer supplies it). Short name: Stockholm Medhanealem.
+- **Address:** Pålsbodagränd 3, 124 75 Bandhagen (as on dev.medhanealem.se). Default event location is the same address.
+- **Left empty until the church supplies them:** office email, phone, social links, map link, livestream URL, notification emails, transit notes.
+- **Menu:** the nine top-level sections of spec §4 plus the two header buttons; footer has the diocese link (https://eotc-nordics.org/a/) and privacy/cookies links. Several targets are Phase 1/2 pages, so those links 404 until the pages are built.
+- **Behaviour:** the seed fills a global only while it is still empty, so it never overwrites edits made in /admin. `SEED_FORCE=1` overwrites deliberately.
 
 ### D-005 — Fonts and design tokens (2026-10-18) — approved by Biruk
 - **Latin heading font:** spec §5 offers "Fraunces or Source Serif"; we use **Source Serif 4** (calmer, closer to liturgical print). Fraunces can be swapped in by replacing one file.

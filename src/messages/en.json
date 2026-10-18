@@ -1,35 +1,13 @@
 {
   "common": {
     "skipToContent": "Skip to main content",
-    "language": "Language",
     "changeLanguage": "Change language",
-    "currentLanguage": "Current language",
     "menu": "Menu",
-    "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "mainNavigation": "Main navigation",
-    "home": "Home"
-  },
-  "header": {
-    "serviceTimes": "Service Times",
-    "requestBaptism": "Request Baptism"
-  },
-  "nav": {
-    "home": "Home",
-    "ourChurch": "Our Church",
-    "ourFaith": "Our Faith",
-    "worship": "Worship & Calendar",
-    "sundaySchool": "Sunday School",
-    "sacraments": "Sacraments & Requests",
-    "newsMedia": "News & Media",
-    "support": "Support",
-    "visit": "Visit & Contact"
+    "mainNavigation": "Main navigation"
   },
   "footer": {
     "footerNavigation": "Footer navigation",
-    "diocese": "Nordic & Greece Diocese",
-    "privacy": "Privacy policy",
-    "cookies": "Cookies",
     "copyright": "© {year} {churchName}"
   },
   "notFound": {
