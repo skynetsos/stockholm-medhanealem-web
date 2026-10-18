@@ -2,11 +2,15 @@
 
 ## Open questions
 
-### Q-003 — Login email for the first super_admin (2026-10-18)
-- **Question:** Biruk asked for the first super_admin "biruk" but no login email was given.
-- **Default applied:** `bukem2t2@gmail.com` (the project owner's account email). It can be changed in /admin → Users at any time; a church-domain address (e.g. `biruk@medhanealem.se`) may be preferable once mail is set up.
+## Deferred work (by phase)
+
+### Phase 3 — polish
+- **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### Q-003 — Login email for the first super_admin (2026-10-18) — approved by Biruk
+- **Decision:** `bukem2t2@gmail.com`. It can be changed in /admin → Users at any time; a church-domain address (e.g. `biruk@medhanealem.se`) may be preferable once mail is set up.
 
 ### D-003 — MFA design (2026-10-18) — requirements from Biruk
 - **Who:** `super_admin`, `clergy_approver`, `office_coordinator` must pass TOTP every session. Other roles are not forced.
