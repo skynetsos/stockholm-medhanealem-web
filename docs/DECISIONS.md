@@ -2,15 +2,16 @@
 
 ## Open questions
 
-### Q-001 — Sender email address (2026-10-18)
-- **Question:** Which address do outgoing emails (form acknowledgements, office notifications) come from?
-- **Default applied:** `no-reply@medhanealem.se` in `.env.example` (`EMAIL_FROM`). Production needs the domain verified in Resend (DNS records on medhanealem.se).
-
-### Q-002 — Local S3 server: RustFS instead of MinIO (2026-10-18)
-- **Question:** Spec §1.1 names MinIO for local S3. MinIO no longer publishes community images: `minio/minio` and `minio/mc` return "not found" on Docker Hub.
-- **Default applied:** `rustfs/rustfs:1.0.3`, an S3-compatible server with the same ports (9000 API, 9001 console). It's used in local dev only; production uses EU object storage (Hetzner/R2). The bucket is created by a one-off `amazon/aws-cli` container. Alternatives: SeaweedFS or Garage.
-
 ## Resolved decisions
+
+### Q-001 — Sender email address (2026-10-18) — approved by Biruk
+- **Question:** Which address do outgoing emails (form acknowledgements, office notifications) come from?
+- **Decision:** `no-reply@medhanealem.se` (`EMAIL_FROM`). Production needs the domain verified in Resend (DNS records on medhanealem.se).
+- **Follow-up when email is wired:** set **Reply-To** to the office address (`SiteSettings.officeEmail`) so replies reach the office, not the no-reply box.
+
+### Q-002 — Local S3 server: RustFS instead of MinIO (2026-10-18) — approved by Biruk
+- **Question:** Spec §1.1 names MinIO for local S3. MinIO no longer publishes community images: `minio/minio` and `minio/mc` return "not found" on Docker Hub.
+- **Decision:** `rustfs/rustfs:1.0.3` for local dev only (ports 9000 API, 9001 console). Production uses EU object storage (Hetzner/R2). The bucket is created by a one-off `amazon/aws-cli` container.
 
 ### D-001 — Next.js pinned to 15.4.x (2026-10-18) — approved by Biruk
 - **Question:** The spec says "Next.js 15". The latest 15.x is 15.5.28, but Payload 3.91.0 (`@payloadcms/next`) only supports `>=15.4.11 <15.5.0` or `>=16.3.3` on the Next 15/16 lines.

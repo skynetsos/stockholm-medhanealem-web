@@ -2,16 +2,20 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Users } from "./collections/Users";
+import { defaultLocale, localeNames, locales } from "./i18n/locales";
+import { requireEnv } from "./lib/env";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-// Localization, S3 storage and serverURL are configured in Phase 0 task 3.
 export default buildConfig({
+  serverURL: requireEnv("NEXT_PUBLIC_SERVER_URL"),
+  secret: requireEnv("PAYLOAD_SECRET"),
   admin: {
     user: Users.slug,
     importMap: {
@@ -19,15 +23,35 @@ export default buildConfig({
     },
   },
   collections: [Users],
+  localization: {
+    locales: locales.map((code) => ({ code, label: localeNames[code] })),
+    defaultLocale,
+    fallback: true,
+  },
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || "",
+  db: postgresAdapter({
+    pool: {
+      connectionString: requireEnv("DATABASE_URI"),
+    },
+  }),
+  plugins: [
+    s3Storage({
+      // Upload collections are added here as they are created (Media in Phase 1).
+      collections: {},
+      bucket: requireEnv("S3_BUCKET"),
+      config: {
+        endpoint: requireEnv("S3_ENDPOINT"),
+        region: requireEnv("S3_REGION"),
+        forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+        credentials: {
+          accessKeyId: requireEnv("S3_ACCESS_KEY_ID"),
+          secretAccessKey: requireEnv("S3_SECRET_ACCESS_KEY"),
+        },
+      },
+    }),
+  ],
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || "",
-    },
-  }),
   sharp,
 });

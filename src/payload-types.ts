@@ -84,10 +84,10 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('am' | 'en' | 'sv') | ('am' | 'en' | 'sv')[];
   globals: {};
   globalsSelect: {};
-  locale: null;
+  locale: 'am' | 'en' | 'sv';
   widgets: {
     collections: CollectionsWidget;
   };
