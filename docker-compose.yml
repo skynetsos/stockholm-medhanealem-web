@@ -1,0 +1,74 @@
+# Local development services. The Next.js app runs on the host with `pnpm dev`.
+# Values come from .env (copy .env.example). All ports bind to localhost only.
+name: medhanealem
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Store UTC in the database; the app converts to Europe/Stockholm for display.
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # S3-compatible object storage (stands in for EU object storage in production).
+  # RustFS replaces MinIO, whose images are no longer published — see docs/DECISIONS.md D-003.
+  s3:
+    image: rustfs/rustfs:1.0.3
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY_ID}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_ACCESS_KEY}
+      RUSTFS_CONSOLE_ENABLE: "true"
+    ports:
+      - "127.0.0.1:9000:9000" # S3 API
+      - "127.0.0.1:9001:9001" # web console
+    volumes:
+      - s3-data:/data
+
+  # One-off job: creates the media bucket, then exits.
+  s3-init:
+    image: amazon/aws-cli:2.38.1
+    depends_on:
+      - s3
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${S3_REGION}
+      S3_BUCKET: ${S3_BUCKET}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        for i in $$(seq 1 30); do
+          aws --endpoint-url http://s3:9000 s3api head-bucket --bucket "$$S3_BUCKET" 2>/dev/null && echo "bucket $$S3_BUCKET exists" && exit 0
+          aws --endpoint-url http://s3:9000 s3api create-bucket --bucket "$$S3_BUCKET" && echo "bucket $$S3_BUCKET created" && exit 0
+          sleep 2
+        done
+        echo "could not create bucket $$S3_BUCKET" && exit 1
+    restart: "no"
+
+  # Catches all outgoing email locally. Web UI: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.31
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Stockholm
+    ports:
+      - "127.0.0.1:1025:1025" # SMTP
+      - "127.0.0.1:8025:8025" # web UI
+
+volumes:
+  postgres-data:
+  s3-data:
