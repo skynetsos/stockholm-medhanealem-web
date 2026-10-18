@@ -32,6 +32,12 @@ backups/
 *.sql.gz
 media/
 
+# misc
+*.pem
+.vercel
+.pnp
+.pnp.*
+
 # editors / OS
 .vscode/*
 !.vscode/extensions.json

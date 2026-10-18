@@ -1,0 +1,5 @@
+# Packages allowed to run install scripts (native binaries for Next/Payload tooling).
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
