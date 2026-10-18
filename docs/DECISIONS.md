@@ -2,7 +2,25 @@
 
 ## Open questions
 
+### Q-003 — Login email for the first super_admin (2026-10-18)
+- **Question:** Biruk asked for the first super_admin "biruk" but no login email was given.
+- **Default applied:** `bukem2t2@gmail.com` (the project owner's account email). It can be changed in /admin → Users at any time; a church-domain address (e.g. `biruk@medhanealem.se`) may be preferable once mail is set up.
+
 ## Resolved decisions
+
+### D-003 — MFA design (2026-10-18) — requirements from Biruk
+- **Who:** `super_admin`, `clergy_approver`, `office_coordinator` must pass TOTP every session. Other roles are not forced.
+- **Flow:** password login (Payload) → `/admin/mfa`. First time: QR code + manual key, confirm one 6-digit code, then 8 one-time recovery codes are shown once. Later sessions: 6-digit code or a recovery code.
+- **Enforcement (defence in depth):** (1) the admin catch-all page redirects every admin route except login/logout/reset/mfa to `/admin/mfa`; (2) every access helper (`src/access`) treats an un-verified privileged user as having no access, so REST, GraphQL and admin server functions return nothing.
+- **Session binding:** an HMAC-signed `medhanealem-mfa` cookie (httpOnly, SameSite=Lax) bound to user id + Payload session id, expiring after an absolute 8 h. Logout or reset revokes the session, which invalidates the cookie.
+- **Session length:** `tokenExpiration` is 8 h for the whole Users collection (all users are staff; simpler and stricter than per-role).
+- **Storage:** TOTP secret AES-256-GCM encrypted; recovery codes stored as HMAC-SHA256 hashes; keys derived from `MFA_ENCRYPTION_KEY` (separate from `PAYLOAD_SECRET`, so rotating that secret at handover doesn't wipe MFA).
+- **Abuse limits:** 5 wrong codes → 15 min lock; a TOTP code can't be reused (replay protection); password login also locks after 5 failures.
+- **Lost phone:** super_admin uses the **Reset MFA** button on the user's page (signs them out everywhere). Break-glass for the last super_admin: `ADMIN_EMAIL=… pnpm user:reset-mfa` on the server.
+- **Admin UI language:** MFA screens are English-only for now (Payload admin custom translations in `src/i18n/admin.ts`); Swedish can be added in Phase 3.
+
+### D-004 — Users `locales` field renamed to `translatorLocales` (2026-10-18)
+- Spec §2.1 names the translator field `locales`. With Payload localization enabled, Payload already owns a table called `users_locales`, so a multi-value select named `locales` collides (queries crash). Setting `dbName` didn't help (Payload then omits the table), so the field is `translatorLocales` in API and admin. Same meaning, different name.
 
 ### Q-001 — Sender email address (2026-10-18) — approved by Biruk
 - **Question:** Which address do outgoing emails (form acknowledgements, office notifications) come from?
@@ -28,3 +46,7 @@
 | `graphql` | Required peer dependency of `payload` and `@payloadcms/next`. |
 | `vitest` | Unit/integration test runner named in spec §9; added now so `pnpm test` runs from task 1. |
 | `@eslint/eslintrc`, `eslint-config-next` | ESLint flat-config bridge and Next rules from create-next-app. |
+| `otplib` | TOTP generation/verification for MFA. Approved by Biruk 2026-10-18. |
+| `qrcode`, `@types/qrcode` | Render the otpauth:// URI as a QR code (server-side PNG data URL) on the MFA enrolment screen. |
+| `@payloadcms/ui`, `@payloadcms/translations` | Payload's own admin UI kit and translation types, needed for the custom MFA view and reset button. Same version as Payload. |
+| `pg`, `@types/pg` (dev) | Integration tests create/drop the `<db>_test` database. Same `pg` version Payload already uses. |

@@ -7,6 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Users } from "./collections/Users";
+import { adminTranslations } from "./i18n/admin";
 import { defaultLocale, localeNames, locales } from "./i18n/locales";
 import { requireEnv } from "./lib/env";
 
@@ -21,6 +22,17 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        mfa: {
+          Component: "/components/admin/mfa/MfaView#MfaView",
+          path: "/mfa",
+        },
+      },
+    },
+  },
+  i18n: {
+    translations: adminTranslations,
   },
   collections: [Users],
   localization: {

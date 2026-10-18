@@ -121,6 +121,31 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  name: string;
+  roles: ('super_admin' | 'clergy_approver' | 'office_coordinator' | 'editor' | 'translator' | 'finance')[];
+  /**
+   * Translators: which languages this user may edit.
+   */
+  translatorLocales?: ('am' | 'en' | 'sv')[] | null;
+  active?: boolean | null;
+  mfa?: {
+    enabled?: boolean | null;
+    enrolledAt?: string | null;
+    secret?: string | null;
+    pendingSecret?: string | null;
+    recoveryCodes?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    lastTimeStep?: number | null;
+    failedAttempts?: number | null;
+    lockedUntil?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -215,6 +240,22 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  roles?: T;
+  translatorLocales?: T;
+  active?: T;
+  mfa?:
+    | T
+    | {
+        enabled?: T;
+        enrolledAt?: T;
+        secret?: T;
+        pendingSecret?: T;
+        recoveryCodes?: T;
+        lastTimeStep?: T;
+        failedAttempts?: T;
+        lockedUntil?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;

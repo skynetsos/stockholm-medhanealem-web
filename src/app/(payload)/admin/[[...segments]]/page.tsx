@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import config from "@payload-config";
 import { generatePageMetadata, RootPage } from "@payloadcms/next/views";
 
+import { enforceAdminMfa } from "@/lib/mfa/gate.server";
 import { importMap } from "../importMap.js";
 
 type Args = {
@@ -18,7 +19,10 @@ type Args = {
 export const generateMetadata = ({ params, searchParams }: Args): Promise<Metadata> =>
   generatePageMetadata({ config, params, searchParams });
 
-const Page = ({ params, searchParams }: Args) =>
-  RootPage({ config, params, searchParams, importMap });
+const Page = async ({ params, searchParams }: Args) => {
+  // Privileged roles must complete MFA for this session before any other admin screen.
+  await enforceAdminMfa((await params).segments);
+  return RootPage({ config, params, searchParams, importMap });
+};
 
 export default Page;
