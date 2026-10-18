@@ -34,9 +34,16 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      # S3-compatible storage for media upload tests (same image as local dev).
+      s3:
+        image: rustfs/rustfs:1.0.3
+        env:
+          RUSTFS_ACCESS_KEY: ci
+          RUSTFS_SECRET_KEY: ci-secret-key-0000
+        ports:
+          - 9000:9000
 
-    # CI-only values. Nothing here is a real secret; S3 is configured but never contacted
-    # (no upload collections are exercised in CI).
+    # CI-only values. Nothing here is a real secret.
     env:
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
@@ -49,7 +56,7 @@ jobs:
       S3_REGION: us-east-1
       S3_BUCKET: medhanealem-media
       S3_ACCESS_KEY_ID: ci
-      S3_SECRET_ACCESS_KEY: ci-secret
+      S3_SECRET_ACCESS_KEY: ci-secret-key-0000
       S3_FORCE_PATH_STYLE: "true"
       EMAIL_FROM: no-reply@medhanealem.se
 
@@ -65,6 +72,17 @@ jobs:
 
       - name: Install
         run: pnpm install --frozen-lockfile
+
+      - name: Create media bucket
+        run: |
+          for i in $(seq 1 30); do
+            docker run --rm --network host \
+              -e AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID" -e AWS_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY" \
+              -e AWS_DEFAULT_REGION="$S3_REGION" amazon/aws-cli:2.38.1 \
+              --endpoint-url "$S3_ENDPOINT" s3api create-bucket --bucket "$S3_BUCKET" && exit 0
+            sleep 2
+          done
+          echo "S3 service did not come up" && exit 1
 
       - name: Lint
         run: pnpm lint

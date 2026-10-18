@@ -6,6 +6,7 @@ import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { Media } from "./collections/Media";
 import { Users } from "./collections/Users";
 import { Footer } from "./globals/Footer";
 import { Navigation } from "./globals/Navigation";
@@ -38,7 +39,7 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users],
+  collections: [Users, Media],
   globals: [SiteSettings, Navigation, Footer],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),
@@ -56,8 +57,8 @@ export default buildConfig({
   }),
   plugins: [
     s3Storage({
-      // Upload collections are added here as they are created (Media in Phase 1).
-      collections: {},
+      // Files are served through Payload (/api/media/file/...), so Media's read access applies to them.
+      collections: { media: true },
       bucket: requireEnv("S3_BUCKET"),
       config: {
         endpoint: requireEnv("S3_ENDPOINT"),

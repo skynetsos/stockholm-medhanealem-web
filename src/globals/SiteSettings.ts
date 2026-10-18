@@ -34,6 +34,15 @@ export const SiteSettings: GlobalConfig = {
               admin: { description: 'Short label, e.g. "Stockholm Medhanealem".' },
             },
             {
+              name: "logo",
+              type: "upload",
+              relationTo: "media",
+              admin: {
+                description:
+                  'Shown in the header next to the church name. PNG/WebP with a transparent background works best. The image needs "Permission to publish".',
+              },
+            },
+            {
               name: "swedishPublic",
               type: "checkbox",
               defaultValue: false,

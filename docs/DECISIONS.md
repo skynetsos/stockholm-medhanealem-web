@@ -4,14 +4,20 @@
 
 ## Deferred work (by phase)
 
-### Phase 1
-- **Add `SiteSettings.logo`** (upload, Media collection) and show it in the header instead of the text wordmark (Q-005).
-
 ### Phase 3 — polish
+- **`containsMinors` enforcement** (spec Phase 3 task 3): e.g. require a guardian-permission note before an image showing children can be marked publishable. Phase 1 already keeps every image without "Permission to publish" off the public site (D-009).
 - **404 page with the CMS header and footer.** Today the 404 shows only the translated message and a home link (D-007). Requested by Biruk 2026-10-18.
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### D-009 — Media and the logo (2026-10-18, Phase 1 task 1a)
+- **Publication gate:** the public (site pages, anonymous API, file URLs) only gets images with "Permission to publish" (`permissionObtained`) ticked. Files are served through Payload (`/api/media/file/…`), so the same rule protects direct file links (verified: 403). Staff with media access see everything.
+- **Access (spec §3):** super_admin, clergy_approver, office_coordinator and editor can upload/edit/delete; translators read only; finance has no media access.
+- **No SVG uploads:** an uploaded SVG would be served from our own domain and could carry scripts. JPEG, PNG, WebP and AVIF only; the logo should be a PNG/WebP.
+- **Sizes:** thumbnail 400, card 800, hero 1600 (width; never upscaled) and og 1200×630 (cropped, focal point aware).
+- **Logo:** `SiteSettings.logo` (Q-005 deferred item, now done) shows in the header beside the church name; it's decorative there (empty alt) because the name is the link text. Like any image it needs "Permission to publish".
+- **CI:** a RustFS service now runs in CI so upload tests use real S3 storage.
 
 ### D-008 — Production packaging, migrations and backups (2026-10-18)
 - **Image:** multi-stage `Dockerfile`; the `runner` target is Next.js `standalone` (342 MB, non-root user, health check on `/api/health`). A `tools` target (full source) runs one-off commands on the server (`seed:base`, `user:create-super-admin`, `user:reset-mfa`, `payload migrate:status`) because the standalone image has no Payload CLI. `output: "standalone"` is only set in the Docker build (`NEXT_OUTPUT`), so local Windows builds are unaffected.

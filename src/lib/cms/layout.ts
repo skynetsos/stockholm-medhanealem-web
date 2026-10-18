@@ -23,7 +23,9 @@ export function getLayoutData(locale: Locale): Promise<LayoutData> {
       const payload = await getPayload({ config });
       const read = { locale, depth: 0, overrideAccess: false } as const;
       const [settings, navigation, footer] = await Promise.all([
-        payload.findGlobal({ slug: "site-settings", ...read }),
+        // depth 1 populates the logo; Media's public read rule leaves it unpopulated (just an id)
+        // unless the image has publication permission.
+        payload.findGlobal({ slug: "site-settings", ...read, depth: 1 }),
         payload.findGlobal({ slug: "navigation", ...read }),
         payload.findGlobal({ slug: "footer", ...read }),
       ]);

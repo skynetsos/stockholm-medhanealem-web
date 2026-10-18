@@ -1,8 +1,10 @@
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 
 import { Link } from "@/i18n/navigation";
 import { type LayoutData, publicLocales } from "@/lib/cms/layout";
 import { isRenderableLink } from "@/lib/links";
+import { mediaSource, publicMedia } from "@/lib/media";
 import type { Navigation } from "@/payload-types";
 
 import { CmsLink } from "./CmsLink";
@@ -41,6 +43,8 @@ export async function SiteHeader({ data }: { data: LayoutData }) {
   const t = await getTranslations("common");
   const { settings, navigation } = data;
   const brand = settings.churchName || settings.shortName;
+  const logo = publicMedia(settings.logo);
+  const logoSrc = logo ? mediaSource(logo, 192) : null;
 
   // Hide items whose label or link is missing; never render empty menus.
   const items = (navigation.headerItems ?? []).filter(isRenderableLink).map((item) => ({
@@ -59,11 +63,23 @@ export async function SiteHeader({ data }: { data: LayoutData }) {
         {t("skipToContent")}
       </a>
       <div className="mx-auto flex max-w-site flex-wrap items-center gap-x-4 gap-y-1 px-gutter py-2">
-        {brand && (
+        {(brand || logoSrc) && (
           <Link
             href="/"
-            className="flex min-h-11 min-w-0 flex-1 basis-64 items-center font-serif text-lg font-semibold text-primary no-underline"
+            className="flex min-h-11 min-w-0 flex-1 basis-64 items-center gap-3 font-serif text-lg font-semibold text-primary no-underline"
           >
+            {logo && logoSrc && (
+              <Image
+                src={logoSrc.url}
+                width={logoSrc.width}
+                height={logoSrc.height}
+                // The name is in the link text, so the logo is decorative unless there is no name.
+                alt={brand ? "" : logo.alt}
+                className="h-12 w-auto shrink-0"
+                sizes="96px"
+                priority
+              />
+            )}
             {brand}
           </Link>
         )}
