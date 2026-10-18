@@ -34,6 +34,16 @@ you set up two-factor authentication (MFA) and save your 8 recovery codes.
 
 Local service UIs: Mailpit (all outgoing email) http://localhost:8025 · RustFS console http://localhost:9001.
 
+### Testing on a phone (same Wi-Fi)
+
+```bash
+DEV_ALLOWED_ORIGINS=<your PC's LAN IP> pnpm dev -H 0.0.0.0
+```
+
+Then open `http://<LAN IP>:3000/am` on the phone. Find the IP with `ipconfig` (Windows: the Wi-Fi
+adapter's IPv4 address). Windows must allow Node.js through the firewall on that network; it asks the
+first time Node listens, or an administrator can add a rule for TCP port 3000.
+
 ## Environment variables
 
 Every variable is documented in [`.env.example`](../.env.example) (local) and
