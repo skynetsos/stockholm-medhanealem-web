@@ -9,9 +9,15 @@
 
 ## Resolved decisions
 
+### D-005 — Fonts and design tokens (2026-10-18)
+- **Latin heading font:** spec §5 offers "Fraunces or Source Serif"; we use **Source Serif 4** (calmer, closer to liturgical print). Fraunces can be swapped in by replacing one file.
+- **Self-hosting:** woff2 files are copied from the Fontsource npm packages into `src/fonts/` with their OFL licences (see `src/fonts/README.md`). No npm dependency added and no font CDN.
+- **Loading:** each font declares its `unicode-range` and nothing is preloaded, so English pages never download the ~200 KB Ethiopic files (verified in the browser). Revisit in the Phase 1 Lighthouse pass if needed.
+- **Palette:** spec §5 values as Tailwind tokens (`primary`, `gold`, `cream`, `ink`, `muted`, `error`), still "confirm with committee" (spec §10 #2). Gold is for accents, borders and large text on green only, since it fails contrast as text on cream; a unit test enforces the allowed pairs.
+
 ### Q-004 — Language selection on "/" and UI string review (2026-10-18) — approved by Biruk
 - **Detection:** off. `/` always redirects to `/am`; visitors switch language explicitly; no locale cookie. Can be turned on later (`localeDetection` in `src/i18n/routing.ts`).
-- **Review:** Biruk reviews the Amharic UI strings (`src/messages/am.json`) himself; Swedish (`sv.json`) waits for the Phase 3 reviewer. Tracked in docs/CONTENT-CHECKLIST.md.
+- **Review:** Biruk reviews the Amharic UI strings (`src/messages/am.json`); Swedish (`sv.json`) waits for the Phase 3 reviewer. Tracked in docs/CONTENT-CHECKLIST.md.
 - **Location:** UI strings live in `src/messages/{locale}.json` (spec §1.1); CLAUDE.md updated to match.
 
 ### Q-003 — Login email for the first super_admin (2026-10-18) — approved by Biruk
