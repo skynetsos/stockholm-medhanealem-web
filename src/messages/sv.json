@@ -36,5 +36,8 @@
     "title": "Sidan hittades inte",
     "description": "Sidan du letar efter finns inte eller har flyttats.",
     "backHome": "Gå till startsidan"
+  },
+  "home": {
+    "welcome": "Välkommen"
   }
 }

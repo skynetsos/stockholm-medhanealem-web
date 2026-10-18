@@ -7,6 +7,9 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Users } from "./collections/Users";
+import { Footer } from "./globals/Footer";
+import { Navigation } from "./globals/Navigation";
+import { SiteSettings } from "./globals/SiteSettings";
 import { adminTranslations } from "./i18n/admin";
 import { defaultLocale, localeNames, locales } from "./i18n/locales";
 import { requireEnv } from "./lib/env";
@@ -35,6 +38,7 @@ export default buildConfig({
     translations: adminTranslations,
   },
   collections: [Users],
+  globals: [SiteSettings, Navigation, Footer],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),
     defaultLocale,

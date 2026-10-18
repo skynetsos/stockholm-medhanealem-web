@@ -85,8 +85,16 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('am' | 'en' | 'sv') | ('am' | 'en' | 'sv')[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+    navigation: Navigation;
+    footer: Footer;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
+  };
   locale: 'am' | 'en' | 'sv';
   widgets: {
     collections: CollectionsWidget;
@@ -313,6 +321,311 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Full approved name, shown in the header and footer.
+   */
+  churchName?: string | null;
+  /**
+   * Short label, e.g. "Stockholm Medhanealem".
+   */
+  shortName?: string | null;
+  /**
+   * Turn on once Swedish content is reviewed (Phase 3).
+   */
+  swedishPublic?: boolean | null;
+  address?: {
+    street?: string | null;
+    postalCode?: string | null;
+    city?: string | null;
+  };
+  mapUrl?: string | null;
+  transitNotes?: string | null;
+  /**
+   * Default event location.
+   */
+  defaultLocation?: string | null;
+  /**
+   * Public office address (shown on the site).
+   */
+  officeEmail?: string | null;
+  /**
+   * Office phone only, never personal numbers.
+   */
+  phone?: string | null;
+  socialLinks?:
+    | {
+        platform: 'facebook' | 'youtube' | 'instagram' | 'tiktok' | 'telegram' | 'other';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  livestreamUrl?: string | null;
+  /**
+   * Who is emailed when a request arrives. Never shown publicly.
+   */
+  officeNotificationEmails?:
+    | {
+        email: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Months after completion before baptism cases are archived (legal review).
+   */
+  retentionMonthsBaptism?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  headerItems?:
+    | {
+        label: string;
+        link?: {
+          type?: ('internal' | 'external') | null;
+          newTab?: boolean | null;
+          path?: string | null;
+          url?: string | null;
+        };
+        children?:
+          | {
+              label: string;
+              link?: {
+                type?: ('internal' | 'external') | null;
+                newTab?: boolean | null;
+                path?: string | null;
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  headerCTAs?:
+    | {
+        label: string;
+        link?: {
+          type?: ('internal' | 'external') | null;
+          newTab?: boolean | null;
+          path?: string | null;
+          url?: string | null;
+        };
+        style?: ('primary' | 'secondary') | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  columns?:
+    | {
+        heading: string;
+        links?:
+          | {
+              label: string;
+              link?: {
+                type?: ('internal' | 'external') | null;
+                newTab?: boolean | null;
+                path?: string | null;
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nordic & Greece Diocese (eotc-nordics.org).
+   */
+  diocese?: {
+    label?: string | null;
+    link?: {
+      type?: ('internal' | 'external') | null;
+      newTab?: boolean | null;
+      path?: string | null;
+      url?: string | null;
+    };
+  };
+  legalLinks?:
+    | {
+        label: string;
+        link?: {
+          type?: ('internal' | 'external') | null;
+          newTab?: boolean | null;
+          path?: string | null;
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  churchName?: T;
+  shortName?: T;
+  swedishPublic?: T;
+  address?:
+    | T
+    | {
+        street?: T;
+        postalCode?: T;
+        city?: T;
+      };
+  mapUrl?: T;
+  transitNotes?: T;
+  defaultLocation?: T;
+  officeEmail?: T;
+  phone?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  livestreamUrl?: T;
+  officeNotificationEmails?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
+  retentionMonthsBaptism?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  headerItems?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              path?: T;
+              url?: T;
+            };
+        children?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    path?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  headerCTAs?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              path?: T;
+              url?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  columns?:
+    | T
+    | {
+        heading?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    path?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  diocese?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              path?: T;
+              url?: T;
+            };
+      };
+  legalLinks?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              path?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

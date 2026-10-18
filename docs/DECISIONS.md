@@ -2,6 +2,13 @@
 
 ## Open questions
 
+### Q-005 — Globals before layout; logo before Media (2026-10-18)
+- **Question 1:** Phase 0 task 7 (header/footer read SiteSettings + Navigation) comes before task 8 (create those globals).
+- **Default applied:** the three globals (fields per spec §2.15) are defined in task 7 so the layout reads real CMS data; task 8 is then the `pnpm seed:base` script.
+- **Question 2:** `SiteSettings.logo` is an image upload, but the Media collection (with permission flags) is Phase 1.
+- **Default applied:** the logo field is added together with Media in Phase 1. Until then the header shows the church name as a text wordmark (no placeholder graphic).
+- **Also added:** `SiteSettings.swedishPublic` (default off). The language switcher shows Swedish only when it is on (spec Phase 3 task 2 calls for this flag); `/sv` URLs still work directly.
+
 ## Deferred work (by phase)
 
 ### Phase 3 — polish
@@ -9,7 +16,7 @@
 
 ## Resolved decisions
 
-### D-005 — Fonts and design tokens (2026-10-18)
+### D-005 — Fonts and design tokens (2026-10-18) — approved by Biruk
 - **Latin heading font:** spec §5 offers "Fraunces or Source Serif"; we use **Source Serif 4** (calmer, closer to liturgical print). Fraunces can be swapped in by replacing one file.
 - **Self-hosting:** woff2 files are copied from the Fontsource npm packages into `src/fonts/` with their OFL licences (see `src/fonts/README.md`). No npm dependency added and no font CDN.
 - **Loading:** each font declares its `unicode-range` and nothing is preloaded, so English pages never download the ~200 KB Ethiopic files (verified in the browser). Revisit in the Phase 1 Lighthouse pass if needed.

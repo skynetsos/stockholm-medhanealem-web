@@ -9,3 +9,10 @@ export const localeNames: Record<Locale, string> = {
   en: "English",
   sv: "Svenska",
 };
+
+/** Compact labels for the header switcher: "አማ | EN | SV" (proposal §4). */
+export const localeShortNames: Record<Locale, string> = {
+  am: "አማ",
+  en: "EN",
+  sv: "SV",
+};

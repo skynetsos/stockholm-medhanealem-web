@@ -102,6 +102,11 @@
     outline-offset: 2px;
   }
 
+  /* On dark (primary) backgrounds the ring switches to cream so it stays visible. */
+  .on-dark :focus-visible {
+    outline-color: var(--color-cream);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
