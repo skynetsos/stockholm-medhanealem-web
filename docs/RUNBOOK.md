@@ -78,7 +78,7 @@ Keep these in the church's password manager. Back them up together, and hand the
 | `pnpm lint` / `pnpm typecheck` / `pnpm test` | ESLint / TypeScript / unit + integration tests (need the local Postgres) |
 | `pnpm build && pnpm test:e2e:prepare && pnpm test:e2e` | Production build, fresh migrated `<db>_e2e` database, Playwright smoke tests (stop `pnpm dev` first: same port) |
 | `pnpm services:up` / `services:down` / `services:logs` | Local Docker services |
-| `pnpm seed:base` | Fill Site settings, Navigation and Footer if empty. `SEED_FORCE=1` overwrites |
+| `pnpm seed:base` | Fill Site settings, Navigation and Footer if empty, and create any missing Sunday School departments. `SEED_FORCE=1` overwrites |
 | `pnpm user:create-super-admin` | Create a super_admin (or re-issue a set-password link). Needs `ADMIN_EMAIL`, `ADMIN_NAME` |
 | `pnpm user:reset-mfa` | Break-glass MFA reset. Needs `ADMIN_EMAIL` |
 | `pnpm generate:types` / `generate:importmap` | Regenerate Payload types / admin import map after config changes |

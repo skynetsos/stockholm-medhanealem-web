@@ -26,6 +26,8 @@ export interface Config {
     teachings: Teaching;
     events: Event;
     announcements: Announcement;
+    clergy: Clergy;
+    departments: Department;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -39,6 +41,8 @@ export interface Config {
     teachings: TeachingsSelect<false> | TeachingsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    clergy: ClergySelect<false> | ClergySelect<true>;
+    departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -569,6 +573,90 @@ export interface Announcement {
   createdAt: string;
 }
 /**
+ * Profiles for the Clergy page. Publishing needs a photo (with permission) and an Amharic bio.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clergy".
+ */
+export interface Clergy {
+  id: number;
+  name: string;
+  /**
+   * As the church writes it, e.g. ቀሲስ, መልአከ ሰላም, ዲያቆን (and the English form in English).
+   */
+  title?: string | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  photo?: (number | null) | Media;
+  /**
+   * Lower numbers are shown first.
+   */
+  order?: number | null;
+  /**
+   * Show on the public site.
+   */
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Sunday School departments. A department page is shown once it has a summary or text.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments".
+ */
+export interface Department {
+  id: number;
+  name: string;
+  /**
+   * Address: /sunday-school/<slug>
+   */
+  slug: string;
+  /**
+   * One or two sentences for the overview page.
+   */
+  summary?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional.
+   */
+  leaderName?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Lower numbers are shown first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -615,6 +703,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'announcements';
         value: number | Announcement;
+      } | null)
+    | ({
+        relationTo: 'clergy';
+        value: number | Clergy;
+      } | null)
+    | ({
+        relationTo: 'departments';
+        value: number | Department;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -969,6 +1065,35 @@ export interface AnnouncementsSelect<T extends boolean = true> {
   expiresAt_tz?: T;
   urgent?: T;
   pinned?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clergy_select".
+ */
+export interface ClergySelect<T extends boolean = true> {
+  name?: T;
+  title?: T;
+  bio?: T;
+  photo?: T;
+  order?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments_select".
+ */
+export interface DepartmentsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  summary?: T;
+  body?: T;
+  leaderName?: T;
+  image?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }

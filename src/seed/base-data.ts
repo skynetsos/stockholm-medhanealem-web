@@ -54,6 +54,19 @@ export const baseSeed = {
     ],
   },
 
+  /**
+   * Sunday School departments (spec §2.7). Amharic names as on dev.medhanealem.se (verified
+   * 2026-10-19); only names are seeded, the church writes the descriptions.
+   */
+  departments: [
+    { slug: "education", order: 10, name: l10n({ am: "ትምህርት ክፍል", en: "Education", sv: "Undervisning" }) },
+    { slug: "children", order: 20, name: l10n({ am: "ህጻናት ክፍል", en: "Children", sv: "Barn" }) },
+    { slug: "mezmur", order: 30, name: l10n({ am: "መዝሙር ክፍል", en: "Mezmur (choir)", sv: "Mezmur (kör)" }) },
+    { slug: "it", order: 40, name: l10n({ am: "አይቲ ክፍል", en: "IT", sv: "IT" }) },
+    { slug: "property", order: 50, name: l10n({ am: "ንብረት ክፍል", en: "Property", sv: "Fastigheter" }) },
+    { slug: "communications", order: 60, name: l10n({ am: "ግንኙነት ክፍል", en: "Communications", sv: "Kommunikation" }) },
+  ],
+
   footer: {
     diocese: {
       url: "https://eotc-nordics.org/a/",

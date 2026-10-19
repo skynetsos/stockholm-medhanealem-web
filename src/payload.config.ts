@@ -7,6 +7,8 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Announcements } from "./collections/Announcements";
+import { Clergy } from "./collections/Clergy";
+import { Departments } from "./collections/Departments";
 import { Events } from "./collections/Events";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
@@ -46,7 +48,7 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users, Media, Pages, Teachings, Events, Announcements],
+  collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments],
   globals: [SiteSettings, Navigation, Footer],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),

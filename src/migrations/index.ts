@@ -3,6 +3,7 @@ import * as migration_20261018_151612_media_and_logo from './20261018_151612_med
 import * as migration_20261019_154410_pages_and_page_links from './20261019_154410_pages_and_page_links';
 import * as migration_20261019_162824_teachings from './20261019_162824_teachings';
 import * as migration_20261019_165149_events_and_announcements from './20261019_165149_events_and_announcements';
+import * as migration_20261019_180941_clergy_and_departments from './20261019_180941_clergy_and_departments';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261019_165149_events_and_announcements.up,
     down: migration_20261019_165149_events_and_announcements.down,
-    name: '20261019_165149_events_and_announcements'
+    name: '20261019_165149_events_and_announcements',
+  },
+  {
+    up: migration_20261019_180941_clergy_and_departments.up,
+    down: migration_20261019_180941_clergy_and_departments.down,
+    name: '20261019_180941_clergy_and_departments'
   },
 ];

@@ -14,6 +14,12 @@
 
 ## Resolved decisions
 
+### D-013 — Clergy and Departments (2026-10-19, Phase 1 task 1e)
+- **Clergy publish guard (spec §2.6):** a profile can only be published with a photo that has "Permission to publish" and a bio in Amharic (the default language). Enforced on the server; so the public page never shows placeholder photos or empty bios. No drafts: the `published` checkbox controls visibility.
+- **Clergy titles** (ቀሲስ, መልአከ ሰላም, ዲያቆን …) are free per-language text written by the church, not a fixed list, so no ecclesiastical title is translated or invented by us.
+- **Access (spec §3):** clergy and super_admin manage profiles including delete; editors create/edit but cannot delete; office reads; translators edit name/title/bio in their own languages but cannot publish or change the photo/order.
+- **Departments (spec §2.7):** name, slug (`/sunday-school/<slug>`), summary, body, optional leader, image, order. Managed like Pages (editors/super_admin). `pnpm seed:base` now also creates the six departments if missing — names only, Amharic as on dev.medhanealem.se (ትምህርት, ህጻናት, መዝሙር, አይቲ, ንብረት, ግንኙነት ክፍል); English/Swedish names are drafts for review. A department page appears once it has a summary or text (task 5).
+
 ### D-012 — Events, Ethiopian calendar and per-date changes (2026-10-19, Phase 1 task 1d)
 - **Ethiopian calendar (spec task 2, moved forward by Biruk):** `src/lib/ethiopian-calendar.ts` converts via Julian Day Numbers. Leap rule: Ethiopian year Y is leap when Y % 4 = 3 (Pagume has 6 days), so Enkutatash falls on 12 Sep before a Gregorian leap year. Fasika uses the Alexandrian (Julian) computus (+13 days, valid 1900–2099). Tested against Enkutatash, Meskel, Genna, Timket and Fasika 2026–2030 and a round trip over every day 1900–2099.
 - **Genna note:** in years after Pagume 6, Tahsas 29 falls on 8 Jan and Genna is kept on Tahsas 28 (7 Jan). Enter Genna as a yearly event on the date the church keeps; the calendar doesn't decide liturgical practice.

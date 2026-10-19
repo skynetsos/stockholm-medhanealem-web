@@ -31,7 +31,7 @@ const nav = (locale: "am" | "en" | "sv") => payload.findGlobal({ slug: "navigati
 describe("seedBase", () => {
   it("fills all three globals in every locale on first run", async () => {
     const report = await seedBase(payload);
-    expect(report).toEqual({ "site-settings": "seeded", navigation: "seeded", footer: "seeded" });
+    expect(report).toEqual({ "site-settings": "seeded", navigation: "seeded", footer: "seeded", departments: "seeded" });
 
     const am = await payload.findGlobal({ slug: "site-settings", locale: "am", overrideAccess: true });
     const en = await payload.findGlobal({ slug: "site-settings", locale: "en", overrideAccess: true });
@@ -58,6 +58,13 @@ describe("seedBase", () => {
       link: { type: "external", url: "https://eotc-nordics.org/a/" },
     });
     expect(footerEn.legalLinks?.map((l) => l.link?.path)).toEqual(["/privacy", "/cookies"]);
+
+    const seedSlugs = ["education", "children", "mezmur", "it", "property", "communications"];
+    const depts = await payload.find({ collection: "departments", locale: "am", sort: "order", where: { slug: { in: seedSlugs } }, overrideAccess: true, limit: 20 });
+    expect(depts.docs.map((d) => d.slug)).toEqual(["education", "children", "mezmur", "it", "property", "communications"]);
+    expect(depts.docs.map((d) => d.name)).toEqual(["ትምህርት ክፍል", "ህጻናት ክፍል", "መዝሙር ክፍል", "አይቲ ክፍል", "ንብረት ክፍል", "ግንኙነት ክፍል"]);
+    const mezmurEn = await payload.find({ collection: "departments", locale: "en", where: { slug: { equals: "mezmur" } }, overrideAccess: true });
+    expect(mezmurEn.docs[0].name).toBe("Mezmur (choir)");
   });
 
   it("is safe to run again: nothing is rewritten", async () => {
@@ -66,6 +73,7 @@ describe("seedBase", () => {
       "site-settings": "skipped (already has content)",
       navigation: "skipped (already has content)",
       footer: "skipped (already has content)",
+      departments: "skipped (already has content)",
     });
     expect((await nav("en")).updatedAt).toBe(before.updatedAt);
   });

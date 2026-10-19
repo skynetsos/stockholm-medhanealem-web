@@ -8,6 +8,8 @@ export const CACHE_TAGS = {
   teachings: "teachings",
   events: "events",
   announcements: "announcements",
+  clergy: "clergy",
+  departments: "departments",
 } as const;
 
 function revalidate(req: PayloadRequest, tags: readonly string[]) {

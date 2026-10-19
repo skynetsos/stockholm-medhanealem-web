@@ -4,7 +4,7 @@ import { defaultLocale, type Locale, locales } from "../i18n/locales";
 import { baseSeed, type Localized } from "./base-data";
 
 export type SeedOutcome = "seeded" | "skipped (already has content)";
-export type SeedReport = Record<"site-settings" | "navigation" | "footer", SeedOutcome>;
+export type SeedReport = Record<"site-settings" | "navigation" | "footer" | "departments", SeedOutcome>;
 
 // Scripts run outside Next.js, so there is no page cache to revalidate.
 const context = { disableRevalidate: true };
@@ -30,7 +30,7 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
     payload.findGlobal({ slug: "footer", ...read }),
   ]);
   const skipped = "skipped (already has content)" as const;
-  const report: SeedReport = { "site-settings": skipped, navigation: skipped, footer: skipped };
+  const report: SeedReport = { "site-settings": skipped, navigation: skipped, footer: skipped, departments: skipped };
 
   // ── Site settings ─────────────────────────────────────────────────────
   if (force || (!settings.churchName && !settings.shortName)) {
@@ -117,6 +117,46 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
       });
     }
     report.footer = "seeded";
+  }
+
+
+  // ── Departments (spec §2.7): create any that are missing (by slug); names only ──
+  for (const dept of baseSeed.departments) {
+    const existing = await payload.find({
+      collection: "departments",
+      where: { slug: { equals: dept.slug } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    });
+    if (existing.docs[0] && !force) continue;
+    const saved = existing.docs[0]
+      ? await payload.update({
+          collection: "departments",
+          id: existing.docs[0].id,
+          locale: defaultLocale,
+          overrideAccess: true,
+          context,
+          data: { name: dept.name.am, order: dept.order },
+        })
+      : await payload.create({
+          collection: "departments",
+          locale: defaultLocale,
+          overrideAccess: true,
+          context,
+          data: { slug: dept.slug, name: dept.name.am, order: dept.order },
+        });
+    for (const locale of otherLocales) {
+      await payload.update({
+        collection: "departments",
+        id: saved.id,
+        locale,
+        overrideAccess: true,
+        context,
+        data: { name: label(dept.name, locale) },
+      });
+    }
+    report.departments = "seeded";
   }
 
   return report;
