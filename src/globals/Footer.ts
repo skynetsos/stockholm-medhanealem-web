@@ -28,7 +28,7 @@ export const Footer: GlobalConfig = {
       type: "group",
       label: "Diocese link",
       admin: { description: "Nordic & Greece Diocese (eotc-nordics.org)." },
-      fields: [{ name: "label", type: "text", localized: true }, linkField()],
+      fields: [{ name: "label", type: "text", localized: true }, linkField("link", { required: false })],
     },
     {
       name: "legalLinks",

@@ -10,6 +10,9 @@ export const CACHE_TAGS = {
   announcements: "announcements",
   clergy: "clergy",
   departments: "departments",
+  galleries: "galleries",
+  videos: "videos",
+  posts: "posts",
 } as const;
 
 function revalidate(req: PayloadRequest, tags: readonly string[]) {

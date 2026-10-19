@@ -28,6 +28,9 @@ export interface Config {
     announcements: Announcement;
     clergy: Clergy;
     departments: Department;
+    galleries: Gallery;
+    videos: Video;
+    posts: Post;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -43,6 +46,9 @@ export interface Config {
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     clergy: ClergySelect<false> | ClergySelect<true>;
     departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
+    galleries: GalleriesSelect<false> | GalleriesSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -56,11 +62,13 @@ export interface Config {
     'site-settings': SiteSetting;
     navigation: Navigation;
     footer: Footer;
+    homepage: Homepage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
   };
   locale: 'am' | 'en' | 'sv';
   widgets: {
@@ -657,6 +665,103 @@ export interface Department {
   createdAt: string;
 }
 /**
+ * Only images with "Permission to publish" are shown; check photos of children carefully.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "galleries".
+ */
+export interface Gallery {
+  id: number;
+  title: string;
+  /**
+   * Address: /media/galleries/<slug>
+   */
+  slug: string;
+  date: string;
+  date_tz: SupportedTimezones;
+  description?: string | null;
+  images: (number | Media)[];
+  /**
+   * Show on the public site.
+   */
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Embedded only after the visitor clicks (privacy), unless consent is turned off for an item.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface Video {
+  id: number;
+  title: string;
+  kind: 'video' | 'audio';
+  category: 'sermon' | 'liturgy' | 'event' | 'sunday-school';
+  date: string;
+  date_tz: SupportedTimezones;
+  /**
+   * YouTube or Vimeo link.
+   */
+  url: string;
+  description?: string | null;
+  /**
+   * Keeps YouTube/Vimeo from setting cookies until the visitor chooses to play. Leave on.
+   */
+  consentRequired?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  /**
+   * Address: /news/<slug>, e.g. timket-2027.
+   */
+  slug: string;
+  /**
+   * Short summary for the news list and search results.
+   */
+  excerpt?: string | null;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  coverImage?: (number | null) | Media;
+  /**
+   * Set automatically when first published; can be changed.
+   */
+  publishedAt?: string | null;
+  publishedAt_tz?: SupportedTimezones;
+  /**
+   * Internal: who wrote it. Not shown publicly.
+   */
+  author?: (number | null) | User;
+  /**
+   * Optional name shown on the site, e.g. the Sunday School.
+   */
+  byline?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -711,6 +816,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'departments';
         value: number | Department;
+      } | null)
+    | ({
+        relationTo: 'galleries';
+        value: number | Gallery;
+      } | null)
+    | ({
+        relationTo: 'videos';
+        value: number | Video;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1099,6 +1216,55 @@ export interface DepartmentsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "galleries_select".
+ */
+export interface GalleriesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  date?: T;
+  date_tz?: T;
+  description?: T;
+  images?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos_select".
+ */
+export interface VideosSelect<T extends boolean = true> {
+  title?: T;
+  kind?: T;
+  category?: T;
+  date?: T;
+  date_tz?: T;
+  url?: T;
+  description?: T;
+  consentRequired?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  body?: T;
+  coverImage?: T;
+  publishedAt?: T;
+  publishedAt_tz?: T;
+  author?: T;
+  byline?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1325,6 +1491,78 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: number;
+  hero?: {
+    image?: (number | null) | Media;
+    heading?: string | null;
+    subheading?: string | null;
+    ctas?:
+      | {
+          label: string;
+          link?: {
+            type?: ('page' | 'internal' | 'external') | null;
+            newTab?: boolean | null;
+            /**
+             * The link is hidden on the site while the page is unpublished.
+             */
+            page?: (number | null) | Page;
+            path?: string | null;
+            url?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Drag to reorder; remove a row to hide a section. Sections without content are hidden automatically.
+   */
+  sections?:
+    | {
+        section:
+          | 'announcementBar'
+          | 'hero'
+          | 'nextService'
+          | 'upcomingHolyDays'
+          | 'latestNotice'
+          | 'about'
+          | 'sundaySchool'
+          | 'gallery'
+          | 'visit';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional: pin up to 5 events to the holy-days section; otherwise the next ones are shown.
+   */
+  featuredEvents?: (number | Event)[] | null;
+  about?: {
+    heading?: string | null;
+    text?: string | null;
+    image?: (number | null) | Media;
+    link?: {
+      type?: ('page' | 'internal' | 'external') | null;
+      newTab?: boolean | null;
+      /**
+       * The link is hidden on the site while the page is unpublished.
+       */
+      page?: (number | null) | Page;
+      path?: string | null;
+      url?: string | null;
+    };
+  };
+  sundaySchool?: {
+    heading?: string | null;
+    text?: string | null;
+    image?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1472,6 +1710,67 @@ export interface FooterSelect<T extends boolean = true> {
               url?: T;
             };
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        image?: T;
+        heading?: T;
+        subheading?: T;
+        ctas?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    page?: T;
+                    path?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+      };
+  sections?:
+    | T
+    | {
+        section?: T;
+        id?: T;
+      };
+  featuredEvents?: T;
+  about?:
+    | T
+    | {
+        heading?: T;
+        text?: T;
+        image?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              page?: T;
+              path?: T;
+              url?: T;
+            };
+      };
+  sundaySchool?:
+    | T
+    | {
+        heading?: T;
+        text?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;

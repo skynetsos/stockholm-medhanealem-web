@@ -10,11 +10,15 @@ import { Announcements } from "./collections/Announcements";
 import { Clergy } from "./collections/Clergy";
 import { Departments } from "./collections/Departments";
 import { Events } from "./collections/Events";
+import { Galleries } from "./collections/Galleries";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
+import { Posts } from "./collections/Posts";
 import { Teachings } from "./collections/Teachings";
 import { Users } from "./collections/Users";
+import { Videos } from "./collections/Videos";
 import { Footer } from "./globals/Footer";
+import { Homepage } from "./globals/Homepage";
 import { Navigation } from "./globals/Navigation";
 import { SiteSettings } from "./globals/SiteSettings";
 import { adminTranslations } from "./i18n/admin";
@@ -48,8 +52,8 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments],
-  globals: [SiteSettings, Navigation, Footer],
+  collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments, Galleries, Videos, Posts],
+  globals: [SiteSettings, Navigation, Footer, Homepage],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),
     defaultLocale,

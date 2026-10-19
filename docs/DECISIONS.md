@@ -14,6 +14,13 @@
 
 ## Resolved decisions
 
+### D-014 — Galleries, Videos, News and the Home page (2026-10-19, Phase 1 task 1f)
+- **Gallery publish guard (spec §2.9):** a gallery can only be marked published when at least one of its images has "Permission to publish". Images without permission stay in the gallery but are never shown publicly (D-009). No drafts: the `published` checkbox controls visibility.
+- **Videos (spec §2.10):** YouTube/Vimeo links only (https), checked on save. "Load only after the visitor clicks" is on by default, so no third-party player loads without consent. Uploading audio/video files is **deferred to Phase 3**: Media accepts images only today.
+- **News posts (spec §2.11):** drafts like Pages (editors and super_admin publish; translators save drafts in their own languages). The **author** is the staff account that created the post and is internal only; the public sees an optional per-language **byline** instead, so staff names and emails are never exposed. The **publish date** is set automatically on first publish (Stockholm time) and can be changed by an editor.
+- **Home page (spec §2.15):** one global with Hero, Sections and Teasers tabs. The sections list starts with all nine sections in the spec order; editors reorder by dragging and hide one by removing its row. Each section can appear only once (checked on save). Sections without content are hidden on the site (task 4).
+- **Optional links:** `linkField` takes `{ required: false }` for links that may be left empty (the home "About" teaser and the footer diocese link); an empty optional link is simply not shown. Menu links stay required.
+
 ### D-013 — Clergy and Departments (2026-10-19, Phase 1 task 1e)
 - **Clergy publish guard (spec §2.6):** a profile can only be published with a photo that has "Permission to publish" and a bio in Amharic (the default language). Enforced on the server; so the public page never shows placeholder photos or empty bios. No drafts: the `published` checkbox controls visibility.
 - **Clergy titles** (ቀሲስ, መልአከ ሰላም, ዲያቆን …) are free per-language text written by the church, not a fixed list, so no ecclesiastical title is translated or invented by us.

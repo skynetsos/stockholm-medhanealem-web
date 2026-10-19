@@ -36,7 +36,12 @@ export const validateExternalUrl = (value: unknown): true | string => {
   }
 };
 
-export function linkField(name = "link"): GroupField {
+/**
+ * @param options.required  false for optional links (e.g. a teaser's "read more"): an empty link is
+ *   then valid and simply hidden on the site. Menu items keep the default (required).
+ */
+export function linkField(name = "link", { required = true }: { required?: boolean } = {}): GroupField {
+  const empty = (value: unknown) => value === undefined || value === null || value === "";
   return {
     name,
     type: "group",
@@ -66,21 +71,23 @@ export function linkField(name = "link"): GroupField {
           description: "The link is hidden on the site while the page is unpublished.",
         },
         validate: (value: unknown, { siblingData }: { siblingData: Partial<LinkValue> }) =>
-          siblingData?.type !== "page" || value ? true : "Choose a page",
+          siblingData?.type !== "page" || value || !required ? true : "Choose a page",
       },
       {
         name: "path",
         type: "text",
         admin: { condition: (_, sibling) => !sibling?.type || sibling.type === "internal", placeholder: "/visit" },
         validate: (value: unknown, { siblingData }: { siblingData: Partial<LinkValue> }) =>
-          !siblingData?.type || siblingData.type === "internal" ? validateInternalPath(value) : true,
+          (!siblingData?.type || siblingData.type === "internal") && !(empty(value) && !required)
+            ? validateInternalPath(value)
+            : true,
       },
       {
         name: "url",
         type: "text",
         admin: { condition: (_, sibling) => sibling?.type === "external", placeholder: "https://" },
         validate: (value: unknown, { siblingData }: { siblingData: Partial<LinkValue> }) =>
-          siblingData?.type === "external" ? validateExternalUrl(value) : true,
+          siblingData?.type === "external" && !(empty(value) && !required) ? validateExternalUrl(value) : true,
       },
     ],
   };

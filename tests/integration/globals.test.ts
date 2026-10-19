@@ -90,4 +90,15 @@ describe("navigation and footer", () => {
       message: expect.stringMatching(/language/i),
     });
   });
+
+  it("optional links (footer diocese) may be left empty", async () => {
+    await expect(
+      payload.updateGlobal({
+        slug: "footer",
+        overrideAccess: true,
+        context: { disableRevalidate: true },
+        data: { diocese: { label: null, link: { type: "internal", path: "" } } },
+      }),
+    ).resolves.toBeTruthy();
+  });
 });
