@@ -1,42 +1,18 @@
-import { type Access, APIError, type CollectionBeforeChangeHook, type CollectionConfig, type FieldAccess, type PayloadRequest } from "payload";
+import type { CollectionConfig, PayloadRequest } from "payload";
 
-import { hasRole, isStaff, type Role } from "../access";
+import { contentAccess } from "../access/content";
 import { pageBlocks } from "../blocks";
 import { labelledLinkFields } from "../fields/link";
 import { CACHE_TAGS, revalidateTags } from "../hooks/revalidate";
 import { PAGE_SECTIONS, RESERVED_TOP_LEVEL_SLUGS, validateSlugFormat } from "../lib/pages";
 
-type StaffUser = { roles?: string[] | null; translatorLocales?: string[] | null };
-
-const user = (req: PayloadRequest) => req.user as StaffUser | null;
-
-/** Spec §3: who may see drafts (everyone else only sees published pages). */
-const PAGE_READERS: Role[] = ["super_admin", "clergy_approver", "office_coordinator", "editor", "translator"];
-const PAGE_EDITORS: Role[] = ["super_admin", "editor"];
-
-const isPageEditor = (req: PayloadRequest) => isStaff(req) && hasRole(user(req), ...PAGE_EDITORS);
-
-/** Translators (without an editor role) may only edit the languages assigned to them. */
-const isTranslatorForLocale = (req: PayloadRequest) =>
-  isStaff(req) &&
-  hasRole(user(req), "translator") &&
-  Boolean(req.locale && user(req)?.translatorLocales?.includes(req.locale));
-
-const readPages: Access = ({ req }) =>
-  isStaff(req) && hasRole(user(req), ...PAGE_READERS) ? true : { _status: { equals: "published" } };
-
-const updatePages: Access = ({ req }) => isPageEditor(req) || isTranslatorForLocale(req);
-
-/** Structure (address, section) is editors-only; translators change text. */
-const editorsOnlyField: FieldAccess = ({ req }) => isPageEditor(req);
-
-/** Translators save drafts; an editor reviews and publishes (proposal §7). */
-const translatorsSaveDraftsOnly: CollectionBeforeChangeHook = ({ data, req }) => {
-  if (req.user && !isPageEditor(req) && data?._status === "published") {
-    throw new APIError("Translators can save drafts; an editor publishes the page.", 403);
-  }
-  return data;
-};
+/** Spec §3 (Pages row): editors and super_admin manage pages; other staff read drafts. */
+const { access, editorsOnlyField, publishersOnly, publishButton } = contentAccess({
+  readers: ["super_admin", "clergy_approver", "office_coordinator", "editor", "translator"],
+  editors: ["super_admin", "editor"],
+  deleters: ["super_admin", "editor"],
+  publishers: ["super_admin", "editor"],
+});
 
 const revalidation = revalidateTags(CACHE_TAGS.pages, CACHE_TAGS.layout);
 
@@ -44,15 +20,11 @@ export const Pages: CollectionConfig = {
   slug: "pages",
   admin: {
     useAsTitle: "title",
+    components: { edit: { PublishButton: publishButton } },
     defaultColumns: ["title", "section", "slug", "_status", "updatedAt"],
     listSearchableFields: ["title", "slug"],
   },
-  access: {
-    read: readPages,
-    create: ({ req }) => isPageEditor(req),
-    update: updatePages,
-    delete: ({ req }) => isPageEditor(req),
-  },
+  access,
   versions: {
     drafts: true,
     maxPerDoc: 50,
@@ -61,7 +33,7 @@ export const Pages: CollectionConfig = {
   defaultPopulate: { title: true, slug: true, section: true },
   indexes: [{ fields: ["section", "slug"], unique: true }],
   hooks: {
-    beforeChange: [translatorsSaveDraftsOnly],
+    beforeChange: [publishersOnly],
     afterChange: revalidation.afterChange,
     afterDelete: revalidation.afterDelete,
   },

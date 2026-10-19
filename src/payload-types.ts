@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     pages: Page;
+    teachings: Teaching;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,6 +81,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    teachings: TeachingsSelect<false> | TeachingsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -459,6 +461,44 @@ export interface Page {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Faith teachings. Publishing requires approval by a clergy member; changes by others need re-approval.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teachings".
+ */
+export interface Teaching {
+  id: number;
+  title: string;
+  category: 'christening' | 'marriage' | 'fitihat' | 'mysteries' | 'sacraments' | 'fasting' | 'prayers' | 'faq';
+  /**
+   * Address, e.g. "seven-sacraments" → /our-faith/seven-sacraments.
+   */
+  slug: string;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Set automatically when a clergy member publishes. Cleared when someone else edits the text.
+   */
+  approvedBy?: (number | null) | User;
+  approvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -493,6 +533,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'teachings';
+        value: number | Teaching;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -772,6 +816,21 @@ export interface PagesSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teachings_select".
+ */
+export interface TeachingsSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  slug?: T;
+  body?: T;
+  approvedBy?: T;
+  approvedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

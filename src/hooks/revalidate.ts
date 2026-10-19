@@ -5,6 +5,7 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 export const CACHE_TAGS = {
   layout: "layout-globals",
   pages: "pages",
+  teachings: "teachings",
 } as const;
 
 function revalidate(req: PayloadRequest, tags: readonly string[]) {

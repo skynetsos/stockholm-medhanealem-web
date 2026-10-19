@@ -8,6 +8,7 @@ import sharp from "sharp";
 
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
+import { Teachings } from "./collections/Teachings";
 import { Users } from "./collections/Users";
 import { Footer } from "./globals/Footer";
 import { Navigation } from "./globals/Navigation";
@@ -40,7 +41,7 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users, Media, Pages],
+  collections: [Users, Media, Pages, Teachings],
   globals: [SiteSettings, Navigation, Footer],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),

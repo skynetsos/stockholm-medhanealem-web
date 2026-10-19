@@ -1,56 +1,16 @@
 /** Pages (spec §2.2, §3): drafts, public visibility, slug rules, translator limits, page links. */
-import { getPayload, type Payload, type PayloadRequest } from "payload";
+import { getPayload, type Payload } from "payload";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import config from "../../src/payload.config";
 import type { Role } from "../../src/access/roles";
 import { resolveLink } from "../../src/lib/links";
-import { createMfaToken, MFA_COOKIE } from "../../src/lib/mfa/session";
 import type { Page, User } from "../../src/payload-types";
+import { type Actor, as, createActor, noRevalidate, rich } from "./helpers";
 
 let payload: Payload;
-const ctx = { disableRevalidate: true };
-
-/** Minimal Lexical document with one paragraph. */
-const rich = (text: string) => ({
-  root: {
-    type: "root",
-    format: "" as const,
-    indent: 0,
-    version: 1,
-    direction: "ltr" as const,
-    children: [
-      {
-        type: "paragraph",
-        format: "" as const,
-        indent: 0,
-        version: 1,
-        direction: "ltr" as const,
-        textFormat: 0,
-        children: [{ type: "text", text, format: 0, detail: 0, mode: "normal", style: "", version: 1 }],
-      },
-    ],
-  },
-});
-
-type Actor = { user: User & { collection: "users" }; req?: Partial<PayloadRequest> };
-
-/** A staff member as the local API sees them; privileged roles get a valid MFA session. */
-async function actor(email: string, roles: Role[], extra: Partial<User> = {}): Promise<Actor> {
-  const doc = await payload.create({
-    collection: "users",
-    overrideAccess: true,
-    data: { email, password: "Pages-test-Pa55!", name: email, roles, active: true, ...extra },
-  });
-  const privileged = roles.some((r) => ["super_admin", "clergy_approver", "office_coordinator"].includes(r));
-  if (!privileged) return { user: { ...doc, collection: "users" } };
-  const sid = `test-session-${doc.id}`;
-  const user = { ...doc, collection: "users" as const, mfa: { ...doc.mfa, enabled: true }, _sid: sid };
-  const headers = new Headers({ cookie: `${MFA_COOKIE}=${createMfaToken(doc.id, sid)}` });
-  return { user, req: { headers } };
-}
-
-const as = (a: Actor) => ({ user: a.user, overrideAccess: false as const, req: a.req, context: ctx });
+const ctx = noRevalidate;
+const actor = (email: string, roles: Role[], extra: Partial<User> = {}) => createActor(payload, email, roles, extra);
 
 let editor: Actor;
 let translatorEn: Actor;
@@ -160,7 +120,7 @@ describe("translators (spec §3: update own locales; proposal §7: cannot publis
     const page = await draftPage({ slug: "no-publish" });
     await expect(
       payload.update({ collection: "pages", id: page.id, ...as(translatorEn), locale: "en", data: { _status: "published" } }),
-    ).rejects.toThrow(/editor publishes/);
+    ).rejects.toThrow(/publishing/);
 
     await payload.update({
       collection: "pages",

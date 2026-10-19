@@ -14,7 +14,16 @@
 
 ## Resolved decisions
 
-### D-010 — Pages: addresses, drafts and translators (2026-10-19, Phase 1 task 1b)
+### D-011 — Teachings: clergy approval (2026-10-19, Phase 1 task 1c)
+- **Rule (spec §2.3):** nothing in Teachings is published without an approver, who must be an active clergy_approver. Enforced on the server in a `beforeChange` hook (so it also covers the API, scripts and imports).
+- **How approval happens:** a clergy member who publishes is recorded as the approver automatically (`approvedBy`, `approvedAt`). A clergy member can also approve a draft without publishing it, so a super_admin can publish later. Only clergy can set the approver; in the admin they can pick only themselves.
+- **Edits withdraw approval:** if anyone other than clergy changes the title or text, that new draft loses its approval and must be re-approved; the live, approved version stays online meanwhile. Edits by clergy keep the existing approval.
+- **Who publishes (spec §3):** super_admin and clergy_approver only. Editors create and edit (drafts), office reads, translators edit drafts in their own languages and can't change slug or category.
+- **Publish button:** hidden in the admin for roles that can't publish (Teachings: editors/translators; Pages: translators). The server rule is the real enforcement.
+- **Shared rules:** Pages and Teachings use one helper (`src/access/content.ts`) for read/create/update/delete, translator limits and publish rights, so future content types (News, Events) follow the same pattern.
+- **Slug:** one per teaching for all languages (as D-010); the public path (`/our-faith/…`, and `/sacraments/…` for christening, marriage, fitihat) is decided in task 5.
+
+### D-010 — Pages: addresses, drafts and translators (2026-10-19, Phase 1 task 1b) — approved by Biruk
 - **One slug per page, not per language (deviation from spec §2.2 "slug unique per locale"):** a page has the same address in every language (`/am/our-church/history`, `/en/our-church/history`). This keeps the language switcher on the same page (it only swaps the language prefix) and keeps hreflang simple. Slugs are lowercase ASCII (`our-history`); titles and content stay fully localized.
 - **Address = section + slug:** e.g. section "Our Church" + `history` → `/our-church/history`; slug `index` = the section's landing page (`/our-church`); section "Other" pages are top-level (`/privacy`, `/cookies`) and can't take a name an app route uses (`news`, `media`, `visit`, …). Unique per section (database index + friendly validation message).
 - **Drafts:** versions with drafts (50 kept per page). The public only ever sees published versions. Payload skips field validation for drafts so editors can save unfinished work; slug/video rules apply on publish.
