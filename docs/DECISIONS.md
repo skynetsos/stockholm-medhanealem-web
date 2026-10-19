@@ -14,6 +14,16 @@
 
 ## Resolved decisions
 
+### D-016 — Home page sections (2026-10-19, Phase 1 task 4)
+- **Urgent bar on every page, not just the home page:** spec §2.5 says urgent → "top bar", and a cancellation notice must be seen wherever people land. So the bar is part of the layout and is no longer one of the reorderable home sections (migration `homepage_without_announcement_bar` removes the option and any saved row for it). It hides itself after "Hide after", re-checked on every page render.
+- **Next service:** the next weekly service, monthly or annual feast that has a start time (all-day entries are skipped), still to come or in progress, within 60 days. Cancelled dates are skipped; a moved date shows at its new time. Location falls back to Site settings' default location; the livestream link to the site's livestream URL.
+- **Upcoming holy days (spec: 3–5):** up to 5, each event once at its next date within a year. If editors picked events on the Home page they are used; otherwise featured events plus annual feasts and fasts. Fewer than 3 are still shown (hiding real dates would be worse); none → section hidden. Cancelled dates stay listed, struck through.
+- **Latest announcement:** the pinned, else newest, visible announcement that isn't urgent (urgent ones are already in the bar), shown in full.
+- **Hidden when empty:** hero without heading or image, teasers without heading or text, gallery without a permitted image, Visit us without address/directions/contact. The page always has one h1: the hero heading, or the welcome line.
+- **No links to pages that don't exist yet:** the calendar, announcement list, gallery page and Sunday School pages come in task 5; their "see all" links are added then.
+- **Dates:** Gregorian dates use the browser-independent Intl data for each language; the Ethiopian date uses our calendar library with month names in the message files (Amharic: መስከረም … ጳጉሜን, "ቀን … ዓ.ም."). **For Biruk's review:** the new Amharic UI strings (section titles, "ተሰርዟል", "ተዛውሯል", month names).
+- **Freshness:** home data is cached 5 minutes like other pages and refreshed at once when an editor saves an event, announcement, gallery, image or the Home page.
+
 ### D-015 — Expanding repeating events into dates (2026-10-19, Phase 1 task 3)
 - **Local time is kept across summer/winter time:** every repeat starts and ends at the same Stockholm clock time as the first occurrence (Kidase 08:00–11:30 in July and in December), so its UTC time shifts by an hour at the clock changes. Works the same whatever time zone the server runs in.
 - **Clock-change edge cases:** a time that doesn't exist (02:00–02:59 on the last Sunday of March) moves one hour later, as clocks do; a time that happens twice (02:00–02:59 on the last Sunday of October) uses the first one.

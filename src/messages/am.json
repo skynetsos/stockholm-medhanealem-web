@@ -16,6 +16,46 @@
     "backHome": "ወደ መነሻ ገጽ ይመለሱ"
   },
   "home": {
-    "welcome": "እንኳን ደህና መጡ"
+    "welcome": "እንኳን ደህና መጡ",
+    "nextService": "የሚቀጥለው አገልግሎት",
+    "upcomingHolyDays": "የሚመጡ በዓላት",
+    "latestNotice": "የቅርብ ጊዜ ማስታወቂያ",
+    "gallery": "የቅርብ ጊዜ ፎቶዎች",
+    "visit": "ይጎብኙን",
+    "address": "አድራሻ",
+    "openMap": "በካርታ ይክፈቱ",
+    "gettingHere": "እንዴት እንደሚመጡ",
+    "contact": "ያግኙን",
+    "email": "ኢሜይል",
+    "phone": "ስልክ",
+    "readMore": "ተጨማሪ ያንብቡ"
+  },
+  "announcements": {
+    "urgentLabel": "አስቸኳይ ማስታወቂያ"
+  },
+  "events": {
+    "cancelled": "ተሰርዟል",
+    "moved": "ተዛውሯል",
+    "allDay": "ቀኑን ሙሉ",
+    "location": "ቦታ",
+    "watchLive": "በቀጥታ ይከታተሉ"
+  },
+  "calendar": {
+    "ethiopianDate": "{month} {day} ቀን {year} ዓ.ም.",
+    "ethiopianMonths": {
+      "m1": "መስከረም",
+      "m2": "ጥቅምት",
+      "m3": "ኅዳር",
+      "m4": "ታኅሣሥ",
+      "m5": "ጥር",
+      "m6": "የካቲት",
+      "m7": "መጋቢት",
+      "m8": "ሚያዝያ",
+      "m9": "ግንቦት",
+      "m10": "ሰኔ",
+      "m11": "ሐምሌ",
+      "m12": "ነሐሴ",
+      "m13": "ጳጉሜን"
+    }
   }
 }

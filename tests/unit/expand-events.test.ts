@@ -132,5 +132,6 @@ describe("ranges and helpers", () => {
     const series = { ...kidase, overrides: [{ date: "2026-10-24T22:00:00.000Z", action: "cancel" as const }] };
     expect(nextScheduled([series], new Date("2026-10-18T10:00:00.000Z"))?.date).toEqual(d(2026, 11, 1));
     expect(nextScheduled([series], new Date("2026-10-18T05:00:00.000Z"))?.date).toEqual(d(2026, 10, 18));
+    expect(nextScheduled([series], new Date("2026-10-18T08:00:00.000Z"))?.date).toEqual(d(2026, 10, 18)); // in progress
   });
 });

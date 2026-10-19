@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { getLayoutData } from "@/lib/cms/layout";
 import { fontVariables } from "@/styles/fonts";
 
+import { AnnouncementBar } from "./AnnouncementBar";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
 
@@ -21,6 +22,7 @@ export async function PublicDocument({ locale, children }: { locale: Locale; chi
     <html lang={locale} dir="ltr" className={fontVariables}>
       <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider locale={locale}>
+          <AnnouncementBar announcements={data.urgent} />
           <SiteHeader data={data} />
           <div className="flex-1">{children}</div>
           <SiteFooter data={data} />

@@ -16,6 +16,46 @@
     "backHome": "Go to the home page"
   },
   "home": {
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "nextService": "Next service",
+    "upcomingHolyDays": "Upcoming holy days",
+    "latestNotice": "Latest announcement",
+    "gallery": "Latest photos",
+    "visit": "Visit us",
+    "address": "Address",
+    "openMap": "Open in a map",
+    "gettingHere": "Getting here",
+    "contact": "Contact",
+    "email": "Email",
+    "phone": "Phone",
+    "readMore": "Read more"
+  },
+  "announcements": {
+    "urgentLabel": "Important notice"
+  },
+  "events": {
+    "cancelled": "Cancelled",
+    "moved": "Moved",
+    "allDay": "All day",
+    "location": "Location",
+    "watchLive": "Watch the livestream"
+  },
+  "calendar": {
+    "ethiopianDate": "{month} {day}, {year} E.C.",
+    "ethiopianMonths": {
+      "m1": "Meskerem",
+      "m2": "Tikimt",
+      "m3": "Hidar",
+      "m4": "Tahsas",
+      "m5": "Tir",
+      "m6": "Yekatit",
+      "m7": "Megabit",
+      "m8": "Miyazya",
+      "m9": "Ginbot",
+      "m10": "Sene",
+      "m11": "Hamle",
+      "m12": "Nehase",
+      "m13": "Pagume"
+    }
   }
 }

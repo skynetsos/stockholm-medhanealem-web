@@ -5,9 +5,11 @@ import { labelledLinkFields, linkField } from "../fields/link";
 
 import { revalidateLayout } from "../hooks/revalidateLayout";
 
-/** Home page sections (Phase 1 task 4). Each is hidden automatically when it has no content. */
+/**
+ * Home page sections (Phase 1 task 4). Each is hidden automatically when it has no content.
+ * The urgent announcement bar is not listed: it sits at the top of every page (D-016).
+ */
 export const HOME_SECTIONS = [
-  { value: "announcementBar", label: "Urgent announcement bar" },
   { value: "hero", label: "Hero" },
   { value: "nextService", label: "Next service" },
   { value: "upcomingHolyDays", label: "Upcoming holy days" },

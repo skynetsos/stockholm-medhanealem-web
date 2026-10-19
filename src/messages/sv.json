@@ -16,6 +16,46 @@
     "backHome": "Gå till startsidan"
   },
   "home": {
-    "welcome": "Välkommen"
+    "welcome": "Välkommen",
+    "nextService": "Nästa gudstjänst",
+    "upcomingHolyDays": "Kommande högtider",
+    "latestNotice": "Senaste meddelandet",
+    "gallery": "Senaste bilderna",
+    "visit": "Besök oss",
+    "address": "Adress",
+    "openMap": "Öppna i en karta",
+    "gettingHere": "Hitta hit",
+    "contact": "Kontakt",
+    "email": "E-post",
+    "phone": "Telefon",
+    "readMore": "Läs mer"
+  },
+  "announcements": {
+    "urgentLabel": "Viktigt meddelande"
+  },
+  "events": {
+    "cancelled": "Inställd",
+    "moved": "Flyttad",
+    "allDay": "Hela dagen",
+    "location": "Plats",
+    "watchLive": "Se direktsändningen"
+  },
+  "calendar": {
+    "ethiopianDate": "{day} {month} {year} (etiopisk kalender)",
+    "ethiopianMonths": {
+      "m1": "Meskerem",
+      "m2": "Tikimt",
+      "m3": "Hidar",
+      "m4": "Tahsas",
+      "m5": "Tir",
+      "m6": "Yekatit",
+      "m7": "Megabit",
+      "m8": "Miyazya",
+      "m9": "Ginbot",
+      "m10": "Sene",
+      "m11": "Hamle",
+      "m12": "Nehase",
+      "m13": "Pagume"
+    }
   }
 }

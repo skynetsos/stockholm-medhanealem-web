@@ -120,10 +120,13 @@ export function expandEvents<T extends ExpandableEvent>(events: T[], range: Date
     .sort((a, b) => a.start.localeCompare(b.start));
 }
 
-/** Next occurrence that takes place (not cancelled) starting at or after `now`, within `days` (home page). */
+/**
+ * The next occurrence that takes place (not cancelled) and hasn't finished by `now` (one in progress
+ * counts), within `days` (home page "next service").
+ */
 export function nextScheduled<T extends ExpandableEvent>(events: T[], now: Date, days = 60): (Occurrence & { event: T }) | null {
   const from = stockholmDate(now);
   const to = jdnToGregorian(jdn(from) + days);
   const nowIso = now.toISOString();
-  return expandEvents(events, { from, to }).find((o) => o.status !== "cancelled" && o.start >= nowIso) ?? null;
+  return expandEvents(events, { from, to }).find((o) => o.status !== "cancelled" && (o.end ?? o.start) >= nowIso) ?? null;
 }

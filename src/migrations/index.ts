@@ -5,6 +5,7 @@ import * as migration_20261019_162824_teachings from './20261019_162824_teaching
 import * as migration_20261019_165149_events_and_announcements from './20261019_165149_events_and_announcements';
 import * as migration_20261019_180941_clergy_and_departments from './20261019_180941_clergy_and_departments';
 import * as migration_20261019_182222_galleries_videos_posts_homepage from './20261019_182222_galleries_videos_posts_homepage';
+import * as migration_20261019_184921_homepage_without_announcement_bar from './20261019_184921_homepage_without_announcement_bar';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261019_182222_galleries_videos_posts_homepage.up,
     down: migration_20261019_182222_galleries_videos_posts_homepage.down,
-    name: '20261019_182222_galleries_videos_posts_homepage'
+    name: '20261019_182222_galleries_videos_posts_homepage',
+  },
+  {
+    up: migration_20261019_184921_homepage_without_announcement_bar.up,
+    down: migration_20261019_184921_homepage_without_announcement_bar.down,
+    name: '20261019_184921_homepage_without_announcement_bar'
   },
 ];

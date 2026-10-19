@@ -1522,15 +1522,7 @@ export interface Homepage {
   sections?:
     | {
         section:
-          | 'announcementBar'
-          | 'hero'
-          | 'nextService'
-          | 'upcomingHolyDays'
-          | 'latestNotice'
-          | 'about'
-          | 'sundaySchool'
-          | 'gallery'
-          | 'visit';
+          'hero' | 'nextService' | 'upcomingHolyDays' | 'latestNotice' | 'about' | 'sundaySchool' | 'gallery' | 'visit';
         id?: string | null;
       }[]
     | null;
