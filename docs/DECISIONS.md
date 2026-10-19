@@ -14,6 +14,14 @@
 
 ## Resolved decisions
 
+### D-015 — Expanding repeating events into dates (2026-10-19, Phase 1 task 3)
+- **Local time is kept across summer/winter time:** every repeat starts and ends at the same Stockholm clock time as the first occurrence (Kidase 08:00–11:30 in July and in December), so its UTC time shifts by an hour at the clock changes. Works the same whatever time zone the server runs in.
+- **Clock-change edge cases:** a time that doesn't exist (02:00–02:59 on the last Sunday of March) moves one hour later, as clocks do; a time that happens twice (02:00–02:59 on the last Sunday of October) uses the first one.
+- **Cancelled dates are kept, marked cancelled**, not dropped, so the calendar can show them struck through with the note (spec §2.4). The "next service" helper and other consumers skip them. Cancelling the whole event marks every date cancelled.
+- **Moved dates** appear on their new date (even outside the original week) with a link back to the series date; without a new end they keep the original length. **Notices** keep the date and attach the note.
+- **All-day and multi-day events** (e.g. fasts) are returned by date; a fast that began before the requested range still appears in it.
+- **Range limit:** at most 800 days per request, so a public URL (e.g. the iCal feed in task 5) can't ask for unlimited work.
+
 ### D-014 — Galleries, Videos, News and the Home page (2026-10-19, Phase 1 task 1f)
 - **Gallery publish guard (spec §2.9):** a gallery can only be marked published when at least one of its images has "Permission to publish". Images without permission stay in the gallery but are never shown publicly (D-009). No drafts: the `published` checkbox controls visibility.
 - **Videos (spec §2.10):** YouTube/Vimeo links only (https), checked on save. "Load only after the visitor clicks" is on by default, so no third-party player loads without consent. Uploading audio/video files is **deferred to Phase 3**: Media accepts images only today.

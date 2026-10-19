@@ -2,7 +2,7 @@ import { type GregorianDate, gregorianToJdn, jdnToGregorian, stockholmDate, toEt
 
 /**
  * Event recurrence (spec §2.4). Dates are calendar dates in Europe/Stockholm; times come from the
- * event's start/end and stay at the same local time across DST (expansion: Phase 1 task 3).
+ * event's start/end and stay at the same local time across DST (expansion into dated occurrences: `expand.ts`).
  * - weekly:  same weekday as the first occurrence
  * - monthly: every Ethiopian month on `ethiopianDay` (e.g. 27 for Medhanealem); Pagume is included
  *            only when it has that day
