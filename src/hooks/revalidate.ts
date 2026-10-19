@@ -6,6 +6,8 @@ export const CACHE_TAGS = {
   layout: "layout-globals",
   pages: "pages",
   teachings: "teachings",
+  events: "events",
+  announcements: "announcements",
 } as const;
 
 function revalidate(req: PayloadRequest, tags: readonly string[]) {

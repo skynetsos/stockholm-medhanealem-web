@@ -6,6 +6,8 @@ import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { Announcements } from "./collections/Announcements";
+import { Events } from "./collections/Events";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
 import { Teachings } from "./collections/Teachings";
@@ -16,6 +18,7 @@ import { SiteSettings } from "./globals/SiteSettings";
 import { adminTranslations } from "./i18n/admin";
 import { migrations } from "./migrations";
 import { defaultLocale, localeNames, locales } from "./i18n/locales";
+import { STOCKHOLM_TIMEZONE } from "./fields/stockholmDate";
 import { requireEnv } from "./lib/env";
 
 const filename = fileURLToPath(import.meta.url);
@@ -26,6 +29,8 @@ export default buildConfig({
   secret: requireEnv("PAYLOAD_SECRET"),
   admin: {
     user: Users.slug,
+    // Everything is entered and shown in Stockholm time (stored as UTC).
+    timezones: { supportedTimezones: [STOCKHOLM_TIMEZONE], defaultTimezone: STOCKHOLM_TIMEZONE.value },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -41,7 +46,7 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users, Media, Pages, Teachings],
+  collections: [Users, Media, Pages, Teachings, Events, Announcements],
   globals: [SiteSettings, Navigation, Footer],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),

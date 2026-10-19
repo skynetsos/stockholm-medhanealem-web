@@ -1,4 +1,4 @@
-import { type Access, APIError, type CollectionBeforeChangeHook, type FieldAccess, type PayloadRequest } from "payload";
+import { type Access, APIError, type CollectionBeforeChangeHook, type FieldAccess, type PayloadRequest, type Where } from "payload";
 
 import { isStaff } from "./index";
 import { hasRole, type Role } from "./roles";
@@ -27,6 +27,19 @@ export const isTranslatorForLocale = (req: PayloadRequest) =>
   isStaff(req) &&
   hasRole(staffUser(req), "translator") &&
   Boolean(req.locale && staffUser(req)?.translatorLocales?.includes(req.locale));
+
+/**
+ * Content without drafts (Events, Announcements): staff `readers` see everything; the public sees
+ * what `publicWhere` allows (true = all, or a query such as "inside its publish window").
+ */
+export function staffContentAccess(roles: Omit<ContentRoles, "publishers"> & { publicWhere: () => Where | true }) {
+  const read: Access = ({ req }) => (hasStaffRole(req, roles.readers) ? true : roles.publicWhere());
+  const create: Access = ({ req }) => hasStaffRole(req, roles.editors);
+  const update: Access = ({ req }) => hasStaffRole(req, roles.editors) || isTranslatorForLocale(req);
+  const remove: Access = ({ req }) => hasStaffRole(req, roles.deleters);
+  const editorsOnlyField: FieldAccess = ({ req }) => hasStaffRole(req, roles.editors);
+  return { access: { read, create, update, delete: remove }, editorsOnlyField };
+}
 
 export function contentAccess(roles: ContentRoles) {
   const read: Access = ({ req }) => (hasStaffRole(req, roles.readers) ? true : { _status: { equals: "published" } });

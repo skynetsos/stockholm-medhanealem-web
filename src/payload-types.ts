@@ -12,54 +12,7 @@
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "supportedTimezones".
  */
-export type SupportedTimezones =
-  | 'Pacific/Midway'
-  | 'Pacific/Niue'
-  | 'Pacific/Honolulu'
-  | 'Pacific/Rarotonga'
-  | 'America/Anchorage'
-  | 'Pacific/Gambier'
-  | 'America/Los_Angeles'
-  | 'America/Tijuana'
-  | 'America/Denver'
-  | 'America/Phoenix'
-  | 'America/Chicago'
-  | 'America/Guatemala'
-  | 'America/New_York'
-  | 'America/Bogota'
-  | 'America/Caracas'
-  | 'America/Santiago'
-  | 'America/Buenos_Aires'
-  | 'America/Sao_Paulo'
-  | 'Atlantic/South_Georgia'
-  | 'Atlantic/Azores'
-  | 'Atlantic/Cape_Verde'
-  | 'Europe/London'
-  | 'Europe/Berlin'
-  | 'Africa/Lagos'
-  | 'Europe/Athens'
-  | 'Africa/Cairo'
-  | 'Europe/Moscow'
-  | 'Asia/Riyadh'
-  | 'Asia/Dubai'
-  | 'Asia/Baku'
-  | 'Asia/Karachi'
-  | 'Asia/Tashkent'
-  | 'Asia/Calcutta'
-  | 'Asia/Dhaka'
-  | 'Asia/Almaty'
-  | 'Asia/Jakarta'
-  | 'Asia/Bangkok'
-  | 'Asia/Shanghai'
-  | 'Asia/Singapore'
-  | 'Asia/Tokyo'
-  | 'Asia/Seoul'
-  | 'Australia/Brisbane'
-  | 'Australia/Sydney'
-  | 'Pacific/Guam'
-  | 'Pacific/Noumea'
-  | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+export type SupportedTimezones = 'Europe/Stockholm';
 
 export interface Config {
   auth: {
@@ -71,6 +24,8 @@ export interface Config {
     media: Media;
     pages: Page;
     teachings: Teaching;
+    events: Event;
+    announcements: Announcement;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +37,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     teachings: TeachingsSelect<false> | TeachingsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -499,6 +456,119 @@ export interface Teaching {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Services, feasts, fasts and notices. Times are Stockholm time.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  title: string;
+  type: 'weekly_service' | 'monthly_feast' | 'annual_feast' | 'fast' | 'special' | 'notice';
+  allDay?: boolean | null;
+  start: string;
+  start_tz: SupportedTimezones;
+  end?: string | null;
+  end_tz?: SupportedTimezones;
+  /**
+   * Ethiopian calendar date of the start (year-month-day), computed automatically.
+   */
+  ethiopianDate?: string | null;
+  description?: string | null;
+  /**
+   * Leave empty to use the default location from Site settings.
+   */
+  location?: string | null;
+  livestreamUrl?: string | null;
+  /**
+   * Monthly and yearly repeat on the Ethiopian calendar (e.g. the 27th of every month). Movable feasts such as Fasika are added as separate events each year.
+   */
+  recurrence?: {
+    frequency?: ('none' | 'weekly' | 'monthly' | 'yearly') | null;
+    /**
+     * Defaults to the Ethiopian day of the start date.
+     */
+    ethiopianDay?: number | null;
+    /**
+     * 1 = Meskerem … 13 = Pagume. Defaults to the start date's month.
+     */
+    ethiopianMonth?: number | null;
+    until?: string | null;
+    until_tz?: SupportedTimezones;
+  };
+  /**
+   * Cancel, move or add a notice to one occurrence without changing the rest of the series (e.g. no Kidase on one Sunday).
+   */
+  overrides?:
+    | {
+        date: string;
+        date_tz: SupportedTimezones;
+        action: 'cancel' | 'move' | 'notice';
+        newStart?: string | null;
+        newStart_tz?: SupportedTimezones;
+        newEnd?: string | null;
+        newEnd_tz?: SupportedTimezones;
+        /**
+         * Shown with this date on the site, e.g. the reason or where to go instead.
+         */
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Cancels the whole event or series (shown struck through with a notice).
+   */
+  cancelled?: boolean | null;
+  /**
+   * Highlight on the home page.
+   */
+  featured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Notices for the congregation. Urgent ones appear in a bar at the top of every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements".
+ */
+export interface Announcement {
+  id: number;
+  title: string;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  publishAt: string;
+  publishAt_tz: SupportedTimezones;
+  /**
+   * Leave empty to keep it until removed.
+   */
+  expiresAt?: string | null;
+  expiresAt_tz?: SupportedTimezones;
+  /**
+   * Show in the bar at the top of every page while visible.
+   */
+  urgent?: boolean | null;
+  /**
+   * Keep at the top of the announcements list.
+   */
+  pinned?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -537,6 +607,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'teachings';
         value: number | Teaching;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'announcements';
+        value: number | Announcement;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -834,6 +912,65 @@ export interface TeachingsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  type?: T;
+  allDay?: T;
+  start?: T;
+  start_tz?: T;
+  end?: T;
+  end_tz?: T;
+  ethiopianDate?: T;
+  description?: T;
+  location?: T;
+  livestreamUrl?: T;
+  recurrence?:
+    | T
+    | {
+        frequency?: T;
+        ethiopianDay?: T;
+        ethiopianMonth?: T;
+        until?: T;
+        until_tz?: T;
+      };
+  overrides?:
+    | T
+    | {
+        date?: T;
+        date_tz?: T;
+        action?: T;
+        newStart?: T;
+        newStart_tz?: T;
+        newEnd?: T;
+        newEnd_tz?: T;
+        note?: T;
+        id?: T;
+      };
+  cancelled?: T;
+  featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements_select".
+ */
+export interface AnnouncementsSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  publishAt?: T;
+  publishAt_tz?: T;
+  expiresAt?: T;
+  expiresAt_tz?: T;
+  urgent?: T;
+  pinned?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

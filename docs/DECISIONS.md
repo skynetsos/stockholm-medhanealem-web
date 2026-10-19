@@ -14,6 +14,15 @@
 
 ## Resolved decisions
 
+### D-012 — Events, Ethiopian calendar and per-date changes (2026-10-19, Phase 1 task 1d)
+- **Ethiopian calendar (spec task 2, moved forward by Biruk):** `src/lib/ethiopian-calendar.ts` converts via Julian Day Numbers. Leap rule: Ethiopian year Y is leap when Y % 4 = 3 (Pagume has 6 days), so Enkutatash falls on 12 Sep before a Gregorian leap year. Fasika uses the Alexandrian (Julian) computus (+13 days, valid 1900–2099). Tested against Enkutatash, Meskel, Genna, Timket and Fasika 2026–2030 and a round trip over every day 1900–2099.
+- **Genna note:** in years after Pagume 6, Tahsas 29 falls on 8 Jan and Genna is kept on Tahsas 28 (7 Jan). Enter Genna as a yearly event on the date the church keeps; the calendar doesn't decide liturgical practice.
+- **Times:** every date field is entered in Europe/Stockholm (zone locked in the admin) and stored as UTC with its zone. Ethiopian dates are computed from the Stockholm calendar date (`ethiopianDate`, read-only, not stored).
+- **Recurrence (spec §2.4):** none / weekly (same weekday) / monthly on an Ethiopian day (e.g. 27th, Medhanealem) / yearly on an Ethiopian month + day. The day/month default to the start date's and are saved explicitly. Pagume is included in monthly rules only when it has that day. Movable feasts (Fasika etc.) are separate events each year. Optional "repeat until".
+- **Per-date changes (Biruk's addition):** a list of single dates on the event, each **cancel**, **move** (new start/end) or **notice** (note shown on that date). The series itself is untouched. Each date must be a real occurrence of the series, at most one change per date. `cancelled` still cancels the whole event/series. Expanding series into dates for the calendar, applying these changes, is task 3.
+- **Announcements (spec §2.5):** public sees them only between "show from" and "hide after" (cached pages refresh within 5 minutes). Urgent → top bar; pinned → top of list. No drafts (per spec).
+- **Access (spec §3):** editors and super_admin manage events/announcements; clergy and office read; translators edit text (title, description, location, notes) in their own languages but not times, rules or date changes; the public reads all events.
+
 ### D-011 — Teachings: clergy approval (2026-10-19, Phase 1 task 1c)
 - **Rule (spec §2.3):** nothing in Teachings is published without an approver, who must be an active clergy_approver. Enforced on the server in a `beforeChange` hook (so it also covers the API, scripts and imports).
 - **How approval happens:** a clergy member who publishes is recorded as the approver automatically (`approvedBy`, `approvedAt`). A clergy member can also approve a draft without publishing it, so a super_admin can publish later. Only clergy can set the approver; in the admin they can pick only themselves.
