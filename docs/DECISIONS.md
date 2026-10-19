@@ -4,12 +4,24 @@
 
 ## Deferred work (by phase)
 
+### Phase 1 — task 10 (performance)
+- **Long cache for media files:** files served through Payload (`/api/media/file/…`) must send `Cache-Control: public, max-age=31536000, immutable` (filenames are unique) so Cloudflare caches them; verify in the Lighthouse run. Requested by Biruk 2026-10-19. Note: only images with publication permission are publicly readable, so caching them publicly is safe; if permission is later withdrawn, the file must also be renamed/re-uploaded or purged from Cloudflare.
+
 ### Phase 3 — polish
 - **`containsMinors` enforcement** (spec Phase 3 task 3): e.g. require a guardian-permission note before an image showing children can be marked publishable. Phase 1 already keeps every image without "Permission to publish" off the public site (D-009).
 - **404 page with the CMS header and footer.** Today the 404 shows only the translated message and a home link (D-007). Requested by Biruk 2026-10-18.
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### D-010 — Pages: addresses, drafts and translators (2026-10-19, Phase 1 task 1b)
+- **One slug per page, not per language (deviation from spec §2.2 "slug unique per locale"):** a page has the same address in every language (`/am/our-church/history`, `/en/our-church/history`). This keeps the language switcher on the same page (it only swaps the language prefix) and keeps hreflang simple. Slugs are lowercase ASCII (`our-history`); titles and content stay fully localized.
+- **Address = section + slug:** e.g. section "Our Church" + `history` → `/our-church/history`; slug `index` = the section's landing page (`/our-church`); section "Other" pages are top-level (`/privacy`, `/cookies`) and can't take a name an app route uses (`news`, `media`, `visit`, …). Unique per section (database index + friendly validation message).
+- **Drafts:** versions with drafts (50 kept per page). The public only ever sees published versions. Payload skips field validation for drafts so editors can save unfinished work; slug/video rules apply on publish.
+- **Translators** (spec §3 "U own locales", proposal §7 "cannot publish"): may edit only the languages in their `translatorLocales`, save drafts only, and can't change slug or section. The fuller translation workflow (missing-translations view, per-locale publish rules) is spec Phase 3 task 1.
+- **Page links in menus:** the link field gained "CMS page" (alongside site path and external URL). It follows the page if its slug changes and is hidden while the page is unpublished.
+- **Blocks** (spec §2.2): text, two columns, image gallery, call to action, FAQ, clergy grid, event list, video (YouTube/Vimeo only, validated). Clergy grid and event list store their settings now and render once Clergy/Events exist (tasks 1d/1e, rendering in task 5).
+- **Not a bug (for future debugging):** in a hidden/minimized browser, Payload's admin leaves groups on edit screens empty because it renders fields only once they scroll into view. Checked in a visible browser: all groups render.
 
 ### D-009 — Media and the logo (2026-10-18, Phase 1 task 1a)
 - **Publication gate:** the public (site pages, anonymous API, file URLs) only gets images with "Permission to publish" (`permissionObtained`) ticked. Files are served through Payload (`/api/media/file/…`), so the same rule protects direct file links (verified: 403). Staff with media access see everything.

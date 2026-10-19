@@ -1,11 +1,16 @@
 import type { Field, GroupField } from "payload";
 
+/** The parts of a Page a link needs to build its URL (populated relationship). */
+export type LinkedPage = { slug?: string | null; section?: string | null };
+
 /**
- * A link that is either an internal site path (locale-independent, e.g. "/visit") or an external URL.
- * Internal paths are prefixed with the visitor's locale when rendered. Phase 1 adds "page" (relation).
+ * A link to a CMS page (preferred: follows renames and disappears while the page is unpublished),
+ * a site path (locale-independent, e.g. "/visit", for app routes such as the calendar) or an
+ * external URL. Internal links are prefixed with the visitor's locale when rendered.
  */
 export type LinkValue = {
-  type?: "internal" | "external" | null;
+  type?: "page" | "internal" | "external" | null;
+  page?: number | LinkedPage | null;
   path?: string | null;
   url?: string | null;
   newTab?: boolean | null;
@@ -44,7 +49,8 @@ export function linkField(name = "link"): GroupField {
             type: "radio",
             defaultValue: "internal",
             options: [
-              { label: "Page on this site", value: "internal" },
+              { label: "CMS page", value: "page" },
+              { label: "Path on this site", value: "internal" },
               { label: "External link", value: "external" },
             ],
           },
@@ -52,11 +58,22 @@ export function linkField(name = "link"): GroupField {
         ],
       },
       {
+        name: "page",
+        type: "relationship",
+        relationTo: "pages",
+        admin: {
+          condition: (_, sibling) => sibling?.type === "page",
+          description: "The link is hidden on the site while the page is unpublished.",
+        },
+        validate: (value: unknown, { siblingData }: { siblingData: Partial<LinkValue> }) =>
+          siblingData?.type !== "page" || value ? true : "Choose a page",
+      },
+      {
         name: "path",
         type: "text",
-        admin: { condition: (_, sibling) => sibling?.type !== "external", placeholder: "/visit" },
+        admin: { condition: (_, sibling) => !sibling?.type || sibling.type === "internal", placeholder: "/visit" },
         validate: (value: unknown, { siblingData }: { siblingData: Partial<LinkValue> }) =>
-          siblingData?.type === "external" ? true : validateInternalPath(value),
+          !siblingData?.type || siblingData.type === "internal" ? validateInternalPath(value) : true,
       },
       {
         name: "url",

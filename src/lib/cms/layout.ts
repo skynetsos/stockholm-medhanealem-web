@@ -21,11 +21,11 @@ export function getLayoutData(locale: Locale): Promise<LayoutData> {
   return unstable_cache(
     async () => {
       const payload = await getPayload({ config });
-      const read = { locale, depth: 0, overrideAccess: false } as const;
+      // depth 1 populates the logo and page links. Public read rules leave them unpopulated (just an
+      // id, so they are hidden) unless the image has publication permission / the page is published.
+      const read = { locale, depth: 1, overrideAccess: false } as const;
       const [settings, navigation, footer] = await Promise.all([
-        // depth 1 populates the logo; Media's public read rule leaves it unpopulated (just an id)
-        // unless the image has publication permission.
-        payload.findGlobal({ slug: "site-settings", ...read, depth: 1 }),
+        payload.findGlobal({ slug: "site-settings", ...read }),
         payload.findGlobal({ slug: "navigation", ...read }),
         payload.findGlobal({ slug: "footer", ...read }),
       ]);

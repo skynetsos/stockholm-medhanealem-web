@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +79,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -250,6 +252,214 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  section: 'our-church' | 'our-faith' | 'sunday-school' | 'worship' | 'support' | 'visit' | 'other';
+  /**
+   * Address within the section, e.g. "history" → /our-church/history. Use "index" for the section's main page.
+   */
+  slug: string;
+  hero?: {
+    image?: (number | null) | Media;
+    /**
+     * Defaults to the page title.
+     */
+    heading?: string | null;
+    subheading?: string | null;
+    ctas?:
+      | {
+          label: string;
+          link?: {
+            type?: ('page' | 'internal' | 'external') | null;
+            newTab?: boolean | null;
+            /**
+             * The link is hidden on the site while the page is unpublished.
+             */
+            page?: (number | null) | Page;
+            path?: string | null;
+            url?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  layout?:
+    | (
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            left: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Leave empty to show the image instead.
+             */
+            right?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            image?: (number | null) | Media;
+            imagePosition?: ('right' | 'left') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'twoColumn';
+          }
+        | {
+            heading?: string | null;
+            /**
+             * Only images with "Permission to publish" are shown on the site.
+             */
+            images: (number | Media)[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageGallery';
+          }
+        | {
+            heading: string;
+            text?: string | null;
+            links?:
+              | {
+                  label: string;
+                  link?: {
+                    type?: ('page' | 'internal' | 'external') | null;
+                    newTab?: boolean | null;
+                    /**
+                     * The link is hidden on the site while the page is unpublished.
+                     */
+                    page?: (number | null) | Page;
+                    path?: string | null;
+                    url?: string | null;
+                  };
+                  style?: ('primary' | 'secondary') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            heading?: string | null;
+            items?:
+              | {
+                  question: string;
+                  answer: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            heading?: string | null;
+            /**
+             * Leave empty to show all published clergy, in their set order.
+             */
+            limit?: number | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'clergyGrid';
+          }
+        | {
+            heading?: string | null;
+            /**
+             * Leave empty to include all types.
+             */
+            types?: ('weekly_service' | 'monthly_feast' | 'annual_feast' | 'fast' | 'special' | 'notice')[] | null;
+            limit?: number | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventList';
+          }
+        | {
+            /**
+             * YouTube or Vimeo link. Visitors load the video only after clicking (privacy).
+             */
+            url: string;
+            /**
+             * Short description of the video (used by screen readers).
+             */
+            title: string;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'videoEmbed';
+          }
+      )[]
+    | null;
+  seo?: {
+    /**
+     * Search-result title. Defaults to the page title.
+     */
+    title?: string | null;
+    description?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -279,6 +489,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -430,6 +644,140 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  section?: T;
+  slug?: T;
+  hero?:
+    | T
+    | {
+        image?: T;
+        heading?: T;
+        subheading?: T;
+        ctas?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    page?: T;
+                    path?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+      };
+  layout?:
+    | T
+    | {
+        richText?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        twoColumn?:
+          | T
+          | {
+              left?: T;
+              right?: T;
+              image?: T;
+              imagePosition?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGallery?:
+          | T
+          | {
+              heading?: T;
+              images?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              heading?: T;
+              text?: T;
+              links?:
+                | T
+                | {
+                    label?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          page?: T;
+                          path?: T;
+                          url?: T;
+                        };
+                    style?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        clergyGrid?:
+          | T
+          | {
+              heading?: T;
+              limit?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventList?:
+          | T
+          | {
+              heading?: T;
+              types?: T;
+              limit?: T;
+              id?: T;
+              blockName?: T;
+            };
+        videoEmbed?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -543,8 +891,12 @@ export interface Navigation {
     | {
         label: string;
         link?: {
-          type?: ('internal' | 'external') | null;
+          type?: ('page' | 'internal' | 'external') | null;
           newTab?: boolean | null;
+          /**
+           * The link is hidden on the site while the page is unpublished.
+           */
+          page?: (number | null) | Page;
           path?: string | null;
           url?: string | null;
         };
@@ -552,8 +904,12 @@ export interface Navigation {
           | {
               label: string;
               link?: {
-                type?: ('internal' | 'external') | null;
+                type?: ('page' | 'internal' | 'external') | null;
                 newTab?: boolean | null;
+                /**
+                 * The link is hidden on the site while the page is unpublished.
+                 */
+                page?: (number | null) | Page;
                 path?: string | null;
                 url?: string | null;
               };
@@ -567,8 +923,12 @@ export interface Navigation {
     | {
         label: string;
         link?: {
-          type?: ('internal' | 'external') | null;
+          type?: ('page' | 'internal' | 'external') | null;
           newTab?: boolean | null;
+          /**
+           * The link is hidden on the site while the page is unpublished.
+           */
+          page?: (number | null) | Page;
           path?: string | null;
           url?: string | null;
         };
@@ -592,8 +952,12 @@ export interface Footer {
           | {
               label: string;
               link?: {
-                type?: ('internal' | 'external') | null;
+                type?: ('page' | 'internal' | 'external') | null;
                 newTab?: boolean | null;
+                /**
+                 * The link is hidden on the site while the page is unpublished.
+                 */
+                page?: (number | null) | Page;
                 path?: string | null;
                 url?: string | null;
               };
@@ -609,8 +973,12 @@ export interface Footer {
   diocese?: {
     label?: string | null;
     link?: {
-      type?: ('internal' | 'external') | null;
+      type?: ('page' | 'internal' | 'external') | null;
       newTab?: boolean | null;
+      /**
+       * The link is hidden on the site while the page is unpublished.
+       */
+      page?: (number | null) | Page;
       path?: string | null;
       url?: string | null;
     };
@@ -619,8 +987,12 @@ export interface Footer {
     | {
         label: string;
         link?: {
-          type?: ('internal' | 'external') | null;
+          type?: ('page' | 'internal' | 'external') | null;
           newTab?: boolean | null;
+          /**
+           * The link is hidden on the site while the page is unpublished.
+           */
+          page?: (number | null) | Page;
           path?: string | null;
           url?: string | null;
         };
@@ -684,6 +1056,7 @@ export interface NavigationSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              page?: T;
               path?: T;
               url?: T;
             };
@@ -696,6 +1069,7 @@ export interface NavigationSelect<T extends boolean = true> {
                 | {
                     type?: T;
                     newTab?: T;
+                    page?: T;
                     path?: T;
                     url?: T;
                   };
@@ -712,6 +1086,7 @@ export interface NavigationSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              page?: T;
               path?: T;
               url?: T;
             };
@@ -740,6 +1115,7 @@ export interface FooterSelect<T extends boolean = true> {
                 | {
                     type?: T;
                     newTab?: T;
+                    page?: T;
                     path?: T;
                     url?: T;
                   };
@@ -756,6 +1132,7 @@ export interface FooterSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              page?: T;
               path?: T;
               url?: T;
             };
@@ -769,6 +1146,7 @@ export interface FooterSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              page?: T;
               path?: T;
               url?: T;
             };
