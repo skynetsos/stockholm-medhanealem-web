@@ -31,6 +31,7 @@ export interface Config {
     galleries: Gallery;
     videos: Video;
     posts: Post;
+    inquiries: Inquiry;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -49,6 +50,7 @@ export interface Config {
     galleries: GalleriesSelect<false> | GalleriesSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -762,6 +764,34 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Messages from the website. Private: only office staff, clergy and super admins can see them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries".
+ */
+export interface Inquiry {
+  id: number;
+  reference?: string | null;
+  type: 'contact' | 'pastoral' | 'marriage' | 'sunday_school' | 'volunteer' | 'funeral';
+  status: 'new' | 'in_progress' | 'closed';
+  assignedTo?: (number | null) | User;
+  name: string;
+  email: string;
+  phone?: string | null;
+  message?: string | null;
+  /**
+   * Reply in this language where possible.
+   */
+  preferredLocale?: ('am' | 'en' | 'sv') | null;
+  childName?: string | null;
+  childAge?: number | null;
+  interests?: string[] | null;
+  availability?: string | null;
+  privacyAccepted: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -828,6 +858,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'inquiries';
+        value: number | Inquiry;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1262,6 +1296,28 @@ export interface PostsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries_select".
+ */
+export interface InquiriesSelect<T extends boolean = true> {
+  reference?: T;
+  type?: T;
+  status?: T;
+  assignedTo?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  preferredLocale?: T;
+  childName?: T;
+  childAge?: T;
+  interests?: T;
+  availability?: T;
+  privacyAccepted?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

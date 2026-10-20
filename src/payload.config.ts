@@ -11,6 +11,7 @@ import { Clergy } from "./collections/Clergy";
 import { Departments } from "./collections/Departments";
 import { Events } from "./collections/Events";
 import { Galleries } from "./collections/Galleries";
+import { Inquiries } from "./collections/Inquiries";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
 import { Posts } from "./collections/Posts";
@@ -25,6 +26,7 @@ import { adminTranslations } from "./i18n/admin";
 import { migrations } from "./migrations";
 import { defaultLocale, localeNames, locales } from "./i18n/locales";
 import { STOCKHOLM_TIMEZONE } from "./fields/stockholmDate";
+import { emailAdapter } from "./lib/email";
 import { requireEnv } from "./lib/env";
 
 const filename = fileURLToPath(import.meta.url);
@@ -52,7 +54,7 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments, Galleries, Videos, Posts],
+  collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments, Galleries, Videos, Posts, Inquiries],
   globals: [SiteSettings, Navigation, Footer, Homepage],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),
@@ -60,6 +62,7 @@ export default buildConfig({
     fallback: true,
   },
   editor: lexicalEditor(),
+  email: emailAdapter(),
   db: postgresAdapter({
     pool: {
       connectionString: requireEnv("DATABASE_URI"),

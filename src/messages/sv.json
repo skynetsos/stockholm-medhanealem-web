@@ -141,5 +141,32 @@
     "mapNotice": "Kartan hämtas från OpenStreetMap, som får din IP-adress.",
     "mapTitle": "Karta som visar var kyrkan ligger",
     "followUs": "Följ oss"
+  },
+  "contact": {
+    "title": "Skicka ett meddelande",
+    "name": "Ditt namn",
+    "email": "E-post",
+    "phone": "Telefon (frivilligt)",
+    "message": "Meddelande",
+    "privacy": "Jag godkänner att kyrkan sparar mitt meddelande och mina kontaktuppgifter för att kunna svara mig.",
+    "privacyLink": "Integritetspolicy",
+    "honeypot": "Lämna det här fältet tomt",
+    "submit": "Skicka meddelandet",
+    "sending": "Skickar…",
+    "successTitle": "Tack, ditt meddelande har skickats",
+    "successText": "Expeditionen svarar så snart som möjligt. Ditt referensnummer är {reference}.",
+    "successTextNoReference": "Expeditionen svarar så snart som möjligt.",
+    "errorSummary": "Rätta följande:",
+    "errors": {
+      "required": "Fyll i det här fältet.",
+      "tooLong": "Det här är för långt.",
+      "email": "Ange en giltig e-postadress, till exempel namn@example.com.",
+      "phone": "Ange ett giltigt telefonnummer.",
+      "messageShort": "Skriv lite mer (minst 10 tecken).",
+      "privacy": "Godkänn, så att vi får spara ditt meddelande.",
+      "spam": "Skräppostkontrollen är inte klar. Vänta en stund och skicka igen.",
+      "rateLimited": "För många meddelanden från din anslutning. Försök igen om 10 minuter.",
+      "server": "Något gick fel. Försök igen senare eller mejla expeditionen."
+    }
   }
 }

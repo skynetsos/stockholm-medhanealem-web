@@ -169,6 +169,12 @@ importers:
       '@payloadcms/db-postgres':
         specifier: 3.91.0
         version: 3.91.0(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))(supports-color@7.2.0)
+      '@payloadcms/email-nodemailer':
+        specifier: 3.91.0
+        version: 3.91.0(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))
+      '@payloadcms/email-resend':
+        specifier: 3.91.0
+        version: 3.91.0(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))
       '@payloadcms/next':
         specifier: 3.91.0
         version: 3.91.0(@types/react@19.3.0)(graphql@16.14.2)(monaco-editor@0.57.0)(next@15.4.11(@playwright/test@1.64.1)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(supports-color@7.2.0)(typescript@5.9.3)
@@ -211,6 +217,9 @@ importers:
       sharp:
         specifier: 0.34.5
         version: 0.34.5
+      zod:
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.7
@@ -1638,6 +1647,18 @@ packages:
 
   '@payloadcms/drizzle@3.91.0':
     resolution: {integrity: sha512-qkY+UKgi+Ku1FZw9G5jEaRhXB9+iS7ic7cY0LM+42GtKXln3wp/vyAXLuIPwutTGQ0WZYpcKkuvRkN7L/yojKg==}
+    peerDependencies:
+      payload: 3.91.0
+
+  '@payloadcms/email-nodemailer@3.91.0':
+    resolution: {integrity: sha512-Hp3TpLz0Lu3WgDVkCk4Ua1HFMzOUuVKJ1rsffS2TEDSbNRd7BdWrXvvTtyjwnfuAjdMk4sBWIFGvaT7Ckbxlgg==}
+    engines: {node: '>=20.18.1'}
+    peerDependencies:
+      payload: 3.91.0
+
+  '@payloadcms/email-resend@3.91.0':
+    resolution: {integrity: sha512-ahTbkuFUT3icTYY/qqBdw5ZC1syGinpcNwcjr9CiPkJQaZI9CRN1Vlb5gs2Sc8Kh5olpJLwFcBVXuxaV66wvrw==}
+    engines: {node: '>=20.18.1'}
     peerDependencies:
       payload: 3.91.0
 
@@ -3867,6 +3888,10 @@ packages:
     resolution: {integrity: sha512-kXs9Go0cah0qHVV2v389IXQLdLCeE1xfFtjOAF+iobu0OIoG1pje8At2vMHyaPMiPMnG/LWP50twML21eMcAag==}
     engines: {node: '>= 0.4'}
 
+  nodemailer@10.1.7:
+    resolution: {integrity: sha512-OQa6FDln5fLttmqSbjDiRYvFDOFNrBqfiOwHPlEbURil3b+vPB1v8xpi+Sp46drzNDlsTnNsS502vthmz56r4w==}
+    engines: {node: '>=20.0.0'}
+
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
@@ -4818,6 +4843,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zod@4.6.5:
+    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -6154,6 +6182,15 @@ snapshots:
       - prisma
       - sql.js
       - sqlite3
+
+  '@payloadcms/email-nodemailer@3.91.0(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))':
+    dependencies:
+      nodemailer: 10.1.7
+      payload: 3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3)
+
+  '@payloadcms/email-resend@3.91.0(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))':
+    dependencies:
+      payload: 3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3)
 
   '@payloadcms/graphql@3.91.0(graphql@16.14.2)(payload@3.91.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
@@ -8611,6 +8648,8 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
+  nodemailer@10.1.7: {}
+
   normalize-path@3.0.0: {}
 
   object-assign@4.1.1: {}
@@ -9694,5 +9733,7 @@ snapshots:
       lib0: 0.2.119
 
   yocto-queue@0.1.0: {}
+
+  zod@4.6.5: {}
 
   zwitch@2.0.4: {}

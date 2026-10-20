@@ -7,6 +7,7 @@ import * as migration_20261019_180941_clergy_and_departments from './20261019_18
 import * as migration_20261019_182222_galleries_videos_posts_homepage from './20261019_182222_galleries_videos_posts_homepage';
 import * as migration_20261019_184921_homepage_without_announcement_bar from './20261019_184921_homepage_without_announcement_bar';
 import * as migration_20261020_172506_site_settings_map_location from './20261020_172506_site_settings_map_location';
+import * as migration_20261020_182918_inquiries from './20261020_182918_inquiries';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261020_172506_site_settings_map_location.up,
     down: migration_20261020_172506_site_settings_map_location.down,
-    name: '20261020_172506_site_settings_map_location'
+    name: '20261020_172506_site_settings_map_location',
+  },
+  {
+    up: migration_20261020_182918_inquiries.up,
+    down: migration_20261020_182918_inquiries.down,
+    name: '20261020_182918_inquiries'
   },
 ];

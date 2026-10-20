@@ -141,5 +141,32 @@
     "mapNotice": "The map loads from OpenStreetMap, which receives your IP address.",
     "mapTitle": "Map showing where the church is",
     "followUs": "Follow us"
+  },
+  "contact": {
+    "title": "Send us a message",
+    "name": "Your name",
+    "email": "Email",
+    "phone": "Phone (optional)",
+    "message": "Message",
+    "privacy": "I agree that the church stores my message and contact details to answer me.",
+    "privacyLink": "Privacy policy",
+    "honeypot": "Leave this field empty",
+    "submit": "Send message",
+    "sending": "Sending…",
+    "successTitle": "Thank you, your message has been sent",
+    "successText": "The office will reply as soon as possible. Your reference is {reference}.",
+    "successTextNoReference": "The office will reply as soon as possible.",
+    "errorSummary": "Please correct the following:",
+    "errors": {
+      "required": "Please fill in this field.",
+      "tooLong": "This is too long.",
+      "email": "Enter a valid email address, for example name@example.com.",
+      "phone": "Enter a valid phone number.",
+      "messageShort": "Please write a little more (at least 10 characters).",
+      "privacy": "Please agree, so that we may store your message.",
+      "spam": "The spam check hasn't finished. Please wait a moment and send again.",
+      "rateLimited": "Too many messages from your connection. Please try again in 10 minutes.",
+      "server": "Something went wrong. Please try again later or email the office."
+    }
   }
 }

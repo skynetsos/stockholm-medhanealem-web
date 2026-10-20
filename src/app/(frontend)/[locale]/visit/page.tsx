@@ -3,11 +3,12 @@ import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
+import { ContactForm } from "@/components/forms/ContactForm";
 import { PageHeader } from "@/components/pages/PageHeader";
 import { VisitDetails } from "@/components/visit/VisitDetails";
 import { localeAlternates } from "@/i18n/alternates";
 import { getLayoutData } from "@/lib/cms/layout";
-import { getPage } from "@/lib/cms/pages";
+import { getAvailablePaths, getPage } from "@/lib/cms/pages";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -27,15 +28,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /**
  * /visit (spec §4): the optional CMS landing page (section Visit, slug "index") as introduction,
  * then address, map (loaded after a click), directions, office contact and social links from Site
- * settings. The contact form joins them in task 6.
+ * settings, then the contact form (task 6).
  */
 export default async function VisitPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
-  const [t, intro, { settings }] = await Promise.all([
+  const [t, tc, intro, { settings }, available] = await Promise.all([
     getTranslations("visit"),
+    getTranslations("contact"),
     getPage(locale as Locale, "visit", "index"),
     getLayoutData(locale as Locale),
+    getAvailablePaths(),
   ]);
 
   return (
@@ -45,6 +48,15 @@ export default async function VisitPage({ params }: Props) {
       <div className="mx-auto max-w-site px-gutter py-10">
         <VisitDetails settings={settings} heading="h2" full />
       </div>
+      <section aria-labelledby="contact-title" className="mx-auto max-w-3xl px-gutter py-10">
+        <h2 id="contact-title" className="mb-4">
+          {tc("title")}
+        </h2>
+        <ContactForm
+          turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
+          privacyHref={available.includes("/privacy") ? "/privacy" : null}
+        />
+      </section>
     </main>
   );
 }

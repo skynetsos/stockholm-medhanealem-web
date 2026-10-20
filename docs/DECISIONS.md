@@ -15,6 +15,16 @@
 
 ## Resolved decisions
 
+### D-022 — Contact form and Inquiries (2026-10-20, Phase 1 task 6)
+- **Inquiries collection now** (spec §2.14; it is listed under Phase 2 but task 6 stores contact messages in it): all spec fields, plus `preferredLocale` (the form's language, so the office can reply in it). Reference `INQ-YYYY-NNNN` from a Postgres sequence per year (no duplicates even at the same moment; Phase 2's `BAP-` references use the same helper). Access (§3): super_admin CRUD, office RU (status/assignment only — what the visitor sent can't be edited), clergy R, everyone else nothing; **no API create at all** — only the site's form actions create inquiries. Shown under "Requests" in the admin. CaseEvents (audit log) come with Phase 2.
+- **The form (on `/visit`):** server action; zod validation with translated field errors and an error summary that gets focus; entries are kept after an error; works without JavaScript except the spam check. Honeypot field: a filled-in honeypot looks like success to the bot but nothing is stored or sent.
+- **Turnstile** loads from Cloudflare only once the visitor starts using the form (no third-party request on page load), invisible unless Cloudflare wants an interaction. The site key is read at runtime (`TURNSTILE_SITE_KEY`, renamed from `NEXT_PUBLIC_…` so the Docker build needn't know it). Without `TURNSTILE_SECRET_KEY` the check is skipped locally but **every message is refused when `SITE_ENV=production`**.
+- **Rate limit:** 5 messages per 10 minutes per salted IP hash, in memory (one app container; a restart resets counters; Cloudflare's rate limiting is in front). Only valid sends count, so fixing typos doesn't lock anyone out. Raw IPs are never stored or logged, and the hash isn't stored on the inquiry.
+- **Office email:** to Site settings → "Requests & privacy" → office notification emails (else the public office email). It contains only the reference and the admin link — no name, address or message ("no sensitive echo"). If sending fails, the inquiry is still saved and the error logged. No email goes to the visitor: the page shows the reference (an open form that mails arbitrary addresses could be abused). So the Q-001 Reply-To follow-up still waits for the first email to the public (Phase 2 acknowledgements).
+- **Email setup:** Resend when `RESEND_API_KEY` is set; otherwise SMTP to Mailpit locally (and in CI, where tests read Mailpit's API to check the office email). Sender name `EMAIL_FROM_NAME`.
+- **For the privacy notice (committee/legal):** the form stores name, email, optional phone and message; Cloudflare (Turnstile) and Resend are processors. The checkbox links to `/privacy` once that page is published.
+- **For Biruk's review:** the Amharic and Swedish form texts (`contact.*` in the message files).
+
 ### D-021 — Visit page and map (2026-10-20, Phase 1 task 5e)
 - **`/visit` is a built-in page** (it will hold the contact form, task 6): the optional CMS landing page (section Visit, slug "index") is shown as introduction, then address, "Open in a map", directions, office email/phone and social links from Site settings. Other pages in the Visit section (e.g. `/visit/parking`) are normal CMS pages. The home page's "Visit us" section links to it.
 - **Map (spec §4: "static image or consent-loaded embed"):** an OpenStreetMap embed that loads only after the visitor presses "Show map", with a note that OpenStreetMap receives their IP address. It needs the church's coordinates, so Site settings gets an optional **Map pin** (latitude/longitude; migration `site_settings_map_location`). **Not filled in:** I won't guess the church's position — please enter it (right-click the church in OpenStreetMap or Google Maps). Without it the page shows the address and the map link only.
@@ -207,3 +217,6 @@ Found by the production-build check deferred from task 5.
 | `@payloadcms/ui`, `@payloadcms/translations` | Payload's own admin UI kit and translation types, needed for the custom MFA view and reset button. Same version as Payload. |
 | `pg`, `@types/pg` (dev) | Integration tests create/drop the `<db>_test` database. Same `pg` version Payload already uses. |
 | `@playwright/test` (dev) | E2E smoke tests named in spec §9 (Phase 0 task 9). |
+| `zod` | Form validation named in spec (§1.2 `lib/validation (zod)`, Phase 1 task 6). Pinned to 4.6.5 (a month old; 4.6.7 was 8 days old). |
+| `@payloadcms/email-resend` | Spec's email provider (Resend) as Payload's email adapter. Same version as Payload. |
+| `@payloadcms/email-nodemailer` | SMTP adapter for local development and CI (Mailpit), used only when no Resend key is set. Same version as Payload. |

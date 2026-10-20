@@ -134,3 +134,40 @@ test("/visit shows the address and loads nothing from map services", async ({ pa
 test("/support/volunteer waits for the form (task 6): 404", async ({ request }) => {
   expect((await request.get("/en/support/volunteer")).status()).toBe(404);
 });
+
+// Contact form (task 6): sends, shows the reference, and the office gets an email without the message.
+test("contact form sends a message and the office is notified", async ({ page, request }) => {
+  test.setTimeout(60_000);
+  const startedAt = Date.now() - 1000;
+  await page.goto("/en/visit");
+  await page.getByLabel(en.contact.name, { exact: true }).fill("E2E Visitor");
+  await page.getByLabel(en.contact.email, { exact: true }).fill("e2e-visitor@example.org");
+  await page.getByLabel(en.contact.message, { exact: true }).fill("A question sent by the end-to-end test.");
+  await page.getByLabel(en.contact.privacy, { exact: true }).check();
+  // Turnstile (Cloudflare test key) passes by itself once the form is in use; give it a moment.
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
+  await page.getByRole("button", { name: en.contact.submit }).click();
+  const status = page.getByRole("status");
+  // Sending checks the token with Cloudflare and emails the office: allow more than the default 5 s.
+  await expect(status).toContainText(en.contact.successTitle, { timeout: 20_000 });
+  const reference = (await status.textContent())!.match(/INQ-\d{4}-\d+/)![0];
+
+  // Only mail sent during this test counts (references restart with each fresh e2e database).
+  const freshMail = async () => {
+    const search = await (await request.get(`http://localhost:8025/api/v1/search?query=${encodeURIComponent(`subject:"${reference}"`)}`)).json();
+    return (search.messages as { Created: string }[]).filter((m) => Date.parse(m.Created) >= startedAt).length;
+  };
+  await expect.poll(freshMail).toBe(1);
+});
+
+test("contact form shows field errors and keeps what was typed", async ({ page }) => {
+  await page.goto("/en/visit");
+  await page.getByLabel(en.contact.name, { exact: true }).fill("E2E Visitor");
+  await page.getByLabel(en.contact.email, { exact: true }).fill("not-an-email");
+  await page.getByRole("button", { name: en.contact.submit }).click();
+  const summary = page.locator("#contact-errors");
+  await expect(summary).toBeFocused();
+  await expect(summary).toContainText(en.contact.errors.email);
+  await expect(page.getByLabel(en.contact.email, { exact: true })).toHaveAttribute("aria-invalid", "true");
+  await expect(page.getByLabel(en.contact.name, { exact: true })).toHaveValue("E2E Visitor");
+});

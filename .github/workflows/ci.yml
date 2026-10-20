@@ -42,6 +42,12 @@ jobs:
           RUSTFS_SECRET_KEY: ci-secret-key-0000
         ports:
           - 9000:9000
+      # Outgoing mail lands here; tests read it through Mailpit's API (contact form, task 6).
+      mailpit:
+        image: axllent/mailpit:v1.31
+        ports:
+          - 1025:1025
+          - 8025:8025
 
     # CI-only values. Nothing here is a real secret.
     env:
@@ -59,6 +65,12 @@ jobs:
       S3_SECRET_ACCESS_KEY: ci-secret-key-0000
       S3_FORCE_PATH_STYLE: "true"
       EMAIL_FROM: no-reply@medhanealem.se
+      SMTP_HOST: localhost
+      SMTP_PORT: "1025"
+      IP_HASH_SALT: ci-ip-hash-salt-not-a-secret
+      # Cloudflare's official always-pass Turnstile test keys.
+      TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+      TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
 
     steps:
       - uses: actions/checkout@v4

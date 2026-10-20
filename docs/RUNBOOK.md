@@ -250,6 +250,13 @@ Caddy uses its own local certificate for `localhost`, so browsers show a warning
 - Privileged roles (super_admin, clergy_approver, office_coordinator) must complete MFA every session;
   sessions last 8 hours. Five wrong MFA codes lock MFA for 15 minutes.
 
+## Contact form and inquiries
+
+- Messages from the Visit page's contact form appear in the admin under **Requests → Inquiries** (office coordinators, clergy and super admins only). Set **Status** and **Assigned to** as you handle them; what the visitor sent can't be edited.
+- The office is emailed a reference and a link for each message. Set who receives it in **Site settings → Requests & privacy → Office notification emails** (if empty, the public office email is used; if both are empty, nothing is emailed — the message is still in the admin).
+- Locally, all mail goes to Mailpit: <http://localhost:8025>.
+- Production needs `RESEND_API_KEY` (domain verified in Resend), `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` (Cloudflare dashboard → Turnstile) and `IP_HASH_SALT`. Without the Turnstile secret, production refuses every message.
+
 ## Editor guide
 
 Added in Phase 1 (how to add an event, announcement and gallery), per spec §6 Phase 1 task 12.
@@ -259,6 +266,8 @@ Added in Phase 1 (how to add an event, announcement and gallery), per spec §6 P
 | Symptom | Likely cause / fix |
 |---|---|
 | App container restarts, logs say `Missing required environment variable X` | Add `X` to the env file (see `.env.production.example`) and `up -d` again. |
+| Contact form always says the spam check hasn't finished | `TURNSTILE_SECRET_KEY` missing or wrong in production, or the site key's domain list in Cloudflare doesn't include the site. |
+| No email about new contact messages | Check Site settings → Office notification emails, `RESEND_API_KEY`, and the app log (`Contact form: office email failed`). The message itself is in Requests → Inquiries. |
 | `/api/health` returns 503 | The app can't reach Postgres: `docker compose -f docker-compose.prod.yml ps`, check `postgres` is healthy and `POSTGRES_*` match. |
 | Caddy can't get a certificate | DNS doesn't point at the server yet, port 80/443 is blocked, or Cloudflare proxy is on before the first certificate (set "DNS only" first). |
 | Header/footer changes don't show | Pages are cached for 5 minutes; saving in /admin refreshes them immediately. Changes made by scripts (`seed:base`) appear within 5 minutes, or restart the app. |

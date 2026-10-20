@@ -110,5 +110,8 @@ await payload.create({
   data: { title: "E2E sermon", kind: "video", category: "sermon", date: "2026-10-11T22:00:00.000Z", date_tz: "Europe/Stockholm", url: "https://youtu.be/dQw4w9WgXcQ" },
 });
 
+// Contact form (task 6): where office notifications go.
+await payload.updateGlobal({ slug: "site-settings", ...ctx, data: { officeNotificationEmails: [{ email: "e2e-office@example.org" }] } });
+
 console.log("E2E fixtures created");
 process.exit(0);
