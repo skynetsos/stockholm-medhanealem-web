@@ -1,5 +1,5 @@
 // E2E fixtures (run by `pnpm test:e2e:prepare`, only against the throwaway <db>_e2e database):
-// a few pages to test CMS routing in the production build. Never run against real data.
+// a few pages and teachings to test content routing in the production build. Never run against real data.
 import { getPayload } from "payload";
 
 import config from "../src/payload.config";
@@ -50,5 +50,21 @@ const page = async (section: "our-church" | "other", slug: string, title: Record
 await page("our-church", "index", { am: "ቤተ ክርስቲያናችን", en: "Our Church" }, "published");
 await page("other", "e2e-test-page", { am: "የሙከራ ገጽ", en: "Test page" }, "published");
 await page("our-church", "e2e-draft", { am: "ረቂቅ", en: "Draft" }, "draft");
+// Teachings need an active clergy approver to be published (spec §2.3).
+const clergy = await payload.create({
+  collection: "users",
+  ...ctx,
+  data: { email: "e2e-clergy@example.org", password: crypto.randomUUID(), name: "E2E Clergy", roles: ["clergy_approver"], active: true },
+});
+const teaching = (category: string, slug: string, title: string) =>
+  payload.create({
+    collection: "teachings",
+    ...ctx,
+    locale: "en",
+    data: { title, category, slug, body: text(`${title} text`), _status: "published", approvedBy: clergy.id } as never,
+  });
+await teaching("fasting", "e2e-fasting", "Fasting test teaching");
+await teaching("christening", "e2e-baptism-guidance", "Baptism guidance test");
+
 console.log("E2E fixtures created");
 process.exit(0);

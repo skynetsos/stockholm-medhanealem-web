@@ -7,26 +7,29 @@ import { CACHE_TAGS } from "../../hooks/revalidate";
 import { LAYOUT_TAG } from "../../hooks/revalidateLayout";
 import type { Page } from "../../payload-types";
 import { pagePath } from "../pages";
+import { teachingPaths } from "../teachings";
 
 /**
- * Addresses of all published pages ("/our-church", "/our-church/history", "/privacy"), the same in
- * every language (D-010). Read by the middleware through /api/site/page-paths; refreshed on save.
+ * Addresses that exist because of published content, the same in every language (D-010): CMS pages
+ * ("/our-church", "/privacy"), faith teachings ("/our-faith/fasting") and the sacrament pages that
+ * have guidance ("/sacraments/baptism"). Read by the middleware through /api/site/paths (D-017,
+ * D-018); refreshed when a page or teaching is saved.
  */
-export function getPublishedPagePaths(): Promise<string[]> {
+export function getAvailablePaths(): Promise<string[]> {
   return unstable_cache(
     async () => {
       const payload = await getPayload({ config });
-      const pages = await payload.find({
-        collection: "pages",
-        overrideAccess: false, // the public sees published pages only
-        depth: 0,
-        pagination: false,
-        select: { section: true, slug: true },
-      });
-      return pages.docs.map((p) => pagePath(p.section, p.slug)).filter((p): p is string => Boolean(p));
+      // The public sees published pages and teachings only.
+      const read = { overrideAccess: false, depth: 0, pagination: false } as const;
+      const [pages, teachings] = await Promise.all([
+        payload.find({ collection: "pages", ...read, select: { section: true, slug: true } }),
+        payload.find({ collection: "teachings", ...read, select: { category: true, slug: true } }),
+      ]);
+      const pagePaths = pages.docs.map((p) => pagePath(p.section, p.slug)).filter((p): p is string => Boolean(p));
+      return [...new Set([...pagePaths, ...teachingPaths(teachings.docs, pagePaths.includes("/our-faith"))])];
     },
-    ["page-paths"],
-    { tags: [CACHE_TAGS.pages], revalidate: 300 },
+    ["available-paths"],
+    { tags: [CACHE_TAGS.pages, CACHE_TAGS.teachings], revalidate: 300 },
   )();
 }
 

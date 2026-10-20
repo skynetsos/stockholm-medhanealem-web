@@ -42,3 +42,24 @@ test("CMS pages are cached like other pages (ISR)", async ({ request }) => {
     .poll(async () => (await request.get("/en/e2e-test-page")).headers()["x-nextjs-cache"], { timeout: 15_000 })
     .toMatch(/^(HIT|STALE)$/);
 });
+
+// Teachings and sacrament pages exist only with published content (D-018).
+test("faith teachings and sacrament guidance are served", async ({ page }) => {
+  await page.goto("/en/our-faith");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(en.faith.title);
+  await page.getByRole("link", { name: "Fasting test teaching" }).click();
+  await expect(page).toHaveURL(/\/en\/our-faith\/e2e-fasting$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Fasting test teaching");
+
+  await page.goto("/en/sacraments");
+  await page.getByRole("link", { name: en.sacraments.baptism }).click();
+  await expect(page.getByRole("heading", { level: 2, name: "Baptism guidance test" })).toBeVisible();
+});
+
+for (const path of ["/en/our-faith/unknown", "/en/our-faith/e2e-baptism-guidance", "/en/sacraments/marriage"]) {
+  test(`${path} without content gets the server-rendered 404`, async ({ request }) => {
+    const response = await request.get(path);
+    expect(response.status()).toBe(404);
+    expect(await response.text()).toContain(`<h1>${en.notFound.title}</h1>`);
+  });
+}

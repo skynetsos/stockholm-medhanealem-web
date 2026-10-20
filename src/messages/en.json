@@ -71,5 +71,22 @@
   },
   "clergy": {
     "title": "Clergy"
+  },
+  "faith": {
+    "title": "Our Faith",
+    "categories": {
+      "mysteries": "The five mysteries",
+      "sacraments": "The seven sacraments",
+      "fasting": "Fasting",
+      "prayers": "Prayers",
+      "faq": "Questions and answers"
+    }
+  },
+  "sacraments": {
+    "title": "Sacraments",
+    "baptism": "Baptism (Christening)",
+    "marriage": "Marriage",
+    "fitihat": "Fitihat (prayer for the departed)",
+    "onThisPage": "On this page"
   }
 }

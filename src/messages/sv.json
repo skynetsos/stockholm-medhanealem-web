@@ -71,5 +71,22 @@
   },
   "clergy": {
     "title": "Präster"
+  },
+  "faith": {
+    "title": "Vår tro",
+    "categories": {
+      "mysteries": "De fem mysterierna",
+      "sacraments": "De sju sakramenten",
+      "fasting": "Fasta",
+      "prayers": "Böner",
+      "faq": "Frågor och svar"
+    }
+  },
+  "sacraments": {
+    "title": "Sakrament",
+    "baptism": "Dop",
+    "marriage": "Äktenskap",
+    "fitihat": "Fitihat (bön för de avlidna)",
+    "onThisPage": "På den här sidan"
   }
 }

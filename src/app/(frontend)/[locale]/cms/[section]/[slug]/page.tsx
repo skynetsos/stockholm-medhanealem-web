@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
+import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { PageHeader } from "@/components/pages/PageHeader";
 import { localeAlternates } from "@/i18n/alternates";
-import { Link } from "@/i18n/navigation";
 import { getPage } from "@/lib/cms/pages";
 import { mediaSource, publicMedia } from "@/lib/media";
 import { pagePath } from "@/lib/pages";
@@ -43,16 +43,7 @@ export default async function CmsPage({ params }: Props) {
   const page = await getPage(locale as Locale, section, slug);
 
   // Only reachable for a page unpublished in the last 30 s (the middleware's list is that old).
-  if (!page) {
-    const t = await getTranslations("notFound");
-    return (
-      <main id="main" className="mx-auto max-w-site px-gutter py-12">
-        <h1>{t("title")}</h1>
-        <p>{t("description")}</p>
-        <Link href="/">{t("backHome")}</Link>
-      </main>
-    );
-  }
+  if (!page) return <NotFoundContent />;
 
   return (
     <main id="main">

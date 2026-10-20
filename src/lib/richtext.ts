@@ -1,4 +1,5 @@
 import { pagePath } from "./pages";
+import { teachingPath } from "./teachings";
 
 /** Plain text of a Lexical rich-text value (for "is it empty?" checks and excerpts). */
 export function richTextToPlain(value: unknown): string {
@@ -23,14 +24,19 @@ type LinkFields = {
 
 /**
  * Where a link inside rich text points, or null to show its text without a link. Internal links
- * work only to published pages (an unpublished page isn't populated for the public); site paths
+ * work only to published pages and teachings (unpublished ones aren't populated for the public); site paths
  * get the visitor's language; only http(s), mailto and tel links are allowed outside the site.
  */
 export function richTextLinkHref(fields: LinkFields, locale: string): string | null {
   if (fields.linkType === "internal") {
-    const value = fields.doc?.value as { section?: string; slug?: string } | undefined;
-    if (fields.doc?.relationTo !== "pages" || !value || typeof value !== "object") return null;
-    const path = pagePath(value.section, value.slug);
+    const value = fields.doc?.value as { section?: string; slug?: string; category?: string } | undefined;
+    if (!value || typeof value !== "object") return null;
+    const path =
+      fields.doc?.relationTo === "pages"
+        ? pagePath(value.section, value.slug)
+        : fields.doc?.relationTo === "teachings"
+          ? teachingPath(value.category, value.slug)
+          : null;
     return path ? `/${locale}${path}` : null;
   }
   const url = fields.url?.trim();

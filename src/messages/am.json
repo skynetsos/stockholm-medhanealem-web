@@ -71,5 +71,22 @@
   },
   "clergy": {
     "title": "ካህናት"
+  },
+  "faith": {
+    "title": "እምነታችን",
+    "categories": {
+      "mysteries": "አምስቱ አዕማደ ምሥጢራት",
+      "sacraments": "ሰባቱ ምሥጢራተ ቤተ ክርስቲያን",
+      "fasting": "አጽዋማት",
+      "prayers": "ጸሎቶች",
+      "faq": "ጥያቄና መልስ"
+    }
+  },
+  "sacraments": {
+    "title": "ምሥጢራት",
+    "baptism": "ክርስትና (ጥምቀት)",
+    "marriage": "ጋብቻ",
+    "fitihat": "ፍትሐት",
+    "onThisPage": "በዚህ ገጽ"
   }
 }
