@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { availablePaths, resetPathsCache, rewriteTarget } from "../../src/lib/cms-routing";
 import { isAppOwned, pageForPath } from "../../src/lib/pages";
 import { richTextLinkHref } from "../../src/lib/richtext";
-import { isContentGatedPath, worshipPaths } from "../../src/lib/content-paths";
+import { isContentGatedPath, sectionPaths, worshipPaths } from "../../src/lib/content-paths";
 import { teachingPath, teachingPaths } from "../../src/lib/teachings";
 
 const published = new Set(["/our-church", "/our-church/history", "/privacy", "/worship", "/our-faith", "/our-faith/fasting", "/sacraments", "/sacraments/baptism"]);
@@ -38,7 +38,7 @@ describe("rewriteTarget", () => {
     expect(rewriteTarget("/en/our-church/draft-only", published)).toBeNull();
     expect(rewriteTarget("/en/nope", published)).toBeNull();
     expect(rewriteTarget("/en/our-church/clergy", published)).toBeNull();
-    expect(rewriteTarget("/en/news", published)).toBeNull();
+    expect(rewriteTarget("/en/news", published)).toBe("/en/cms/not/a/page"); // no posts (D-020)
     expect(rewriteTarget("/en", published)).toBeNull();
     expect(rewriteTarget("/de/privacy", published)).toBeNull();
     expect(rewriteTarget("/en/a/b/c", published)).toBeNull();
@@ -87,6 +87,38 @@ describe("worship pages (D-019)", () => {
     expect(isContentGatedPath("/worship/constructor")).toBe(false);
     expect(rewriteTarget("/en/worship/weekly", new Set(["/worship/weekly"]))).toBeNull();
     expect(rewriteTarget("/en/worship/monthly-feasts", new Set(["/worship/weekly"]))).toBe("/en/cms/not/a/page");
+  });
+});
+
+describe("Sunday School, News and Media (D-020)", () => {
+  it("gate their addresses", () => {
+    for (const path of ["/sunday-school", "/sunday-school/mezmur", "/news", "/news/x", "/media", "/media/videos", "/media/galleries/timket"]) {
+      expect(isContentGatedPath(path), path).toBe(true);
+    }
+    for (const path of ["/media/other", "/media/galleries", "/news/a/b", "/media/galleries/a/b"]) {
+      expect(isContentGatedPath(path), path).toBe(false);
+    }
+  });
+
+  it("list only pages with content", () => {
+    const paths = sectionPaths({
+      hasSundaySchoolIntro: false,
+      departments: [
+        { slug: "mezmur", hasContent: true },
+        { slug: "it", hasContent: false },
+      ],
+      posts: [{ slug: "first" }],
+      galleries: [
+        { slug: "timket", hasPublicImage: true },
+        { slug: "private", hasPublicImage: false },
+      ],
+      hasVideos: false,
+    });
+    expect(paths.sort()).toEqual(["/media", "/media/galleries/timket", "/news", "/news/first", "/sunday-school", "/sunday-school/mezmur"].sort());
+    expect(sectionPaths({ hasSundaySchoolIntro: false, departments: [], posts: [], galleries: [], hasVideos: true })).toEqual([
+      "/media/videos",
+      "/media",
+    ]);
   });
 });
 

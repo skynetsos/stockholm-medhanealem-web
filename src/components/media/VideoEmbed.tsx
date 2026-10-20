@@ -7,25 +7,37 @@ import type { VideoRef } from "@/lib/video";
 
 const PROVIDER_NAMES = { youtube: "YouTube", vimeo: "Vimeo" } as const;
 
-const embedUrl = ({ provider, id }: VideoRef) =>
+const embedUrl = ({ provider, id }: VideoRef, autoplay: boolean) =>
   provider === "youtube"
-    ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`
-    : `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1`;
+    ? `https://www.youtube-nocookie.com/embed/${id}?rel=0${autoplay ? "&autoplay=1" : ""}`
+    : `https://player.vimeo.com/video/${id}?dnt=1${autoplay ? "&autoplay=1" : ""}`;
 
 /**
  * Consent-gated video (spec §5 VideoEmbed, §10 #9): nothing is loaded from YouTube/Vimeo until the
- * visitor presses Play. Uses the privacy-enhanced players (youtube-nocookie, Vimeo dnt).
+ * visitor presses Play. Uses the privacy-enhanced players (youtube-nocookie, Vimeo dnt). An editor
+ * can switch the click-to-load step off for a single video (Videos: consentRequired = false); the
+ * player then loads with the page but doesn't start by itself.
  */
-export function VideoEmbed({ video, title, caption }: { video: VideoRef; title: string; caption?: string | null }) {
+export function VideoEmbed({
+  video,
+  title,
+  caption,
+  loadImmediately = false,
+}: {
+  video: VideoRef;
+  title: string;
+  caption?: string | null;
+  loadImmediately?: boolean;
+}) {
   const t = useTranslations("video");
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(loadImmediately);
 
   return (
     <figure>
       <div className="on-dark aspect-video overflow-hidden rounded bg-ink">
         {playing ? (
           <iframe
-            src={embedUrl(video)}
+            src={embedUrl(video, !loadImmediately)}
             title={title}
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             allowFullScreen

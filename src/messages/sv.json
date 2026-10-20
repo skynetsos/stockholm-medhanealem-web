@@ -28,7 +28,10 @@
     "contact": "Kontakt",
     "email": "E-post",
     "phone": "Telefon",
-    "readMore": "Läs mer"
+    "readMore": "Läs mer",
+    "allServices": "Alla gudstjänster",
+    "fullCalendar": "Hela kalendern",
+    "allPhotos": "Se alla bilder"
   },
   "announcements": {
     "urgentLabel": "Viktigt meddelande"
@@ -110,5 +113,25 @@
     "subscribe": "Lägg till i din kalender (iCal)",
     "livestream": "Direktsändning",
     "openLivestream": "Öppna direktsändningen"
+  },
+  "sundaySchool": {
+    "title": "Söndagsskola",
+    "leader": "Ansvarig"
+  },
+  "news": {
+    "title": "Nyheter"
+  },
+  "media": {
+    "title": "Media",
+    "galleries": "Bildgallerier",
+    "videos": "Video och inspelningar",
+    "audio": "Ljud",
+    "photoCount": "{count, plural, one {# bild} other {# bilder}}",
+    "categories": {
+      "sermon": "Predikningar",
+      "liturgy": "Liturgi",
+      "event": "Evenemang",
+      "sundaySchool": "Söndagsskola"
+    }
   }
 }

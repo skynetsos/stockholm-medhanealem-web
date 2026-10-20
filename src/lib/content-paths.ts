@@ -16,12 +16,23 @@ export const WORSHIP_LISTS = {
 export type WorshipList = keyof typeof WORSHIP_LISTS;
 
 export function isContentGatedPath(path: string): boolean {
-  const [first, second, ...more] = path.split("/").filter(Boolean);
+  const [first, second, third, ...more] = path.split("/").filter(Boolean);
   if (more.length) return false;
-  if (first === "our-faith") return true;
-  if (first === "sacraments") return !second || SACRAMENT_PAGES.some((s) => s.page === second);
-  if (first === "worship") return second === "livestream" || Object.hasOwn(WORSHIP_LISTS, second ?? "");
-  return false;
+  if (third !== undefined) return first === "media" && second === "galleries"; // /media/galleries/<slug>
+  switch (first) {
+    case "our-faith":
+    case "sunday-school":
+    case "news":
+      return true;
+    case "sacraments":
+      return !second || SACRAMENT_PAGES.some((s) => s.page === second);
+    case "worship":
+      return second === "livestream" || Object.hasOwn(WORSHIP_LISTS, second ?? "");
+    case "media":
+      return !second || second === "videos";
+    default:
+      return false;
+  }
 }
 
 /** Worship addresses that exist given these events and the site's livestream link. */
@@ -31,5 +42,36 @@ export function worshipPaths(events: { type?: string | null }[], livestreamUrl: 
     .filter(([, listTypes]) => listTypes.some((t) => types.has(t)))
     .map(([list]) => `/worship/${list}`);
   if (livestreamUrl?.startsWith("https://")) paths.push("/worship/livestream");
+  return paths;
+}
+
+/**
+ * Sunday School, News and Media addresses that exist given this content (D-020):
+ * - /sunday-school with an intro page or a department with text; each such department's page
+ * - /news and each published post
+ * - /media, each published gallery with at least one image that may be shown, /media/videos
+ */
+export function sectionPaths({
+  hasSundaySchoolIntro,
+  departments,
+  posts,
+  galleries,
+  hasVideos,
+}: {
+  hasSundaySchoolIntro: boolean;
+  departments: { slug: string; hasContent: boolean }[];
+  posts: { slug: string }[];
+  galleries: { slug: string; hasPublicImage: boolean }[];
+  hasVideos: boolean;
+}): string[] {
+  const paths: string[] = [];
+  const shownDepartments = departments.filter((d) => d.hasContent);
+  if (hasSundaySchoolIntro || shownDepartments.length) paths.push("/sunday-school");
+  paths.push(...shownDepartments.map((d) => `/sunday-school/${d.slug}`));
+  if (posts.length) paths.push("/news", ...posts.map((p) => `/news/${p.slug}`));
+  const shownGalleries = galleries.filter((g) => g.hasPublicImage);
+  paths.push(...shownGalleries.map((g) => `/media/galleries/${g.slug}`));
+  if (hasVideos) paths.push("/media/videos");
+  if (shownGalleries.length || hasVideos) paths.push("/media");
   return paths;
 }

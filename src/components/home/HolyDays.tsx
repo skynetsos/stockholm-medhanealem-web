@@ -8,11 +8,19 @@ import type { Event } from "@/payload-types";
 import { HomeSection } from "./HomeSection";
 
 /** Up to five upcoming feasts/fasts, each with its Gregorian and Ethiopian date. */
-export async function HolyDays({ items, labels }: { items: (Occurrence & { event: Event })[]; labels: DateLabels }) {
+export async function HolyDays({
+  items,
+  labels,
+  more,
+}: {
+  items: (Occurrence & { event: Event })[];
+  labels: DateLabels;
+  more?: { href: string; label: string } | null;
+}) {
   const t = await getTranslations("home");
 
   return (
-    <HomeSection id="holy-days" title={t("upcomingHolyDays")}>
+    <HomeSection id="holy-days" title={t("upcomingHolyDays")} more={more}>
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((o) => (
           <li key={`${o.event.id}-${o.start}`}>

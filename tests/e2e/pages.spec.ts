@@ -91,3 +91,31 @@ for (const path of ["/en/worship/monthly-feasts", "/en/worship/livestream"]) {
     expect((await request.get(path)).status()).toBe(404);
   });
 }
+
+// Sunday School, News and Media (D-020).
+test("Sunday School, News and Media pages with content", async ({ page }) => {
+  await page.goto("/en/sunday-school");
+  await page.getByRole("link", { name: /Mezmur|መዝሙር/ }).click();
+  await expect(page.getByText("Choir practice every week.")).toBeVisible();
+
+  await page.goto("/en/news");
+  await page.getByRole("link", { name: "E2E news" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E news");
+
+  await page.goto("/en/media");
+  await page.getByRole("link", { name: "E2E gallery" }).click();
+  await page.getByRole("button", { name: /E2E photo/ }).click();
+  await expect(page.locator("dialog[open]")).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  await page.goto("/en/media/videos");
+  await expect(page.locator("iframe")).toHaveCount(0); // nothing from YouTube before Play
+  await page.getByRole("button", { name: en.video.play }).click();
+  await expect(page.locator('iframe[src^="https://www.youtube-nocookie.com/embed/"]')).toHaveCount(1);
+});
+
+for (const path of ["/en/sunday-school/education", "/en/news/unknown", "/en/media/galleries/unknown"]) {
+  test(`${path} without content gets the server-rendered 404`, async ({ request }) => {
+    expect((await request.get(path)).status()).toBe(404);
+  });
+}

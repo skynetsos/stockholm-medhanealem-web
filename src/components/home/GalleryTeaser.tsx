@@ -16,12 +16,20 @@ export function galleryImages(gallery: Gallery | null): Media[] {
 }
 
 /** The newest gallery: title, date and its first few permitted photos. */
-export async function GalleryTeaser({ gallery, labels }: { gallery: Gallery; labels: DateLabels }) {
+export async function GalleryTeaser({
+  gallery,
+  labels,
+  more,
+}: {
+  gallery: Gallery;
+  labels: DateLabels;
+  more?: { href: string; label: string } | null;
+}) {
   const t = await getTranslations("home");
   const images = galleryImages(gallery).slice(0, MAX_IMAGES);
 
   return (
-    <HomeSection id="gallery" title={t("gallery")}>
+    <HomeSection id="gallery" title={t("gallery")} more={more}>
       <h3>{gallery.title}</h3>
       <p className="mb-4 text-muted">
         <time dateTime={gallery.date}>{labels.day(stockholmDate(gallery.date))}</time>

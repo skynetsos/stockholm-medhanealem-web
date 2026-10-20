@@ -14,6 +14,14 @@
 
 ## Resolved decisions
 
+### D-020 — Sunday School, News, Media and the home page links (2026-10-20, Phase 1 task 5d)
+- **Sunday School:** `/sunday-school` shows the optional CMS landing page (section Sunday School, slug "index") as introduction, then the departments that have a summary or text, as cards. `/sunday-school/<department>`: name, summary, image, text and leader. A department without text in Amharic (the default language, which the others fall back to) has no page (D-013) — so in a fresh install every department page and `/sunday-school` itself 404 until the church writes something.
+- **News:** `/news` lists published posts, newest first (up to 100); `/news/<slug>` shows date, the public byline (never the author account, D-014), cover image and text.
+- **Media:** `/media` lists published galleries that have at least one image that may be shown, and links to `/media/videos`. `/media/galleries/<slug>` shows the permitted photos with the lightbox. `/media/videos` groups videos by category, newest first; each loads from YouTube/Vimeo only after Play. If an editor turns off "Load only after the visitor clicks" for a video, its player loads with the page but doesn't start by itself.
+- **All of these exist only with content** (middleware list, D-017); unknown or empty ones get the real 404.
+- **Home page links (task 4 follow-up):** "All services" → `/worship/weekly`, "Full calendar" → `/worship/calendar`, "See all photos" → the latest gallery's page, and the Sunday School teaser links to `/sunday-school` — each shown only when the page exists. The latest announcement has no link: the spec has no announcements page.
+- **For Biruk's review (Amharic):** ሰንበት ትምህርት ቤት, ኃላፊ, ዜና, ሚዲያ, የፎቶ ስብስቦች, ቪዲዮና የድምፅ ቅጂዎች, ድምፅ, ፎቶ/ፎቶዎች, ስብከቶች, ቅዳሴ, ዝግጅቶች, ሁሉም አገልግሎቶች, ሙሉ የቀን መቁጠሪያ, ሁሉንም ፎቶዎች ይመልከቱ.
+
 ### D-019 — Worship pages, calendar, livestream and iCal (2026-10-20, Phase 1 task 5c)
 - **List pages:** `/worship/weekly` (weekly services), `/worship/monthly-feasts`, `/worship/annual-feasts` (feasts and fasts in two groups). Each service or feast is shown once with its rule ("Every Sunday · 8:00–11:30", "Every Ethiopian month on day 27", "Every year on Tir 11"), place, description, its next date (Gregorian + Ethiopian) and any cancelled, moved or annotated dates in the next 60 days. Each page exists only when there are such events (middleware list, D-017); `/worship` itself is the CMS landing page.
 - **Calendar `/worship/calendar`:** always available. Month grid starting Monday with the Gregorian and Ethiopian day in each cell (the Ethiopian month name on its 1st), event titles (dots on phones), the chosen day's events listed below. Keyboard: arrows move by day/week, Home/End to the week's start/end, PageUp/PageDown by month; today is marked. Shows the current month and the next 12; past one-off events of the current month are included. Built without a new dependency.

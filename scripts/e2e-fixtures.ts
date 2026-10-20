@@ -1,6 +1,7 @@
 // E2E fixtures (run by `pnpm test:e2e:prepare`, only against the throwaway <db>_e2e database):
 // a few pages and teachings to test content routing in the production build. Never run against real data.
 import { getPayload } from "payload";
+import sharp from "sharp";
 
 import config from "../src/payload.config";
 
@@ -80,6 +81,33 @@ await payload.create({
     end_tz: "Europe/Stockholm",
     recurrence: { frequency: "weekly" },
   },
+});
+
+// Sunday School, News and Media (D-020).
+const mezmur = (await payload.find({ collection: "departments", ...ctx, where: { slug: { equals: "mezmur" } } })).docs[0];
+// Text in Amharic (the default language) is what makes a department page exist (D-020).
+await payload.update({ collection: "departments", id: mezmur.id, ...ctx, locale: "am", data: { summary: "የመዝሙር ልምምድ በየሳምንቱ።" } });
+await payload.update({ collection: "departments", id: mezmur.id, ...ctx, locale: "en", data: { summary: "Choir practice every week.", body: text("Join the choir.") } });
+await payload.create({ collection: "posts", ...ctx, locale: "en", data: { title: "E2E news", slug: "e2e-news", body: text("News text"), _status: "published" } });
+const photo = await sharp({ create: { width: 800, height: 600, channels: 3, background: "#c8a24a" } }).jpeg().toBuffer();
+const image = await payload.create({
+  collection: "media",
+  ...ctx,
+  locale: "en",
+  data: { alt: "E2E photo", permissionObtained: true },
+  file: { data: photo, mimetype: "image/jpeg", name: `e2e-photo-${Date.now()}.jpg`, size: photo.length },
+});
+await payload.create({
+  collection: "galleries",
+  ...ctx,
+  locale: "en",
+  data: { title: "E2E gallery", slug: "e2e-gallery", date: "2026-09-26T22:00:00.000Z", date_tz: "Europe/Stockholm", images: [image.id], published: true },
+});
+await payload.create({
+  collection: "videos",
+  ...ctx,
+  locale: "en",
+  data: { title: "E2E sermon", kind: "video", category: "sermon", date: "2026-10-11T22:00:00.000Z", date_tz: "Europe/Stockholm", url: "https://youtu.be/dQw4w9WgXcQ" },
 });
 
 console.log("E2E fixtures created");

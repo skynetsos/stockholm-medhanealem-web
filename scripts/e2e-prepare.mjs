@@ -4,7 +4,7 @@
 // "push". So e2e gets its own database, <DATABASE_URI db>_e2e, recreated here and built the
 // production way: migrations, then the base seed, an admin user and a few test pages.
 import { spawnSync } from "child_process";
-import { existsSync } from "fs";
+import { existsSync, rmSync } from "fs";
 import pg from "pg";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
@@ -34,4 +34,6 @@ for (const args of [["seed:base"], ["user:create-super-admin"], ["payload", "run
   const result = spawnSync("pnpm", args, { env, stdio: "inherit", shell: true });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
+// The production server keeps cached CMS data on disk; it belonged to the database just replaced.
+rmSync(".next/cache/fetch-cache", { recursive: true, force: true });
 console.log(`E2E database ready: ${e2eDb}`);

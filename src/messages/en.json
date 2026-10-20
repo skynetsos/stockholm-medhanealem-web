@@ -28,7 +28,10 @@
     "contact": "Contact",
     "email": "Email",
     "phone": "Phone",
-    "readMore": "Read more"
+    "readMore": "Read more",
+    "allServices": "All services",
+    "fullCalendar": "Full calendar",
+    "allPhotos": "See all photos"
   },
   "announcements": {
     "urgentLabel": "Important notice"
@@ -110,5 +113,25 @@
     "subscribe": "Add to your calendar (iCal)",
     "livestream": "Livestream",
     "openLivestream": "Open the livestream"
+  },
+  "sundaySchool": {
+    "title": "Sunday School",
+    "leader": "Leader"
+  },
+  "news": {
+    "title": "News"
+  },
+  "media": {
+    "title": "Media",
+    "galleries": "Photo galleries",
+    "videos": "Videos and recordings",
+    "audio": "Audio",
+    "photoCount": "{count, plural, one {# photo} other {# photos}}",
+    "categories": {
+      "sermon": "Sermons",
+      "liturgy": "Liturgy",
+      "event": "Events",
+      "sundaySchool": "Sunday School"
+    }
   }
 }

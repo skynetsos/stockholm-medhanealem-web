@@ -13,6 +13,7 @@ import { hasVisitInfo, VisitUs } from "@/components/home/VisitUs";
 import { localeAlternates } from "@/i18n/alternates";
 import { getActiveEvents } from "@/lib/cms/events";
 import { getHomeData } from "@/lib/cms/home";
+import { getAvailablePaths } from "@/lib/cms/pages";
 import { getLayoutData } from "@/lib/cms/layout";
 import { getDateLabels } from "@/lib/date-labels";
 import { type HomeSection, latestNotice, nextService, sectionOrder, upcomingHolyDays } from "@/lib/home";
@@ -32,12 +33,15 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
   const t = await getTranslations("home");
-  const [{ settings }, home, events, labels] = await Promise.all([
+  const [{ settings }, home, events, labels, available] = await Promise.all([
     getLayoutData(locale as Locale),
     getHomeData(locale as Locale),
     getActiveEvents(locale as Locale),
     getDateLabels(),
+    getAvailablePaths(),
   ]);
+  // "See all" links only to pages that exist (D-020).
+  const linkIf = (href: string, label: string) => (href === "/worship/calendar" || available.includes(href) ? { href, label } : null);
   const { homepage } = home;
   const now = new Date();
   const order = sectionOrder(homepage);
@@ -51,12 +55,26 @@ export default async function HomePage({ params }: Props) {
 
   const sections: Record<HomeSection, () => ReactNode> = {
     hero: () => showHero && <Hero hero={homepage.hero!} fallbackHeading={t("welcome")} />,
-    nextService: () => service && <NextService occurrence={service} settings={settings} labels={labels} />,
-    upcomingHolyDays: () => holyDays.length > 0 && <HolyDays items={holyDays} labels={labels} />,
+    nextService: () =>
+      service && (
+        <NextService occurrence={service} settings={settings} labels={labels} more={linkIf("/worship/weekly", t("allServices"))} />
+      ),
+    upcomingHolyDays: () =>
+      holyDays.length > 0 && <HolyDays items={holyDays} labels={labels} more={linkIf("/worship/calendar", t("fullCalendar"))} />,
     latestNotice: () => notice && <LatestNotice announcement={notice} labels={labels} />,
     about: () => hasTeaser(homepage.about) && <Teaser id="about" teaser={homepage.about!} />,
-    sundaySchool: () => hasTeaser(homepage.sundaySchool) && <Teaser id="sunday-school" teaser={homepage.sundaySchool!} />,
-    gallery: () => gallery && <GalleryTeaser gallery={gallery} labels={labels} />,
+    sundaySchool: () =>
+      hasTeaser(homepage.sundaySchool) && (
+        <Teaser
+          id="sunday-school"
+          teaser={{
+            ...homepage.sundaySchool!,
+            link: available.includes("/sunday-school") ? { type: "internal", path: "/sunday-school" } : null,
+          }}
+        />
+      ),
+    gallery: () =>
+      gallery && <GalleryTeaser gallery={gallery} labels={labels} more={linkIf(`/media/galleries/${gallery.slug}`, t("allPhotos"))} />,
     visit: () => hasVisitInfo(settings) && <VisitUs settings={settings} />,
   };
 

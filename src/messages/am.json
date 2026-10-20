@@ -28,7 +28,10 @@
     "contact": "ያግኙን",
     "email": "ኢሜይል",
     "phone": "ስልክ",
-    "readMore": "ተጨማሪ ያንብቡ"
+    "readMore": "ተጨማሪ ያንብቡ",
+    "allServices": "ሁሉም አገልግሎቶች",
+    "fullCalendar": "ሙሉ የቀን መቁጠሪያ",
+    "allPhotos": "ሁሉንም ፎቶዎች ይመልከቱ"
   },
   "announcements": {
     "urgentLabel": "አስቸኳይ ማስታወቂያ"
@@ -110,5 +113,25 @@
     "subscribe": "ወደ ቀን መቁጠሪያዎ ያክሉ (iCal)",
     "livestream": "ቀጥታ ስርጭት",
     "openLivestream": "ቀጥታ ስርጭቱን ይክፈቱ"
+  },
+  "sundaySchool": {
+    "title": "ሰንበት ትምህርት ቤት",
+    "leader": "ኃላፊ"
+  },
+  "news": {
+    "title": "ዜና"
+  },
+  "media": {
+    "title": "ሚዲያ",
+    "galleries": "የፎቶ ስብስቦች",
+    "videos": "ቪዲዮና የድምፅ ቅጂዎች",
+    "audio": "ድምፅ",
+    "photoCount": "{count, plural, one {# ፎቶ} other {# ፎቶዎች}}",
+    "categories": {
+      "sermon": "ስብከቶች",
+      "liturgy": "ቅዳሴ",
+      "event": "ዝግጅቶች",
+      "sundaySchool": "ሰንበት ትምህርት ቤት"
+    }
   }
 }

@@ -12,10 +12,12 @@ export async function NextService({
   occurrence,
   settings,
   labels,
+  more,
 }: {
   occurrence: Occurrence & { event: Event };
   settings: SiteSetting;
   labels: DateLabels;
+  more?: { href: string; label: string } | null;
 }) {
   const t = await getTranslations("home");
   const te = await getTranslations("events");
@@ -24,7 +26,7 @@ export async function NextService({
   const livestream = event.livestreamUrl || settings.livestreamUrl;
 
   return (
-    <HomeSection id="next-service" title={t("nextService")}>
+    <HomeSection id="next-service" title={t("nextService")} more={more}>
       <div className="rounded border-s-4 border-gold bg-white p-5 shadow-sm">
         <h3 className="flex flex-wrap items-center gap-2">
           {event.title} <StatusBadge status={occurrence.status} />
