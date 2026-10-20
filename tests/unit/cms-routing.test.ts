@@ -3,7 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { availablePaths, resetPathsCache, rewriteTarget } from "../../src/lib/cms-routing";
 import { isAppOwned, pageForPath } from "../../src/lib/pages";
 import { richTextLinkHref } from "../../src/lib/richtext";
-import { isContentGatedPath, teachingPath, teachingPaths } from "../../src/lib/teachings";
+import { isContentGatedPath, worshipPaths } from "../../src/lib/content-paths";
+import { teachingPath, teachingPaths } from "../../src/lib/teachings";
 
 const published = new Set(["/our-church", "/our-church/history", "/privacy", "/worship", "/our-faith", "/our-faith/fasting", "/sacraments", "/sacraments/baptism"]);
 
@@ -74,6 +75,18 @@ describe("teachings and sacraments (D-018)", () => {
       ["/our-faith", "/our-faith/q", "/sacraments", "/sacraments/baptism"].sort(),
     );
     expect(teachingPaths([], true)).toEqual(["/our-faith"]);
+  });
+});
+
+describe("worship pages (D-019)", () => {
+  it("exist only with events of their type, the livestream only with a link", () => {
+    expect(worshipPaths([{ type: "weekly_service" }, { type: "fast" }], null).sort()).toEqual(["/worship/annual-feasts", "/worship/weekly"]);
+    expect(worshipPaths([], "https://youtube.com/@church/live")).toEqual(["/worship/livestream"]);
+    expect(isContentGatedPath("/worship/weekly")).toBe(true);
+    expect(isContentGatedPath("/worship/calendar")).toBe(false); // always there
+    expect(isContentGatedPath("/worship/constructor")).toBe(false);
+    expect(rewriteTarget("/en/worship/weekly", new Set(["/worship/weekly"]))).toBeNull();
+    expect(rewriteTarget("/en/worship/monthly-feasts", new Set(["/worship/weekly"]))).toBe("/en/cms/not/a/page");
   });
 });
 

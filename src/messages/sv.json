@@ -38,7 +38,12 @@
     "moved": "Flyttad",
     "allDay": "Hela dagen",
     "location": "Plats",
-    "watchLive": "Se direktsändningen"
+    "watchLive": "Se direktsändningen",
+    "repeatWeekly": "Varje {weekday}",
+    "repeatMonthly": "Varje etiopisk månad, dag {day}",
+    "repeatYearly": "Varje år den {date}",
+    "next": "Nästa",
+    "changes": "Kommande ändringar"
   },
   "calendar": {
     "ethiopianDate": "{day} {month} {year} (etiopisk kalender)",
@@ -56,7 +61,13 @@
       "m11": "Hamle",
       "m12": "Nehase",
       "m13": "Pagume"
-    }
+    },
+    "ethiopianDayMonth": "{day} {month}",
+    "previousMonth": "Föregående månad",
+    "nextMonth": "Nästa månad",
+    "today": "Idag",
+    "noEvents": "Inget planerat den här dagen.",
+    "eventCount": "{count, plural, =0 {inget planerat} one {# händelse} other {# händelser}}"
   },
   "gallery": {
     "enlarge": "Förstora bild {number} av {total}",
@@ -88,5 +99,16 @@
     "marriage": "Äktenskap",
     "fitihat": "Fitihat (bön för de avlidna)",
     "onThisPage": "På den här sidan"
+  },
+  "worship": {
+    "weekly": "Veckans gudstjänster",
+    "monthlyFeasts": "Månatliga högtider",
+    "annualFeasts": "Årliga högtider och fastor",
+    "feasts": "Högtider",
+    "fasts": "Fastor",
+    "calendar": "Kalender",
+    "subscribe": "Lägg till i din kalender (iCal)",
+    "livestream": "Direktsändning",
+    "openLivestream": "Öppna direktsändningen"
   }
 }

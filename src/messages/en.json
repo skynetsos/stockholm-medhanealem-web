@@ -38,7 +38,12 @@
     "moved": "Moved",
     "allDay": "All day",
     "location": "Location",
-    "watchLive": "Watch the livestream"
+    "watchLive": "Watch the livestream",
+    "repeatWeekly": "Every {weekday}",
+    "repeatMonthly": "Every Ethiopian month on day {day}",
+    "repeatYearly": "Every year on {date}",
+    "next": "Next",
+    "changes": "Changes coming up"
   },
   "calendar": {
     "ethiopianDate": "{month} {day}, {year} E.C.",
@@ -56,7 +61,13 @@
       "m11": "Hamle",
       "m12": "Nehase",
       "m13": "Pagume"
-    }
+    },
+    "ethiopianDayMonth": "{month} {day}",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "noEvents": "Nothing scheduled on this day.",
+    "eventCount": "{count, plural, =0 {nothing scheduled} one {# event} other {# events}}"
   },
   "gallery": {
     "enlarge": "Enlarge image {number} of {total}",
@@ -88,5 +99,16 @@
     "marriage": "Marriage",
     "fitihat": "Fitihat (prayer for the departed)",
     "onThisPage": "On this page"
+  },
+  "worship": {
+    "weekly": "Weekly services",
+    "monthlyFeasts": "Monthly feasts",
+    "annualFeasts": "Annual feasts and fasts",
+    "feasts": "Feasts",
+    "fasts": "Fasts",
+    "calendar": "Calendar",
+    "subscribe": "Add to your calendar (iCal)",
+    "livestream": "Livestream",
+    "openLivestream": "Open the livestream"
   }
 }

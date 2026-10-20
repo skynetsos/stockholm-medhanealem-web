@@ -66,5 +66,21 @@ const teaching = (category: string, slug: string, title: string) =>
 await teaching("fasting", "e2e-fasting", "Fasting test teaching");
 await teaching("christening", "e2e-baptism-guidance", "Baptism guidance test");
 
+// A weekly service (Sunday 08:00–11:30 Stockholm) for the worship pages, calendar and iCal feed.
+await payload.create({
+  collection: "events",
+  ...ctx,
+  locale: "en",
+  data: {
+    title: "E2E Kidase",
+    type: "weekly_service",
+    start: "2026-10-04T06:00:00.000Z",
+    start_tz: "Europe/Stockholm",
+    end: "2026-10-04T09:30:00.000Z",
+    end_tz: "Europe/Stockholm",
+    recurrence: { frequency: "weekly" },
+  },
+});
+
 console.log("E2E fixtures created");
 process.exit(0);

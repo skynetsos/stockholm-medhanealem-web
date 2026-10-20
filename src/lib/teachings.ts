@@ -25,19 +25,6 @@ export function teachingPath(category: string | null | undefined, slug: string |
   return sacrament ? `/sacraments/${sacrament.page}#${slug}` : null;
 }
 
-/**
- * Site addresses whose page exists only when there is content for it: /our-faith and its teachings,
- * /sacraments and its three pages. The middleware sends these to the 404 when they aren't in the
- * list of available addresses (D-017/D-018).
- */
-export function isContentGatedPath(path: string): boolean {
-  const [first, second, ...more] = path.split("/").filter(Boolean);
-  if (more.length) return false;
-  if (first === "our-faith") return true;
-  if (first === "sacraments") return !second || SACRAMENT_PAGES.some((s) => s.page === second);
-  return false;
-}
-
 /** Addresses that exist given these published teachings (and whether /our-faith has an intro page). */
 export function teachingPaths(teachings: { category?: string | null; slug?: string | null }[], hasFaithIntro: boolean): string[] {
   const paths = new Set<string>();

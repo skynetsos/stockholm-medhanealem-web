@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { routing } from "./i18n/routing";
 import { availablePaths, rewriteTarget } from "./lib/cms-routing";
-import { isContentGatedPath } from "./lib/teachings";
+import { isContentGatedPath } from "./lib/content-paths";
 
 const handleI18nRouting = createMiddleware(routing);
 

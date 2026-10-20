@@ -38,7 +38,7 @@ describe.each([
 it("Amharic strings are written in Ethiopic script", () => {
   const flat = flatten(am);
   const ethiopic = /[ሀ-፿]/;
-  const exempt = new Set(["footer.copyright"]);
+  const exempt = new Set(["footer.copyright", "calendar.ethiopianDayMonth"]); // only placeholders
   for (const [key, text] of Object.entries(flat)) {
     if (!exempt.has(key)) expect(ethiopic.test(text), key).toBe(true);
   }

@@ -1,6 +1,6 @@
 import { locales } from "../i18n/locales";
 import { cmsRoutePath, isAppOwned, pageForPath, pagePath } from "./pages";
-import { isContentGatedPath } from "./teachings";
+import { isContentGatedPath } from "./content-paths";
 
 /**
  * Where the middleware sends a request (D-017, D-018). Next.js 15.4 can't server-render a 404 from a

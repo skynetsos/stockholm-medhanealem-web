@@ -27,8 +27,15 @@ export async function getDateLabels() {
     });
   };
 
+  /** "Tir 11" (no year): yearly feasts. */
+  const ethiopianDayMonth = (day: number, month: number) =>
+    t("ethiopianDayMonth", { day: String(day), month: t(`ethiopianMonths.m${month}` as MonthKey) });
+
   return {
     ethiopian,
+    ethiopianDayMonth,
+    /** "Sunday" */
+    weekday: (date: GregorianDate) => format.dateTime(stockholmInstant(date), { weekday: "long" }),
     day: (date: GregorianDate) => format.dateTime(stockholmInstant(date), DAY),
     /** "Sunday 18 October 2026", or a range for multi-day events. */
     days: (o: Pick<Occurrence, "date" | "endDate">) =>

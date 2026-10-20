@@ -38,7 +38,12 @@
     "moved": "ተዛውሯል",
     "allDay": "ቀኑን ሙሉ",
     "location": "ቦታ",
-    "watchLive": "በቀጥታ ይከታተሉ"
+    "watchLive": "በቀጥታ ይከታተሉ",
+    "repeatWeekly": "ዘወትር {weekday}",
+    "repeatMonthly": "በየወሩ በ{day}",
+    "repeatYearly": "በየዓመቱ {date}",
+    "next": "ቀጣይ",
+    "changes": "የሚመጡ ለውጦች"
   },
   "calendar": {
     "ethiopianDate": "{month} {day} ቀን {year} ዓ.ም.",
@@ -56,7 +61,13 @@
       "m11": "ሐምሌ",
       "m12": "ነሐሴ",
       "m13": "ጳጉሜን"
-    }
+    },
+    "ethiopianDayMonth": "{month} {day}",
+    "previousMonth": "ያለፈው ወር",
+    "nextMonth": "የሚቀጥለው ወር",
+    "today": "ዛሬ",
+    "noEvents": "በዚህ ቀን የተያዘ ፕሮግራም የለም።",
+    "eventCount": "{count, plural, =0 {ፕሮግራም የለም} one {# ፕሮግራም} other {# ፕሮግራሞች}}"
   },
   "gallery": {
     "enlarge": "ምስል {number} ከ {total} አስፋ",
@@ -88,5 +99,16 @@
     "marriage": "ጋብቻ",
     "fitihat": "ፍትሐት",
     "onThisPage": "በዚህ ገጽ"
+  },
+  "worship": {
+    "weekly": "ሳምንታዊ አገልግሎቶች",
+    "monthlyFeasts": "ወርኃዊ በዓላት",
+    "annualFeasts": "ዓመታዊ በዓላትና አጽዋማት",
+    "feasts": "በዓላት",
+    "fasts": "አጽዋማት",
+    "calendar": "የቀን መቁጠሪያ",
+    "subscribe": "ወደ ቀን መቁጠሪያዎ ያክሉ (iCal)",
+    "livestream": "ቀጥታ ስርጭት",
+    "openLivestream": "ቀጥታ ስርጭቱን ይክፈቱ"
   }
 }
