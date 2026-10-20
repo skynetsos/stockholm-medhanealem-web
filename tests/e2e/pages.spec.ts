@@ -119,3 +119,18 @@ for (const path of ["/en/sunday-school/education", "/en/news/unknown", "/en/medi
     expect((await request.get(path)).status()).toBe(404);
   });
 }
+
+// Visit (D-021): built-in page with the address from Site settings; nothing third-party on load.
+test("/visit shows the address and loads nothing from map services", async ({ page }) => {
+  const requests: string[] = [];
+  page.on("request", (r) => requests.push(r.url()));
+  await page.goto("/en/visit");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(en.visit.title);
+  await expect(page.locator("address")).toContainText("Bandhagen");
+  await expect(page.getByRole("link", { name: en.home.openMap })).toHaveAttribute("href", /openstreetmap\.org|^https:/);
+  expect(requests.filter((url) => !url.startsWith("http://localhost"))).toEqual([]);
+});
+
+test("/support/volunteer waits for the form (task 6): 404", async ({ request }) => {
+  expect((await request.get("/en/support/volunteer")).status()).toBe(404);
+});

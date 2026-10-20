@@ -31,7 +31,8 @@
     "readMore": "Läs mer",
     "allServices": "Alla gudstjänster",
     "fullCalendar": "Hela kalendern",
-    "allPhotos": "Se alla bilder"
+    "allPhotos": "Se alla bilder",
+    "visitPage": "Vägbeskrivning och kontakt"
   },
   "announcements": {
     "urgentLabel": "Viktigt meddelande"
@@ -133,5 +134,12 @@
       "event": "Evenemang",
       "sundaySchool": "Söndagsskola"
     }
+  },
+  "visit": {
+    "title": "Besök oss",
+    "showMap": "Visa kartan",
+    "mapNotice": "Kartan hämtas från OpenStreetMap, som får din IP-adress.",
+    "mapTitle": "Karta som visar var kyrkan ligger",
+    "followUs": "Följ oss"
   }
 }

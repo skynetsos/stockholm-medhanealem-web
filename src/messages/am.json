@@ -31,7 +31,8 @@
     "readMore": "ተጨማሪ ያንብቡ",
     "allServices": "ሁሉም አገልግሎቶች",
     "fullCalendar": "ሙሉ የቀን መቁጠሪያ",
-    "allPhotos": "ሁሉንም ፎቶዎች ይመልከቱ"
+    "allPhotos": "ሁሉንም ፎቶዎች ይመልከቱ",
+    "visitPage": "አቅጣጫና አድራሻ"
   },
   "announcements": {
     "urgentLabel": "አስቸኳይ ማስታወቂያ"
@@ -133,5 +134,12 @@
       "event": "ዝግጅቶች",
       "sundaySchool": "ሰንበት ትምህርት ቤት"
     }
+  },
+  "visit": {
+    "title": "ይጎብኙን",
+    "showMap": "ካርታውን አሳይ",
+    "mapNotice": "ካርታው ከ OpenStreetMap ይጫናል፤ OpenStreetMap የእርስዎን IP አድራሻ ይቀበላል።",
+    "mapTitle": "ቤተ ክርስቲያኗ ያለችበትን የሚያሳይ ካርታ",
+    "followUs": "ይከተሉን"
   }
 }

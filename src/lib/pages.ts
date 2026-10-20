@@ -48,6 +48,12 @@ export const APP_OWNED_SECTION_SLUGS: Partial<Record<PageSection, readonly strin
   support: ["volunteer"],
 };
 
+/**
+ * Sections whose landing page is one of the site's own routes, which shows the CMS landing page
+ * (slug "index") as its introduction: the middleware never sends these addresses to the CMS route.
+ */
+export const APP_LANDING_SECTIONS: readonly PageSection[] = ["our-faith", "sunday-school", "visit"];
+
 /** True when the site's own routes serve this address, so it can never be a CMS page. */
 export function isAppOwned(section: string, slug: string): boolean {
   if (section === "other") return RESERVED_TOP_LEVEL_SLUGS.has(slug);

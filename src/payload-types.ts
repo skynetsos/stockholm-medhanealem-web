@@ -1331,6 +1331,13 @@ export interface SiteSetting {
     city?: string | null;
   };
   mapUrl?: string | null;
+  /**
+   * Where the church is, for the map on the Visit page (decimal degrees, e.g. 59.27 and 18.03). In OpenStreetMap or Google Maps, right-click the church to copy them. Leave empty to show only the address and map link.
+   */
+  mapLocation?: {
+    latitude?: number | null;
+    longitude?: number | null;
+  };
   transitNotes?: string | null;
   /**
    * Default event location.
@@ -1570,6 +1577,12 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         city?: T;
       };
   mapUrl?: T;
+  mapLocation?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+      };
   transitNotes?: T;
   defaultLocation?: T;
   officeEmail?: T;

@@ -31,7 +31,8 @@
     "readMore": "Read more",
     "allServices": "All services",
     "fullCalendar": "Full calendar",
-    "allPhotos": "See all photos"
+    "allPhotos": "See all photos",
+    "visitPage": "Directions and contact"
   },
   "announcements": {
     "urgentLabel": "Important notice"
@@ -133,5 +134,12 @@
       "event": "Events",
       "sundaySchool": "Sunday School"
     }
+  },
+  "visit": {
+    "title": "Visit us",
+    "showMap": "Show map",
+    "mapNotice": "The map loads from OpenStreetMap, which receives your IP address.",
+    "mapTitle": "Map showing where the church is",
+    "followUs": "Follow us"
   }
 }

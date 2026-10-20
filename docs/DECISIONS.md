@@ -5,6 +5,7 @@
 ## Deferred work (by phase)
 
 ### Phase 1 — task 10 (performance)
+- **Send each page only the UI text it needs:** `NextIntlClientProvider` currently passes every message (all namespaces) to the browser on every page. Limit it to the namespaces client components use (common, gallery, video, calendar, events, visit). Found in 5e.
 - **Long cache for media files:** files served through Payload (`/api/media/file/…`) must send `Cache-Control: public, max-age=31536000, immutable` (filenames are unique) so Cloudflare caches them; verify in the Lighthouse run. Requested by Biruk 2026-10-19. Note: only images with publication permission are publicly readable, so caching them publicly is safe; if permission is later withdrawn, the file must also be renamed/re-uploaded or purged from Cloudflare.
 
 ### Phase 3 — polish
@@ -13,6 +14,12 @@
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### D-021 — Visit page and map (2026-10-20, Phase 1 task 5e)
+- **`/visit` is a built-in page** (it will hold the contact form, task 6): the optional CMS landing page (section Visit, slug "index") is shown as introduction, then address, "Open in a map", directions, office email/phone and social links from Site settings. Other pages in the Visit section (e.g. `/visit/parking`) are normal CMS pages. The home page's "Visit us" section links to it.
+- **Map (spec §4: "static image or consent-loaded embed"):** an OpenStreetMap embed that loads only after the visitor presses "Show map", with a note that OpenStreetMap receives their IP address. It needs the church's coordinates, so Site settings gets an optional **Map pin** (latitude/longitude; migration `site_settings_map_location`). **Not filled in:** I won't guess the church's position — please enter it (right-click the church in OpenStreetMap or Google Maps). Without it the page shows the address and the map link only.
+- **"Open in a map":** the Map link from Site settings; if empty, OpenStreetMap at the pin; if no pin either, an OpenStreetMap search for the address.
+- **Support:** `/support` is the CMS landing page (as since 5a). `/support/volunteer` stays a 404 until the volunteer form is built on task 6's form setup.
 
 ### D-020 — Sunday School, News, Media and the home page links (2026-10-20, Phase 1 task 5d)
 - **Sunday School:** `/sunday-school` shows the optional CMS landing page (section Sunday School, slug "index") as introduction, then the departments that have a summary or text, as cards. `/sunday-school/<department>`: name, summary, image, text and leader. A department without text in Amharic (the default language, which the others fall back to) has no page (D-013) — so in a fresh install every department page and `/sunday-school` itself 404 until the church writes something.

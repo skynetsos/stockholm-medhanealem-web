@@ -69,6 +69,24 @@ export const SiteSettings: GlobalConfig = {
               ],
             },
             { name: "mapUrl", type: "text", label: "Map link" },
+            {
+              name: "mapLocation",
+              type: "group",
+              label: "Map pin",
+              admin: {
+                description:
+                  "Where the church is, for the map on the Visit page (decimal degrees, e.g. 59.27 and 18.03). In OpenStreetMap or Google Maps, right-click the church to copy them. Leave empty to show only the address and map link.",
+              },
+              fields: [
+                {
+                  type: "row",
+                  fields: [
+                    { name: "latitude", type: "number", min: -90, max: 90, admin: { width: "50%", step: 0.000001 } },
+                    { name: "longitude", type: "number", min: -180, max: 180, admin: { width: "50%", step: 0.000001 } },
+                  ],
+                },
+              ],
+            },
             { name: "transitNotes", type: "textarea", localized: true, label: "Public transport directions" },
             { name: "defaultLocation", type: "text", localized: true, admin: { description: "Default event location." } },
             { name: "officeEmail", type: "email", admin: { description: "Public office address (shown on the site)." } },

@@ -1,5 +1,5 @@
 import { locales } from "../i18n/locales";
-import { cmsRoutePath, isAppOwned, pageForPath, pagePath } from "./pages";
+import { APP_LANDING_SECTIONS, cmsRoutePath, isAppOwned, pageForPath, pagePath, SECTION_INDEX_SLUG } from "./pages";
 import { isContentGatedPath } from "./content-paths";
 
 /**
@@ -28,6 +28,7 @@ export function rewriteTarget(pathname: string, available: ReadonlySet<string> |
 
   const page = pageForPath(requested);
   if (!page || isAppOwned(page.section, page.slug)) return null;
+  if (page.slug === SECTION_INDEX_SLUG && APP_LANDING_SECTIONS.includes(page.section)) return null;
   const path = pagePath(page.section, page.slug);
   if (!path || (available && !available.has(path))) return null;
   return cmsRoutePath(locale, page.section, page.slug);

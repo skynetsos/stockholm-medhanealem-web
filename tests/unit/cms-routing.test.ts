@@ -122,6 +122,14 @@ describe("Sunday School, News and Media (D-020)", () => {
   });
 });
 
+describe("Visit (D-021)", () => {
+  it("serves /visit from its own route even with a CMS landing page; other visit pages from the CMS", () => {
+    const withVisit = new Set(["/visit", "/visit/parking"]);
+    expect(rewriteTarget("/en/visit", withVisit)).toBeNull();
+    expect(rewriteTarget("/en/visit/parking", withVisit)).toBe("/en/cms/visit/parking");
+  });
+});
+
 describe("availablePaths", () => {
   afterEach(() => {
     resetPathsCache();
