@@ -57,5 +57,19 @@
       "m12": "ነሐሴ",
       "m13": "ጳጉሜን"
     }
+  },
+  "gallery": {
+    "enlarge": "ምስል {number} ከ {total} አስፋ",
+    "close": "ዝጋ",
+    "previous": "ቀዳሚ ምስል",
+    "next": "ቀጣይ ምስል",
+    "counter": "{number} ከ {total}"
+  },
+  "video": {
+    "play": "ቪዲዮውን አጫውት",
+    "notice": "ማጫወት ቪዲዮውን ከ {provider} ይጭናል፤ ይህም ስለ እርስዎ መረጃ ሊሰበስብ ይችላል።"
+  },
+  "clergy": {
+    "title": "ካህናት"
   }
 }

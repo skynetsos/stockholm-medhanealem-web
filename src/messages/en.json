@@ -57,5 +57,19 @@
       "m12": "Nehase",
       "m13": "Pagume"
     }
+  },
+  "gallery": {
+    "enlarge": "Enlarge image {number} of {total}",
+    "close": "Close",
+    "previous": "Previous image",
+    "next": "Next image",
+    "counter": "{number} of {total}"
+  },
+  "video": {
+    "play": "Play video",
+    "notice": "Playing loads the video from {provider}, which may collect data about you."
+  },
+  "clergy": {
+    "title": "Clergy"
   }
 }

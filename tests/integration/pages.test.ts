@@ -87,6 +87,19 @@ describe("addresses (section + slug)", () => {
     await expect(publish({ slug: "news", section: "our-church" })).resolves.toBeTruthy();
   });
 
+  it("rejects addresses that belong to the site's own routes (D-017)", async () => {
+    const slugError = (data: Parameters<typeof publish>[0]) =>
+      publish(data)
+        .then(() => null)
+        .catch((e: { data?: { errors?: { message: string }[] } }) => e.data?.errors?.[0]?.message);
+    expect(await slugError({ slug: "clergy", section: "our-church" })).toMatch(/"\/our-church\/clergy" is a built-in page/);
+    expect(await slugError({ slug: "calendar", section: "worship" })).toMatch(/built-in/);
+    expect(await slugError({ slug: "fasting", section: "our-faith" })).toMatch(/built-in/);
+    expect(await slugError({ slug: "cms", section: "other" })).toMatch(/built-in/);
+    await expect(publish({ slug: "index", section: "our-faith" })).resolves.toBeTruthy();
+    await expect(publish({ slug: "history", section: "worship" })).resolves.toBeTruthy();
+  });
+
   it("rejects a video block that is not YouTube or Vimeo on publish", async () => {
     await expect(
       publish({ slug: "bad-video", layout: [{ blockType: "videoEmbed", url: "https://evil.example/v", title: "x" }] }),

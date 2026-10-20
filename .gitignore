@@ -31,7 +31,7 @@ pnpm-debug.log*
 backups/
 *.dump
 *.sql.gz
-media/
+/media/
 
 # misc
 *.pem

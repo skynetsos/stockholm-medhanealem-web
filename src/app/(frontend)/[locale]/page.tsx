@@ -11,6 +11,7 @@ import { NextService } from "@/components/home/NextService";
 import { hasTeaser, Teaser } from "@/components/home/Teaser";
 import { hasVisitInfo, VisitUs } from "@/components/home/VisitUs";
 import { localeAlternates } from "@/i18n/alternates";
+import { getActiveEvents } from "@/lib/cms/events";
 import { getHomeData } from "@/lib/cms/home";
 import { getLayoutData } from "@/lib/cms/layout";
 import { getDateLabels } from "@/lib/date-labels";
@@ -31,9 +32,10 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
   const t = await getTranslations("home");
-  const [{ settings }, home, labels] = await Promise.all([
+  const [{ settings }, home, events, labels] = await Promise.all([
     getLayoutData(locale as Locale),
     getHomeData(locale as Locale),
+    getActiveEvents(locale as Locale),
     getDateLabels(),
   ]);
   const { homepage } = home;
@@ -41,8 +43,8 @@ export default async function HomePage({ params }: Props) {
   const order = sectionOrder(homepage);
 
   const featuredIds = (homepage.featuredEvents ?? []).map((e) => (typeof e === "object" ? e.id : e));
-  const service = nextService(home.events, now);
-  const holyDays = upcomingHolyDays(home.events, featuredIds, now);
+  const service = nextService(events, now);
+  const holyDays = upcomingHolyDays(events, featuredIds, now);
   const notice = latestNotice(home.announcements, now);
   const gallery = galleryImages(home.gallery).length ? home.gallery : null;
   const showHero = order.includes("hero") && hasHero(homepage.hero);

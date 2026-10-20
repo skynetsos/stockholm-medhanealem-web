@@ -30,7 +30,8 @@ export default defineConfig({
   webServer: {
     command: `pnpm start --port ${port}`,
     url: `${baseURL}/api/health`,
-    env: { DATABASE_URI: e2eDatabaseUri() },
+    // PORT: the middleware reaches this server at 127.0.0.1:PORT for the published-page list (D-017).
+    env: { DATABASE_URI: e2eDatabaseUri(), PORT: String(port) },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

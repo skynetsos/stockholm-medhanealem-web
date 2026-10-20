@@ -2,7 +2,7 @@
 //
 // E2E runs the PRODUCTION server, which applies migrations and refuses databases created by dev
 // "push". So e2e gets its own database, <DATABASE_URI db>_e2e, recreated here and built the
-// production way: migrations, then the base seed and an admin user.
+// production way: migrations, then the base seed, an admin user and a few test pages.
 import { spawnSync } from "child_process";
 import { existsSync } from "fs";
 import pg from "pg";
@@ -30,8 +30,8 @@ const env = {
   ADMIN_EMAIL: "e2e-admin@example.org",
   ADMIN_NAME: "E2E Admin",
 };
-for (const script of ["seed:base", "user:create-super-admin"]) {
-  const result = spawnSync("pnpm", [script], { env, stdio: "inherit", shell: true });
+for (const args of [["seed:base"], ["user:create-super-admin"], ["payload", "run", "scripts/e2e-fixtures.ts"]]) {
+  const result = spawnSync("pnpm", args, { env, stdio: "inherit", shell: true });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 console.log(`E2E database ready: ${e2eDb}`);

@@ -57,5 +57,19 @@
       "m12": "Nehase",
       "m13": "Pagume"
     }
+  },
+  "gallery": {
+    "enlarge": "Förstora bild {number} av {total}",
+    "close": "Stäng",
+    "previous": "Föregående bild",
+    "next": "Nästa bild",
+    "counter": "{number} av {total}"
+  },
+  "video": {
+    "play": "Spela upp videon",
+    "notice": "Uppspelningen hämtar videon från {provider}, som kan samla in uppgifter om dig."
+  },
+  "clergy": {
+    "title": "Präster"
   }
 }

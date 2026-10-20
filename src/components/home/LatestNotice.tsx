@@ -1,9 +1,7 @@
-import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
-import { RichText } from "@payloadcms/richtext-lexical/react";
 import { getTranslations } from "next-intl/server";
 
+import { CmsRichText } from "@/components/richtext/CmsRichText";
 import type { DateLabels } from "@/lib/date-labels";
-import { hasRichText } from "@/lib/richtext";
 import type { Announcement } from "@/payload-types";
 
 import { HomeSection } from "./HomeSection";
@@ -19,9 +17,7 @@ export async function LatestNotice({ announcement, labels }: { announcement: Ann
         <p className="text-sm text-muted">
           <time dateTime={announcement.publishAt}>{labels.instant(announcement.publishAt)}</time>
         </p>
-        {hasRichText(announcement.body) && (
-          <RichText data={announcement.body as SerializedEditorState} className="mt-3 space-y-3" />
-        )}
+        <CmsRichText data={announcement.body} className="mt-3" />
       </article>
     </HomeSection>
   );

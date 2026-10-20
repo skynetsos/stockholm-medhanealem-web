@@ -55,6 +55,25 @@ export function nextService(events: Event[], now: Date): (Occurrence & { event: 
 }
 
 /**
+ * Dates that haven't ended yet within `days` (an all-day or multi-day event counts until its last
+ * day is over), in date order, optionally limited to some event types (EventList block).
+ */
+export function upcomingOccurrences(
+  events: Event[],
+  now: Date,
+  { types, limit, days = 365 }: { types?: readonly Event["type"][] | null; limit?: number; days?: number } = {},
+): (Occurrence & { event: Event })[] {
+  const picked = types?.length ? events.filter((e) => types.includes(e.type)) : events;
+  const from = stockholmDate(now);
+  const today = gregorianToJdn(from);
+  const nowIso = now.toISOString();
+  const list = expandEvents(picked, { from, to: jdnToGregorian(today + days) }).filter((o) =>
+    o.allDay ? gregorianToJdn(o.endDate) >= today : (o.end ?? o.start) >= nowIso,
+  );
+  return limit ? list.slice(0, limit) : list;
+}
+
+/**
  * Upcoming holy days (up to 5, each event once, at its next date within a year): the events the
  * editors picked on the Home page, or else featured events and annual feasts/fasts. Cancelled
  * dates stay in the list, marked, so people know.
@@ -68,14 +87,8 @@ export function upcomingHolyDays(
   const picked = featuredIds.length
     ? events.filter((e) => featuredIds.includes(e.id))
     : events.filter((e) => e.featured || HOLY_DAY_TYPES.includes(e.type));
-  const from = stockholmDate(now);
-  const to = jdnToGregorian(gregorianToJdn(from) + 365);
-  const today = gregorianToJdn(from);
-  const nowIso = now.toISOString();
-
   const seen = new Set<number>();
-  return expandEvents(picked, { from, to })
-    .filter((o) => (o.allDay ? gregorianToJdn(o.endDate) >= today : (o.end ?? o.start) >= nowIso))
+  return upcomingOccurrences(picked, now)
     .filter((o) => !seen.has(o.event.id) && seen.add(o.event.id))
     .slice(0, limit);
 }

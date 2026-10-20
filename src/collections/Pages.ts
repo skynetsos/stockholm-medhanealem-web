@@ -4,7 +4,7 @@ import { contentAccess } from "../access/content";
 import { pageBlocks } from "../blocks";
 import { labelledLinkFields } from "../fields/link";
 import { CACHE_TAGS, revalidateTags } from "../hooks/revalidate";
-import { PAGE_SECTIONS, RESERVED_TOP_LEVEL_SLUGS, validateSlugFormat } from "../lib/pages";
+import { isAppOwned, PAGE_SECTIONS, pagePath, validateSlugFormat } from "../lib/pages";
 
 /** Spec §3 (Pages row): editors and super_admin manage pages; other staff read drafts. */
 const { access, editorsOnlyField, publishersOnly, publishButton } = contentAccess({
@@ -66,8 +66,9 @@ export const Pages: CollectionConfig = {
             if (format !== true) return format;
             const slug = value as string;
             const section = data?.section ?? "other";
-            if (section === "other" && RESERVED_TOP_LEVEL_SLUGS.has(slug)) {
-              return `"/${slug}" is used by the site itself; choose another slug or a section.`;
+            if (isAppOwned(section, slug)) {
+              const path = section === "other" ? `/${slug}` : pagePath(section, slug) ?? `/${section}/${slug}`;
+              return `"${path}" is a built-in page of the site; choose another slug${section === "other" ? " or a section" : ""}.`;
             }
             const clash = await req.payload.find({
               collection: "pages",

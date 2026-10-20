@@ -14,6 +14,15 @@
 
 ## Resolved decisions
 
+### D-017 — Serving CMS pages, and their 404 (2026-10-20, Phase 1 task 5a) — option 1 chosen by Biruk
+- **Problem:** in Next.js 15.4.11 a page that calls `notFound()` sends an empty error page (no `lang`, no text) instead of a server-rendered 404. Reproduced in a bare Next 15.4.11 app; a `[locale]/not-found.tsx`, a nested route group with its own not-found, `force-dynamic`, and turning off streamed metadata (`htmlLimitedBots`) don't help. So a catch-all route can't 404 unknown CMS slugs properly.
+- **Solution:** the middleware decides. It keeps the list of published page addresses (from `/api/site/page-paths`, server-cached and refreshed on save; kept in the middleware's memory for 30 s) and rewrites a published address (`/en/our-church/history`) to the internal route `/[locale]/cms/[section]/[slug]`. Any other address matches no route, so it gets the normal server-rendered 404 with status 404. `/…/cms/…` asked for directly is sent to a 404 too.
+- **Consequences:** a newly published page can take up to 30 s to appear; a page unpublished in the last 30 s shows the "not found" text with status 200 until the list refreshes. If the list can't be loaded, every possible page address is tried (the site never breaks), never a built-in one. The middleware reaches the app at `127.0.0.1:$PORT` (override with `INTERNAL_SERVER_URL`).
+- **Built-in addresses win** and can't be taken by a CMS page (checked on save): `/our-church/clergy`; everything below `/our-faith` and `/sunday-school` except their landing pages (teachings, departments); `/worship/{weekly, monthly-feasts, annual-feasts, calendar, livestream}`; `/support/volunteer`; top-level `/news`, `/media`, `/sacraments`, `/visit`, `/search`, `/cms` etc.
+- **Rendering:** all 8 blocks; empty blocks are hidden (gallery without permitted images, clergy grid without published clergy, event list without upcoming dates). Rich text links to published pages only, in the visitor's language; only http(s)/mailto/tel links outside the site; images only with publication permission; an editor's "Heading 1" becomes h2 (the page title is the h1). The lightbox (native `<dialog>`) and click-to-load video are built in, no new dependencies.
+- **Clergy page:** shows the published clergy with full bios; with none published it shows only its title (no placeholder text).
+- **Fixed in passing:** `.gitignore` had `media/`, which also ignored `src/components/media` (and Tailwind skips ignored folders). Now `/media/` (the local upload folder in the project root only).
+
 ### D-016 — Home page sections (2026-10-19, Phase 1 task 4)
 - **Urgent bar on every page, not just the home page:** spec §2.5 says urgent → "top bar", and a cancellation notice must be seen wherever people land. So the bar is part of the layout and is no longer one of the reorderable home sections (migration `homepage_without_announcement_bar` removes the option and any saved row for it). It hides itself after "Hide after", re-checked on every page render.
 - **Next service:** the next weekly service, monthly or annual feast that has a start time (all-day entries are skipped), still to come or in progress, within 60 days. Cancelled dates are skipped; a moved date shows at its new time. Location falls back to Site settings' default location; the livestream link to the site's livestream URL.
@@ -97,7 +106,7 @@ Found by the production-build check deferred from task 5.
   - A pass-through `app/layout.tsx` exists only so the root not-found works; the real root layouts are still `[locale]/layout.tsx` and Payload's.
   - The locale middleware now also handles "file-like" paths (e.g. `/wp-login.php` → `/am/wp-login.php` → Amharic 404) instead of letting them 500. Skipped: admin, API, Next internals, and Next's own file routes (favicon, robots.txt, sitemap.xml, manifest, icons). Any file added to `public/` must be added to that skip list.
 - **Trade-off:** the 404 page shows the translated message and a home link, but no CMS header/footer.
-- **Phase 1 note:** a page that calls `notFound()` (e.g. an unknown CMS slug) will still get the client-rendered shell. Prefer making such pages unmatched routes (generateStaticParams + `dynamicParams = false` where the slugs are known), and re-check this behaviour when upgrading Next.js.
+- **Phase 1 note:** a page that calls `notFound()` (e.g. an unknown CMS slug) will still get the client-rendered shell. CMS pages solve this in the middleware (D-017); re-check this behaviour when upgrading Next.js.
 
 ### Q-005 — Globals before layout; logo before Media (2026-10-18) — approved by Biruk
 - The three globals (spec §2.15) were defined in task 7; task 8 is the `pnpm seed:base` script.

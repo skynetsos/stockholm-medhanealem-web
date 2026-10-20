@@ -32,3 +32,17 @@ export function mediaSource(media: Media, minWidth: number): { url: string; widt
   const chosen = fit ?? { url: media.url!, width: media.width ?? minWidth, height: media.height ?? minWidth };
   return { ...chosen, url: toSitePath(chosen.url) };
 }
+
+/** Gallery items (thumbnail + large size) for the images that may be shown publicly, in order. */
+export function galleryItems(values: (number | Media | null | undefined)[] | null | undefined) {
+  return (values ?? [])
+    .map((value) => publicMedia(value))
+    .filter((media): media is Media => media !== null)
+    .map((media) => ({
+      id: media.id,
+      alt: media.alt,
+      caption: media.caption,
+      thumb: mediaSource(media, 400),
+      full: mediaSource(media, 1600),
+    }));
+}
