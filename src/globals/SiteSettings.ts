@@ -43,6 +43,16 @@ export const SiteSettings: GlobalConfig = {
               },
             },
             {
+              name: "shareImage",
+              type: "upload",
+              relationTo: "media",
+              label: "Default share image",
+              admin: {
+                description:
+                  'Shown when a page without its own picture is shared (Facebook, WhatsApp, Telegram …). A real church photo, landscape; it is cropped to 1200 × 630. Needs "Permission to publish".',
+              },
+            },
+            {
               name: "swedishPublic",
               type: "checkbox",
               defaultValue: false,

@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import { PublicDocument } from "@/components/layout/PublicDocument";
 import { routing } from "@/i18n/routing";
 import { getLayoutData } from "@/lib/cms/layout";
+import { mediaSource, publicMedia } from "@/lib/media";
+import { isIndexable, siteOrigin } from "@/lib/seo";
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -27,10 +29,20 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
   if (!hasLocale(routing.locales, locale)) return {};
   const { settings } = await getLayoutData(locale);
   const siteName = settings.churchName || settings.shortName || undefined;
+  const shareImage = publicMedia(settings.shareImage);
+  const share = shareImage ? mediaSource(shareImage, 1200) : null;
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000"),
+    metadataBase: new URL(siteOrigin()),
     title: siteName ? { default: siteName, template: `%s | ${settings.shortName || siteName}` } : undefined,
-    openGraph: siteName ? { siteName } : undefined,
+    // Defaults for every page (D-023); pages with their own picture or description override them.
+    openGraph: {
+      siteName,
+      type: "website",
+      locale,
+      images: share ? [{ url: share.url, width: share.width, height: share.height, alt: shareImage!.alt }] : undefined,
+    },
+    twitter: { card: share ? "summary_large_image" : "summary" },
+    robots: isIndexable(locale, settings) ? { index: true, follow: true } : { index: false, follow: false },
   };
 }
 

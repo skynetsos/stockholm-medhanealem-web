@@ -5,10 +5,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { PageHeader } from "@/components/pages/PageHeader";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { VisitDetails } from "@/components/visit/VisitDetails";
 import { localeAlternates } from "@/i18n/alternates";
 import { getLayoutData } from "@/lib/cms/layout";
 import { getAvailablePaths, getPage } from "@/lib/cms/pages";
+import { churchJsonLd } from "@/lib/jsonld";
+import { siteOrigin } from "@/lib/seo";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -43,6 +46,7 @@ export default async function VisitPage({ params }: Props) {
 
   return (
     <main id="main">
+      <JsonLd data={churchJsonLd(settings, siteOrigin(), locale)} />
       <PageHeader title={intro?.title || t("title")} hero={intro?.hero} />
       {intro && <RenderBlocks blocks={intro.layout} locale={locale as Locale} />}
       <div className="mx-auto max-w-site px-gutter py-10">

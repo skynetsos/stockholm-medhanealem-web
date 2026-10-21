@@ -51,3 +51,14 @@ export function stockholmInstant(date: GregorianDate, time: WallTime = { hour: 0
     .filter((ms) => asUtc(stockholmWallTime(ms).date, stockholmWallTime(ms)) === local);
   return new Date(matches.length ? Math.min(...matches) : local - before * 60_000);
 }
+
+/** An instant as Stockholm local time with its UTC offset: "2026-10-25T08:00:00+01:00" (JSON-LD). */
+export function stockholmIsoWithOffset(instant: Date | string): string {
+  const ms = new Date(instant).getTime();
+  const wall = stockholmWallTime(ms);
+  const offset = offsetMinutes(ms);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const sign = offset >= 0 ? "+" : "-";
+  const { year, month, day } = wall.date;
+  return `${year}-${pad(month)}-${pad(day)}T${pad(wall.hour)}:${pad(wall.minute)}:${pad(wall.second)}${sign}${pad(Math.floor(Math.abs(offset) / 60))}:${pad(Math.abs(offset) % 60)}`;
+}

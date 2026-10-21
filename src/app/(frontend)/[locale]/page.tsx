@@ -10,6 +10,7 @@ import { LatestNotice } from "@/components/home/LatestNotice";
 import { NextService } from "@/components/home/NextService";
 import { hasTeaser, Teaser } from "@/components/home/Teaser";
 import { hasVisitInfo, VisitUs } from "@/components/home/VisitUs";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { localeAlternates } from "@/i18n/alternates";
 import { getActiveEvents } from "@/lib/cms/events";
 import { getHomeData } from "@/lib/cms/home";
@@ -17,12 +18,15 @@ import { getAvailablePaths } from "@/lib/cms/pages";
 import { getLayoutData } from "@/lib/cms/layout";
 import { getDateLabels } from "@/lib/date-labels";
 import { type HomeSection, latestNotice, nextService, sectionOrder, upcomingHolyDays } from "@/lib/home";
+import { churchJsonLd, eventJsonLd } from "@/lib/jsonld";
+import { siteOrigin } from "@/lib/seo";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  return { alternates: localeAlternates(locale) };
+  const { homepage } = await getHomeData(locale as Locale);
+  return { description: homepage.hero?.subheading || undefined, alternates: localeAlternates(locale) };
 }
 
 /**
@@ -80,6 +84,12 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <main id="main">
+      <JsonLd
+        data={[
+          churchJsonLd(settings, siteOrigin(), locale),
+          ...[service, ...holyDays].filter((o) => o !== null).map((o) => eventJsonLd(o, settings, siteOrigin(), locale)),
+        ].filter((d) => d !== null)}
+      />
       {/* Every page needs an h1; without a hero it is the welcome line. */}
       {!showHero && (
         <div className="mx-auto max-w-site px-gutter pt-12">

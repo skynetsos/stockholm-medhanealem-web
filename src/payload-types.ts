@@ -1378,6 +1378,10 @@ export interface SiteSetting {
    */
   logo?: (number | null) | Media;
   /**
+   * Shown when a page without its own picture is shared (Facebook, WhatsApp, Telegram …). A real church photo, landscape; it is cropped to 1200 × 630. Needs "Permission to publish".
+   */
+  shareImage?: (number | null) | Media;
+  /**
    * Turn on once Swedish content is reviewed (Phase 3).
    */
   swedishPublic?: boolean | null;
@@ -1624,6 +1628,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   churchName?: T;
   shortName?: T;
   logo?: T;
+  shareImage?: T;
   swedishPublic?: T;
   address?:
     | T

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { type CalendarEntry, CalendarMonth } from "@/components/worship/CalendarMonth";
 import { localeAlternates } from "@/i18n/alternates";
 import { getActiveEvents } from "@/lib/cms/events";
@@ -9,6 +10,9 @@ import { getLayoutData } from "@/lib/cms/layout";
 import { getDateLabels } from "@/lib/date-labels";
 import { formatIsoDate, stockholmDate } from "@/lib/ethiopian-calendar";
 import { expandEvents } from "@/lib/events/expand";
+import { upcomingOccurrences } from "@/lib/home";
+import { eventJsonLd } from "@/lib/jsonld";
+import { siteOrigin } from "@/lib/seo";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -53,8 +57,12 @@ export default async function CalendarPage({ params }: Props) {
     location: o.event.location || settings.defaultLocation || null,
   }));
 
+  // Structured data for the dates of the next 60 days (up to 50), for search results (D-023).
+  const upcoming = upcomingOccurrences(events, new Date(), { days: 60, limit: 50 });
+
   return (
     <main id="main" className="mx-auto max-w-site px-gutter py-12">
+      <JsonLd data={upcoming.map((o) => eventJsonLd(o, settings, siteOrigin(), locale))} />
       <h1>{t("calendar")}</h1>
       <p className="mb-6 mt-2">
         {/* An API route, not a page: no language prefix; the language is a parameter. */}

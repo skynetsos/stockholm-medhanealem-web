@@ -8,6 +8,7 @@ import * as migration_20261019_182222_galleries_videos_posts_homepage from './20
 import * as migration_20261019_184921_homepage_without_announcement_bar from './20261019_184921_homepage_without_announcement_bar';
 import * as migration_20261020_172506_site_settings_map_location from './20261020_172506_site_settings_map_location';
 import * as migration_20261020_182918_inquiries from './20261020_182918_inquiries';
+import * as migration_20261021_143613_site_settings_share_image from './20261021_143613_site_settings_share_image';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261020_182918_inquiries.up,
     down: migration_20261020_182918_inquiries.down,
-    name: '20261020_182918_inquiries'
+    name: '20261020_182918_inquiries',
+  },
+  {
+    up: migration_20261021_143613_site_settings_share_image.up,
+    down: migration_20261021_143613_site_settings_share_image.down,
+    name: '20261021_143613_site_settings_share_image'
   },
 ];

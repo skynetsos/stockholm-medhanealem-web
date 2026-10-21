@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { stockholmInstant, stockholmWallTime } from "../../src/lib/stockholm-time";
+import { stockholmInstant, stockholmIsoWithOffset, stockholmWallTime } from "../../src/lib/stockholm-time";
 
 const d = (year: number, month: number, day: number) => ({ year, month, day });
 const t = (hour: number, minute = 0) => ({ hour, minute, second: 0 });
@@ -27,5 +27,12 @@ describe("stockholmInstant", () => {
   it("defaults to midnight and round-trips with stockholmWallTime", () => {
     expect(stockholmInstant(d(2027, 1, 19)).toISOString()).toBe("2027-01-18T23:00:00.000Z");
     expect(stockholmWallTime("2027-07-04T09:30:00.000Z")).toEqual({ date: d(2027, 7, 4), hour: 11, minute: 30, second: 0 });
+  });
+});
+
+describe("stockholmIsoWithOffset", () => {
+  it("writes Stockholm local time with +01:00 in winter and +02:00 in summer", () => {
+    expect(stockholmIsoWithOffset("2026-10-25T07:00:00.000Z")).toBe("2026-10-25T08:00:00+01:00");
+    expect(stockholmIsoWithOffset("2027-07-04T06:00:00.000Z")).toBe("2027-07-04T08:00:00+02:00");
   });
 });
