@@ -257,6 +257,13 @@ Caddy uses its own local certificate for `localhost`, so browsers show a warning
 - Locally, all mail goes to Mailpit: <http://localhost:8025>.
 - Production needs `RESEND_API_KEY` (domain verified in Resend), `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` (Cloudflare dashboard → Turnstile) and `IP_HASH_SALT`. Without the Turnstile secret, production refuses every message.
 
+## Importing photos
+
+- **Church images from the old site** (`src/seed/assets/`): `pnpm payload run scripts/import-site-assets.ts` imports the church photo and logo (publication permission ticked) and sets the Site settings logo, the Default share image and the Home page hero image. Safe to run again: images already in Media (same file name) are reused.
+- **Photos from Facebook or a phone:** save them into one folder with descriptive file names (e.g. `timket-2026-procession.jpg`; the name becomes the alt text), then
+  `$env:PHOTO_DIR="C:\Users\yonas\Pictures\medhanealem-photos\facebook"; pnpm payload run scripts/import-photos.ts`.
+  Each photo is converted to JPEG, turned upright and stripped of all metadata (EXIF/GPS); photos under 800 px wide are skipped and listed. They arrive with **Permission to publish** and **Shows children** unticked and are collected in the unpublished gallery "ፎቶዎች / Photos" for review. Safe to run again. HEIC (iPhone) files can't be read here: save them as JPG.
+
 ## Editor guide
 
 Added in Phase 1 (how to add an event, announcement and gallery), per spec §6 Phase 1 task 12.
