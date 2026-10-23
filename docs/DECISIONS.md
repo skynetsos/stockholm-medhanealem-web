@@ -9,11 +9,18 @@
 - **Long cache for media files:** files served through Payload (`/api/media/file/…`) must send `Cache-Control: public, max-age=31536000, immutable` (filenames are unique) so Cloudflare caches them; verify in the Lighthouse run. Requested by Biruk 2026-10-19. Note: only images with publication permission are publicly readable, so caching them publicly is safe; if permission is later withdrawn, the file must also be renamed/re-uploaded or purged from Cloudflare.
 
 ### Phase 3 — polish
+- **Mark fallback text with its language:** Amharic text shown on an English/Swedish page because the translation is missing should carry `lang="am"` (WCAG 3.1.2). Found in task 9 (D-024).
 - **`containsMinors` enforcement** (spec Phase 3 task 3): e.g. require a guardian-permission note before an image showing children can be marked publishable. Phase 1 already keeps every image without "Permission to publish" off the public site (D-009).
 - **404 page with the CMS header and footer.** Today the 404 shows only the translated message and a home link (D-007). Requested by Biruk 2026-10-18.
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### D-024 — Accessibility pass (2026-10-23, Phase 1 task 9)
+- **axe in Playwright** (`tests/e2e/a11y.spec.ts`, WCAG 2.2 A/AA rules) on every page template with the e2e content — home (am/en), CMS page, Our Church, Clergy, Our Faith, teaching, Sacraments, baptism guidance, weekly services, calendar (am/en), Sunday School, department, News, post, Media, gallery, videos, Visit (am/en), 404 — at desktop and phone size, plus the open lightbox, the contact form with errors and the open phone menu. Result: **0 issues of any severity** (the exit checklist asks for 0 serious/critical). Runs in CI with the other e2e tests; a serious or critical issue fails the build.
+- **Fixed:** the calendar used `role="grid"` without the row structure that role requires — now a plain table of buttons (keyboard use unchanged), the chosen day marked with `aria-pressed`. And an image without alt text in the page's language was rendered with no `alt` at all: images now appear only when they have alt text in that language (alt is required in Amharic in the admin, so in practice this affects only untranslated alt text in English/Swedish; the address list for galleries still checks only publication permission).
+- **Already in place (checked):** skip link first in the tab order and moving focus to the content (new test); visible focus ring (cream on dark backgrounds); landmarks (header, navigation, main, footer); every form field labelled, errors linked with `aria-describedby` and summarised; touch targets ≥ 44 px; colour contrast pinned by `tests/unit/design-tokens.test.ts`; reduced motion respected.
+- **Known limit, for Phase 3:** when a page has no English/Swedish translation, the Amharic fallback text is not marked `lang="am"` (WCAG 3.1.2). Fixing it needs Payload to tell us which fields fell back.
 
 ### D-023 — SEO (2026-10-21, Phase 1 task 8)
 - **Only production is indexed.** `robots.txt` lets search engines in only when `SITE_ENV=production` (and keeps them out of `/admin` and `/api/`); otherwise it disallows everything and every page carries `noindex, nofollow`. Read at runtime, so the same image works for staging and production.
@@ -227,4 +234,5 @@ Found by the production-build check deferred from task 5.
 | `@playwright/test` (dev) | E2E smoke tests named in spec §9 (Phase 0 task 9). |
 | `zod` | Form validation named in spec (§1.2 `lib/validation (zod)`, Phase 1 task 6). Pinned to 4.6.5 (a month old; 4.6.7 was 8 days old). |
 | `@payloadcms/email-resend` | Spec's email provider (Resend) as Payload's email adapter. Same version as Payload. |
+| `@axe-core/playwright` (dev) | Accessibility checks in the e2e tests, named in spec Phase 1 task 9 ("Run axe in Playwright"). 4.13.0 (two months old). |
 | `@payloadcms/email-nodemailer` | SMTP adapter for local development and CI (Mailpit), used only when no Resend key is set. Same version as Payload. |

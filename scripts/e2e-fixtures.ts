@@ -97,6 +97,8 @@ const image = await payload.create({
   data: { alt: "E2E photo", permissionObtained: true },
   file: { data: photo, mimetype: "image/jpeg", name: `e2e-photo-${Date.now()}.jpg`, size: photo.length },
 });
+// Alt text in Amharic too (the default language), as the admin requires for real content.
+await payload.update({ collection: "media", id: image.id, ...ctx, locale: "am", data: { alt: "የሙከራ ፎቶ" } });
 await payload.create({
   collection: "galleries",
   ...ctx,

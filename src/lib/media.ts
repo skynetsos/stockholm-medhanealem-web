@@ -1,9 +1,12 @@
 import type { Media } from "../payload-types";
 
-/** A populated, publicly readable Media document, or null (unpopulated id, missing, or no file). */
+/**
+ * A populated, publicly readable Media document, or null (unpopulated id, missing, no file, or no
+ * alt text in this language — every image on the site has alt text, CLAUDE.md / WCAG 1.1.1).
+ */
 export function publicMedia(value: number | Media | null | undefined): Media | null {
   if (!value || typeof value !== "object") return null;
-  if (!value.url || !value.permissionObtained) return null;
+  if (!value.url || !value.permissionObtained || !value.alt?.trim()) return null;
   return value;
 }
 

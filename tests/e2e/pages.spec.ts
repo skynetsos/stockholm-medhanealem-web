@@ -72,11 +72,11 @@ test("weekly services list, calendar and iCal feed", async ({ page, request }) =
   await expect(page.getByText(/Every Sunday · 8:00\s*–\s*11:30\s*AM/)).toBeVisible();
 
   await page.goto("/en/worship/calendar");
-  const today = page.locator('td[aria-selected="true"] button');
+  const today = page.locator('button[aria-pressed="true"]');
   await expect(today).toHaveAttribute("aria-current", "date");
   await today.focus();
   await page.keyboard.press("PageDown");
-  await expect(page.locator('td[aria-selected="true"] button')).toBeFocused();
+  await expect(page.locator('button[aria-pressed="true"]')).toBeFocused();
 
   const ics = await request.get("/api/ical?lang=en");
   expect(ics.headers()["content-type"]).toContain("text/calendar");

@@ -8,7 +8,6 @@ import { LAYOUT_TAG } from "../../hooks/revalidateLayout";
 import type { Page } from "../../payload-types";
 import { sectionPaths, worshipPaths } from "../content-paths";
 import { hasDepartmentContent } from "../departments";
-import { publicMedia } from "../media";
 import { pagePath } from "../pages";
 import { teachingPaths } from "../teachings";
 import { routing } from "../../i18n/routing";
@@ -50,7 +49,11 @@ export function getAvailablePaths(): Promise<string[]> {
             hasSundaySchoolIntro: pagePaths.includes("/sunday-school"),
             departments: departments.docs.map((d) => ({ slug: d.slug, hasContent: hasDepartmentContent(d) })),
             posts: posts.docs,
-            galleries: galleries.docs.map((g) => ({ slug: g.slug, hasPublicImage: (g.images ?? []).some((i) => publicMedia(i)) })),
+            // Permission only: alt text is checked per language when the page renders (publicMedia).
+            galleries: galleries.docs.map((g) => ({
+              slug: g.slug,
+              hasPublicImage: (g.images ?? []).some((i) => typeof i === "object" && Boolean(i.url && i.permissionObtained)),
+            })),
             hasVideos: videos.totalDocs > 0,
           }),
         ]),

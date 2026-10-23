@@ -31,6 +31,12 @@ describe("publicMedia", () => {
     expect(publicMedia(1)).toBeNull();
     expect(publicMedia(null)).toBeNull();
   });
+
+  it("hides an image that has no alt text in this language (WCAG 1.1.1)", () => {
+    expect(publicMedia({ ...base, alt: "" })).toBeNull();
+    expect(publicMedia({ ...base, alt: "   " })).toBeNull();
+    expect(publicMedia({ ...base, alt: null as unknown as string })).toBeNull();
+  });
 });
 
 describe("toSitePath", () => {

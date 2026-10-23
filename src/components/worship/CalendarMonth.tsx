@@ -149,7 +149,7 @@ export function CalendarMonth({
         </button>
       </div>
 
-      <table role="grid" aria-labelledby="calendar-caption" className="w-full table-fixed border-collapse">
+      <table aria-labelledby="calendar-caption" className="w-full table-fixed border-collapse">
         <caption id="calendar-caption" className="mb-2 text-start font-serif text-h3 text-primary" aria-live="polite">
           {caption}
         </caption>
@@ -171,7 +171,7 @@ export function CalendarMonth({
                 const items = byDay.get(iso) ?? [];
                 const isSelected = iso === selected;
                 return (
-                  <td key={iso} aria-selected={isSelected} className="border border-cream p-0 align-top">
+                  <td key={iso} className="border border-cream p-0 align-top">
                     <button
                       type="button"
                       ref={(el) => {
@@ -179,6 +179,7 @@ export function CalendarMonth({
                         else cells.current.delete(iso);
                       }}
                       tabIndex={isSelected ? 0 : -1}
+                      aria-pressed={isSelected}
                       aria-current={iso === today ? "date" : undefined}
                       aria-label={`${fullDate(iso)}, ${ethiopianFull(jdn)}: ${t("eventCount", { count: items.length })}`}
                       onClick={() => select(jdn)}
