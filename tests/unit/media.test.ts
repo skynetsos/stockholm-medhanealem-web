@@ -32,7 +32,7 @@ describe("publicMedia", () => {
     expect(publicMedia(null)).toBeNull();
   });
 
-  it("hides an image that has no alt text in this language (WCAG 1.1.1)", () => {
+  it("hides an image that has no alt text in any language (after the fallback, D-024; WCAG 1.1.1)", () => {
     expect(publicMedia({ ...base, alt: "" })).toBeNull();
     expect(publicMedia({ ...base, alt: "   " })).toBeNull();
     expect(publicMedia({ ...base, alt: null as unknown as string })).toBeNull();

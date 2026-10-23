@@ -2,7 +2,8 @@ import type { Media } from "../payload-types";
 
 /**
  * A populated, publicly readable Media document, or null (unpopulated id, missing, no file, or no
- * alt text in this language — every image on the site has alt text, CLAUDE.md / WCAG 1.1.1).
+ * alt text in any language — every image on the site has alt text, CLAUDE.md / WCAG 1.1.1). Missing
+ * translations of the alt text fall back to Amharic first (Media afterRead hook, D-024).
  */
 export function publicMedia(value: number | Media | null | undefined): Media | null {
   if (!value || typeof value !== "object") return null;

@@ -141,3 +141,37 @@ describe("staff access (spec §3)", () => {
     expect(doc.permissionObtained).toBe(false);
   });
 });
+
+describe("alt text fallback for the public site (D-024)", () => {
+  async function uploadIn(locale: "am" | "en", name: string, alt: string) {
+    const data = await png("#0b3d2e");
+    const doc = await payload.create({
+      collection: "media",
+      overrideAccess: true,
+      locale,
+      data: { alt, permissionObtained: true },
+      file: { data, mimetype: "image/png", name: `${name}-${Date.now()}.png`, size: data.length },
+    });
+    created.push(doc.id);
+    return doc;
+  }
+  const publicAlt = async (id: number, locale: "am" | "en" | "sv") =>
+    (await payload.findByID({ collection: "media", id, locale, overrideAccess: false })).alt;
+
+  it("falls back to Amharic, and to another language when Amharic is missing too", async () => {
+    const amharic = await uploadIn("am", "alt-am", "የቤተ ክርስቲያን ፎቶ");
+    expect(await publicAlt(amharic.id, "en")).toBe("የቤተ ክርስቲያን ፎቶ");
+    expect(await publicAlt(amharic.id, "sv")).toBe("የቤተ ክርስቲያን ፎቶ");
+
+    const englishOnly = await uploadIn("en", "alt-en", "Church photo");
+    expect(await publicAlt(englishOnly.id, "am")).toBe("Church photo");
+    expect(await publicAlt(englishOnly.id, "sv")).toBe("Church photo");
+  });
+
+  it("leaves a missing translation empty for staff, so the admin never saves a fallback", async () => {
+    const englishOnly = await uploadIn("en", "alt-staff", "Church photo");
+    const editor = await staff(`alt-editor-${Date.now()}@test.local`, ["editor"]);
+    const asEditor = await payload.findByID({ collection: "media", id: englishOnly.id, locale: "am", user: editor, overrideAccess: false });
+    expect(asEditor.alt ?? null).toBeNull();
+  });
+});

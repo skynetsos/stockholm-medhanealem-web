@@ -1,7 +1,8 @@
-import type { Access, CollectionConfig } from "payload";
+import type { Access, CollectionAfterReadHook, CollectionConfig } from "payload";
 
 import { hasRole, hasRoleAccess, isStaff, type Role } from "../access";
 import { revalidateLayoutOnChange } from "../hooks/revalidateLayout";
+import { defaultLocale, locales } from "../i18n/locales";
 
 /** Roles that manage media (spec §3: CRUD). Translators may only read; finance has no access. */
 const MEDIA_EDITORS: Role[] = ["super_admin", "clergy_approver", "office_coordinator", "editor"];
@@ -14,6 +15,30 @@ const MEDIA_READERS: Role[] = [...MEDIA_EDITORS, "translator"];
 const readMedia: Access = ({ req }) => {
   if (isStaff(req) && hasRole(req.user as { roles?: string[] }, ...MEDIA_READERS)) return true;
   return { permissionObtained: { equals: true } };
+};
+
+/**
+ * Alt text for the public site when it is missing in the requested language (D-024): Payload already
+ * falls back to Amharic; this also covers alt text written only in English or Swedish. Order:
+ * Amharic, then the other languages. Only for public reads, so the admin still shows a missing
+ * translation as empty (and never saves a fallback into it). An image with no alt text in any
+ * language keeps an empty alt and is not shown (publicMedia).
+ */
+const altFallback: CollectionAfterReadHook = async ({ doc, req }) => {
+  if (req.user || req.context?.altLookup || req.locale === "all") return doc;
+  if (typeof doc.alt !== "string" ? doc.alt != null : doc.alt.trim() !== "") return doc;
+  const all = await req.payload.findByID({
+    collection: "media",
+    id: doc.id,
+    locale: "all",
+    depth: 0,
+    overrideAccess: true,
+    select: { alt: true },
+    context: { altLookup: true },
+  });
+  const alts = (all.alt ?? {}) as unknown as Partial<Record<string, string | null>>;
+  const fallback = [defaultLocale, ...locales].map((code) => alts[code]?.trim()).find(Boolean);
+  return fallback ? { ...doc, alt: fallback } : doc;
 };
 
 export const Media: CollectionConfig = {
@@ -31,7 +56,7 @@ export const Media: CollectionConfig = {
     update: hasRoleAccess(...MEDIA_EDITORS),
     delete: hasRoleAccess(...MEDIA_EDITORS),
   },
-  hooks: { afterChange: [revalidateLayoutOnChange] },
+  hooks: { afterChange: [revalidateLayoutOnChange], afterRead: [altFallback] },
   upload: {
     // Files live in S3 (see payload.config.ts) and are served through Payload, so the read
     // access rule above also protects the file URLs.
