@@ -1,5 +1,13 @@
 # Content Checklist
 
+> **Open items carried from Phase 1** (Phase 1 accepted conditionally by Biruk on 2026-10-27:
+> code-complete):
+> 1. **Task 7 — WordPress import:** waiting for the WXR export of dev.medhanealem.se. The import
+>    script will also be able to read the public pages of the site if no export arrives. Rows marked
+>    "WP" below are what it can prefill.
+> 2. **Committee content review:** every page reviewed and signed off (table at the end of this
+>    file), including the privacy policy's legal review.
+
 What the church needs to write, translate, photograph or decide before launch (spec Phase 1 task 11).
 Every row says **where in the admin** it is done. The site never shows placeholder text: anything
 missing is simply hidden, and a page without content answers "page not found".
