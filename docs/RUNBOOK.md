@@ -275,7 +275,80 @@ In Git Bash on Windows, prefix with `MSYS_NO_PATHCONV=1` so `/am` isn't turned i
 
 ## Editor guide
 
-Added in Phase 1 (how to add an event, announcement and gallery), per spec §6 Phase 1 task 12.
+For editors and office staff (spec Phase 1 task 12). The admin is at `/admin`; everything is entered
+in **Stockholm time**. What still needs writing is listed in `docs/CONTENT-CHECKLIST.md`.
+
+### Things that apply everywhere
+
+- **Languages.** Amharic is the main language. Write it first, then switch the **Locale** menu at the
+  top of the edit screen to English (and later Swedish) and translate the same item. A missing
+  translation shows the Amharic text instead; nothing is left blank on the site.
+- **Saving shows it.** Events, announcements and galleries appear on the site as soon as they are
+  saved (and published, where there is a checkbox). A brand-new *page* can take up to 30 seconds.
+- **Photos.** Every image needs alt text (a short description for people who can't see it) and only
+  appears on the site with **Permission to publish** ticked. Tick it only when the church has
+  permission — from parents or guardians too if children are recognisable (**Shows children**).
+  Never upload photos of other churches. If permission is withdrawn later: delete the image and ask
+  the administrator to clear it from the Cloudflare cache.
+- **Drafts and approval.** Pages, news posts and teachings have **Save draft** and **Publish**.
+  Translators can only save drafts. Teachings are published by a clergy member (approval is
+  recorded automatically); a change by anyone else needs approving again.
+
+### Add an event (Collections → Events)
+
+1. **Create new.** Enter the **Title** (Amharic), choose the **Type**: weekly service, monthly feast,
+   annual feast, fast, special event or notice. The type decides where it is listed: weekly services
+   on *Service times*, monthly feasts on *Monthly feasts*, annual feasts and fasts on *Annual feasts*,
+   and everything on the calendar.
+2. **Start** and **End** (date and time, Stockholm). For a feast day or a fast without times, tick
+   **All day**; a fast that lasts weeks has its last day as **End**.
+3. **Repeats:**
+   - *Does not repeat* — one date (Fasika and other movable feasts: one event per year).
+   - *Every week (same weekday)* — e.g. Sunday Kidase: start on the first Sunday at 08:00, end
+     11:30. The time stays 08:00 in summer and winter.
+   - *Every Ethiopian month (same day)* — e.g. Medhanealem on the 27th. The Ethiopian day is taken
+     from the start date; check it in the field that appears.
+   - *Every Ethiopian year (same month and day)* — fixed feasts such as Timket (Tir 11) or Meskel.
+   - **Repeat until** (optional) ends a series.
+4. **Location** only if it isn't the usual place (the default comes from Site settings);
+   **Livestream link** if this event is streamed; **Description** for a short note.
+5. **Featured** (right-hand side) puts it among the holy days on the home page.
+6. **Save.** Then switch **Locale** to English and translate the title and description.
+
+**One Sunday is different** (no Kidase, a different time, a guest preacher): open the series, go to
+**Changes to single dates → Add**, pick the **date**, and choose *Cancel this date*, *Move this
+date* (enter the **New start** and, if needed, **New end**) or *Add a notice for this date*. Add a
+**note** explaining it (translate it too). The rest of the series is untouched. A cancelled date
+stays on the calendar, struck through, with the note.
+
+**The whole series stops:** tick **Cancelled** (right-hand side) — every date shows as cancelled —
+or set **Repeat until**. Delete an event only if it was entered by mistake.
+
+### Add an announcement (Collections → Announcements)
+
+1. **Create new.** **Title** and **Body** in Amharic (then English via **Locale**).
+2. **Show from** — when it appears (now by default). **Hide after** — when it disappears by itself;
+   leave empty to keep it until you remove it.
+3. **Urgent** puts it in the gold bar at the top of **every page** while it is shown — for
+   cancellations and changes people must not miss. Remove the tick (or let it expire) afterwards.
+4. **Pinned** keeps it as the announcement on the home page even when newer ones arrive.
+5. **Save.**
+
+### Add a photo gallery (Media, then Collections → Galleries)
+
+1. **Upload the photos** in **Media → Create new** (or several at once with bulk upload): for each
+   one, **alt** text (Amharic, then English), optional **caption** and **credit**, and **Permission
+   to publish** only when the church has permission. JPEG, PNG, WebP or AVIF; no SVG.
+2. **Galleries → Create new:** **Title**, **Slug** (the address: `timket-2027` →
+   `/media/galleries/timket-2027`; lower-case letters, digits and hyphens), **Date**, optional
+   **Description**, then add the photos under **Images**.
+3. Tick **Published** (right-hand side) and **Save**. A gallery can only be published when at least
+   one of its photos has permission; photos without it stay hidden. The newest gallery also appears
+   on the home page.
+4. Translate the title and description via **Locale**.
+
+Photos from Facebook or a phone can be imported in one go by the administrator (see *Importing
+photos* above); they arrive unticked in the gallery "ፎቶዎች / Photos" for review.
 
 ## Troubleshooting
 
