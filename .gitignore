@@ -45,3 +45,6 @@ backups/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Lighthouse output (pnpm lighthouse)
+lighthouse-reports/

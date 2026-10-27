@@ -2,6 +2,8 @@ import localFont from "next/font/local";
 
 // Self-hosted variable fonts (see src/fonts/README.md). Each exposes a CSS variable that the
 // Tailwind font stacks in globals.css combine, so Ethiopic and Latin text each get their own font.
+// The two Ethiopic fonts are declared in globals.css instead (served from /fonts so Amharic pages
+// can preload them, D-025); the Latin ones are here.
 //
 // unicode-range tells the browser which characters each file covers, so a page only downloads the
 // files for scripts it actually contains (an English page never fetches the 200 KB Ethiopic font).
@@ -10,18 +12,9 @@ import localFont from "next/font/local";
 //   Ethiopic: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF
 //   Latin:    the Fontsource "latin" subset range (Basic Latin, Latin-1 incl. å ä ö, punctuation)
 
-export const notoSansEthiopic = localFont({
-  src: "../fonts/NotoSansEthiopic-Variable.woff2",
-  weight: "100 900",
-  display: "swap",
-  preload: false,
-  declarations: [{ prop: "unicode-range", value: "U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF" }],
-  variable: "--font-noto-sans-ethiopic",
-});
-
 export const inter = localFont({
   src: "../fonts/Inter-Latin-Variable.woff2",
-  weight: "100 900",
+  weight: "400 700",
   display: "swap",
   preload: false,
   declarations: [
@@ -34,18 +27,9 @@ export const inter = localFont({
   variable: "--font-inter",
 });
 
-export const notoSerifEthiopic = localFont({
-  src: "../fonts/NotoSerifEthiopic-Variable.woff2",
-  weight: "100 900",
-  display: "swap",
-  preload: false,
-  declarations: [{ prop: "unicode-range", value: "U+1200-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FF" }],
-  variable: "--font-noto-serif-ethiopic",
-});
-
 export const sourceSerif = localFont({
   src: "../fonts/SourceSerif4-Latin-Variable.woff2",
-  weight: "200 900",
+  weight: "400 700",
   display: "swap",
   preload: false,
   declarations: [
@@ -58,6 +42,6 @@ export const sourceSerif = localFont({
   variable: "--font-source-serif",
 });
 
-export const fontVariables = [notoSansEthiopic, inter, notoSerifEthiopic, sourceSerif]
+export const fontVariables = [inter, sourceSerif]
   .map((font) => font.variable)
   .join(" ");

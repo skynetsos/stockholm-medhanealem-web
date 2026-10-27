@@ -66,14 +66,22 @@ describe("palette (spec §5)", () => {
 
 describe("fonts", () => {
   it.each([
-    "NotoSansEthiopic-Variable.woff2",
-    "NotoSerifEthiopic-Variable.woff2",
-    "Inter-Latin-Variable.woff2",
-    "SourceSerif4-Latin-Variable.woff2",
+    "public/fonts/noto-sans-ethiopic-v1.woff2",
+    "public/fonts/noto-serif-ethiopic-v1.woff2",
+    "src/fonts/Inter-Latin-Variable.woff2",
+    "src/fonts/SourceSerif4-Latin-Variable.woff2",
   ])("%s is self-hosted with its licence", (file) => {
-    const bytes = readFileSync(`src/fonts/${file}`);
+    const bytes = readFileSync(file);
     expect(bytes.subarray(0, 4).toString("ascii")).toBe("wOF2");
     expect(existsSync("src/fonts/README.md")).toBe(true);
+  });
+
+  it("the Ethiopic fonts declared in the CSS are the files in public/fonts (D-025)", () => {
+    for (const url of css.match(/url\("(\/fonts\/[^"]+)"\)/g) ?? []) {
+      const file = url.slice(5, -2);
+      expect(existsSync(`public${file}`), file).toBe(true);
+    }
+    expect(css.match(/url\("\/fonts\//g)).toHaveLength(2);
   });
 
   it("font stacks list Latin, Ethiopic, then Abyssinica SIL fallback", () => {

@@ -21,7 +21,8 @@
     "user:reset-mfa": "payload run scripts/reset-mfa.ts",
     "payload": "payload",
     "generate:types": "payload generate:types",
-    "generate:importmap": "payload generate:importmap"
+    "generate:importmap": "payload generate:importmap",
+    "lighthouse": "node scripts/lighthouse.mjs"
   },
   "engines": {
     "node": ">=22 <23"
@@ -59,6 +60,7 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "15.4.11",
+    "lighthouse": "13.5.0",
     "pg": "8.20.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",

@@ -46,16 +46,21 @@ export default async function CalendarPage({ params }: Props) {
     from: { year: today.year, month: today.month, day: 1 },
     to: { year: lastMonthEnd.getUTCFullYear(), month: lastMonthEnd.getUTCMonth() + 1, day: lastMonthEnd.getUTCDate() },
   };
-  const entries: CalendarEntry[] = expandEvents(events, range).map((o) => ({
-    key: `${o.event.id}-${o.start}`,
-    title: o.event.title,
-    date: formatIsoDate(o.date),
-    endDate: formatIsoDate(o.endDate),
-    time: o.allDay ? null : labels.time(o),
-    status: o.status,
-    note: o.note,
-    location: o.event.location || settings.defaultLocation || null,
-  }));
+  const defaultLocation = settings.defaultLocation || null;
+  // Compact: optional fields only when set (13 months of these go to the browser, task 10).
+  const entries: CalendarEntry[] = expandEvents(events, range).map((o) => {
+    const endDate = formatIsoDate(o.endDate);
+    const location = o.event.location && o.event.location !== defaultLocation ? o.event.location : undefined;
+    return {
+      title: o.event.title,
+      date: formatIsoDate(o.date),
+      ...(endDate !== formatIsoDate(o.date) && { endDate }),
+      ...(!o.allDay && { time: labels.time(o) }),
+      ...(o.status !== "scheduled" && { status: o.status }),
+      ...(o.note && { note: o.note }),
+      ...(location && { location }),
+    };
+  });
 
   // Structured data for the dates of the next 60 days (up to 50), for search results (D-023).
   const upcoming = upcomingOccurrences(events, new Date(), { days: 60, limit: 50 });
@@ -72,6 +77,7 @@ export default async function CalendarPage({ params }: Props) {
       </p>
       <CalendarMonth
         entries={entries}
+        defaultLocation={defaultLocation}
         today={formatIsoDate(today)}
         firstMonth={formatIsoDate(range.from).slice(0, 7)}
         lastMonth={formatIsoDate(range.to).slice(0, 7)}

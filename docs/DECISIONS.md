@@ -4,10 +4,6 @@
 
 ## Deferred work (by phase)
 
-### Phase 1 — task 10 (performance)
-- **Send each page only the UI text it needs:** `NextIntlClientProvider` currently passes every message (all namespaces) to the browser on every page. Limit it to the namespaces client components use (common, gallery, video, calendar, events, visit). Found in 5e.
-- **Long cache for media files:** files served through Payload (`/api/media/file/…`) must send `Cache-Control: public, max-age=31536000, immutable` (filenames are unique) so Cloudflare caches them; verify in the Lighthouse run. Requested by Biruk 2026-10-19. Note: only images with publication permission are publicly readable, so caching them publicly is safe; if permission is later withdrawn, the file must also be renamed/re-uploaded or purged from Cloudflare.
-
 ### Phase 3 — polish
 - **Mark fallback text with its language:** Amharic text shown on an English/Swedish page because the translation is missing should carry `lang="am"` (WCAG 3.1.2). Found in task 9 (D-024).
 - **`containsMinors` enforcement** (spec Phase 3 task 3): e.g. require a guardian-permission note before an image showing children can be marked publishable. Phase 1 already keeps every image without "Permission to publish" off the public site (D-009).
@@ -15,6 +11,14 @@
 - **Amharic text for the admin MFA screens** (enrol, verify, recovery codes, reset). Today they are English-only (`src/i18n/admin.ts`). Payload admin has no built-in Amharic, so this means adding `am` custom translations and enabling the language for the admin UI; text needs native review. Requested by Biruk 2026-10-18.
 
 ## Resolved decisions
+
+### D-025 — Performance (2026-10-27, Phase 1 task 10)
+- **Result (Lighthouse 13.5, default mobile profile, production build, e2e content):** home (am) 91, home (en) 92–93, calendar 90–91, teaching page 91; accessibility 100, best practices 96, SEO 92–100 everywhere (SEO 92 on pages without a description, e.g. a home page without hero subheading). Run with `pnpm lighthouse` against a production server with `SITE_ENV=production` (otherwise the noindex of D-023 lowers SEO on purpose). Before the work: 73–75.
+- **Fonts were the main cost** (blocking them gave 98). The four self-hosted variable fonts are now **trimmed** to the weights the site uses (400–700) and, for Ethiopic, the Ethiopic block U+1200–139F: 473 KB → 224 KB (`scripts/fonts/trim-fonts.py`, fonttools — a build tool, not a dependency). The two **Ethiopic fonts are preloaded on Amharic pages only**: they are served from `public/fonts/` (versioned names, `Cache-Control: public, max-age=31536000, immutable`) and declared in `globals.css`, because `next/font` can only preload for every language; English/Swedish pages still never download them unless Ethiopic text appears. This changes D-005 ("nothing preloaded") for Amharic pages.
+- **Payload's `Critical-CH` header** (colour scheme hint for its admin) made Chrome load every first public page twice (~0.6 s on a slow connection) and split caches by colour scheme: now limited to `/admin`.
+- **Media files** (`/api/media/file/…`): `public, max-age=31536000, immutable` for anonymous requests (they can only get images with publication permission), `private, no-store` for signed-in staff (who may see private images), so Cloudflare can never cache a private image. Requested by Biruk. **If publication permission is later withdrawn**, the image may stay in Cloudflare's and browsers' caches: delete it in the admin and purge its URL in Cloudflare (or upload it again under a new name).
+- **Less data per page:** the browser receives only the 7 message namespaces client components use (guarded by a unit test), and the calendar sends its 13 months of dates in a compact form (default location once, optional fields only when set).
+- **Note:** real content (a hero photo, longer pages) will move these numbers; re-run `pnpm lighthouse` on staging before launch (Phase 1 exit checklist).
 
 ### D-024 — Accessibility pass (2026-10-23, Phase 1 task 9)
 - **axe in Playwright** (`tests/e2e/a11y.spec.ts`, WCAG 2.2 A/AA rules) on every page template with the e2e content — home (am/en), CMS page, Our Church, Clergy, Our Faith, teaching, Sacraments, baptism guidance, weekly services, calendar (am/en), Sunday School, department, News, post, Media, gallery, videos, Visit (am/en), 404 — at desktop and phone size, plus the open lightbox, the contact form with errors and the open phone menu. Result: **0 issues of any severity** (the exit checklist asks for 0 serious/critical). Runs in CI with the other e2e tests; a serious or critical issue fails the build.
@@ -234,5 +238,6 @@ Found by the production-build check deferred from task 5.
 | `@playwright/test` (dev) | E2E smoke tests named in spec §9 (Phase 0 task 9). |
 | `zod` | Form validation named in spec (§1.2 `lib/validation (zod)`, Phase 1 task 6). Pinned to 4.6.5 (a month old; 4.6.7 was 8 days old). |
 | `@payloadcms/email-resend` | Spec's email provider (Resend) as Payload's email adapter. Same version as Payload. |
+| `lighthouse` (dev) | Performance/SEO checks named in spec Phase 1 task 10 ("Lighthouse CI on home, calendar, a teaching page"), run with `pnpm lighthouse`. 13.5.0 (over a month old). |
 | `@axe-core/playwright` (dev) | Accessibility checks in the e2e tests, named in spec Phase 1 task 9 ("Run axe in Playwright"). 4.13.0 (two months old). |
 | `@payloadcms/email-nodemailer` | SMTP adapter for local development and CI (Mailpit), used only when no Resend key is set. Same version as Payload. |

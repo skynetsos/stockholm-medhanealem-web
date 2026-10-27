@@ -1,6 +1,33 @@
 @import "tailwindcss";
 
 /*
+ * Ethiopic fonts (trimmed Noto Sans/Serif Ethiopic, D-025). Served from /fonts so Amharic pages can
+ * preload them (PublicDocument); English/Swedish pages download them only if Ethiopic text appears
+ * (unicode-range). The Latin fonts come from next/font (src/styles/fonts.ts). Bump the -v1 file
+ * names when the files change: they are cached for a year.
+ */
+@font-face {
+  font-family: "Noto Sans Ethiopic Site";
+  src: url("/fonts/noto-sans-ethiopic-v1.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-139F;
+}
+@font-face {
+  font-family: "Noto Serif Ethiopic Site";
+  src: url("/fonts/noto-serif-ethiopic-v1.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-139F;
+}
+:root {
+  --font-noto-sans-ethiopic: "Noto Sans Ethiopic Site";
+  --font-noto-serif-ethiopic: "Noto Serif Ethiopic Site";
+}
+
+/*
  * Design tokens (spec §5). Palette pending committee confirmation (DECISIONS: spec §10 #2).
  * Contrast rules are enforced by tests/unit/design-tokens.test.ts:
  *   - ink, muted, primary, error: OK as text on cream and white (>= 4.5:1)

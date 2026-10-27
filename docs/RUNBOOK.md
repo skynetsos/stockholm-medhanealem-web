@@ -264,6 +264,15 @@ Caddy uses its own local certificate for `localhost`, so browsers show a warning
   `$env:PHOTO_DIR="C:\Users\yonas\Pictures\medhanealem-photos\facebook"; pnpm payload run scripts/import-photos.ts`.
   Each photo is converted to JPEG, turned upright and stripped of all metadata (EXIF/GPS); photos under 800 px wide are skipped and listed. They arrive with **Permission to publish** and **Shows children** unticked and are collected in the unpublished gallery "ፎቶዎች / Photos" for review. Safe to run again. HEIC (iPhone) files can't be read here: save them as JPG.
 
+## Performance check (Lighthouse)
+
+`pnpm lighthouse` runs Lighthouse (mobile profile) on the home, calendar and a teaching page and fails
+below 90 for performance, accessibility or SEO. Against a local production build:
+`pnpm build && pnpm test:e2e:prepare`, start the server with `SITE_ENV=production` on port 3100,
+then `pnpm lighthouse` (reports in `lighthouse-reports/`). Against staging:
+`LH_BASE_URL=https://staging.example LH_PAGES=/am,/am/worship/calendar,/am/our-faith/<slug> pnpm lighthouse`.
+In Git Bash on Windows, prefix with `MSYS_NO_PATHCONV=1` so `/am` isn't turned into a Windows path.
+
 ## Editor guide
 
 Added in Phase 1 (how to add an event, announcement and gallery), per spec §6 Phase 1 task 12.

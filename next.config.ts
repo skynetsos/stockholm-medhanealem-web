@@ -13,4 +13,21 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: process.env.DEV_ALLOWED_ORIGINS?.split(",").map((origin) => origin.trim()),
 };
 
-export default withPayload(withNextIntl(nextConfig), { devBundleServerPackages: false });
+const config = withPayload(withNextIntl(nextConfig), { devBundleServerPackages: false });
+
+/**
+ * Payload sends `Critical-CH: Sec-CH-Prefers-Color-Scheme` (plus Accept-CH/Vary) on every path for
+ * its admin theme. On the public site that makes Chrome load each first page twice (a retry with
+ * the hint, ~0.6 s on a slow phone connection, found by Lighthouse in task 10) and splits caches by
+ * colour scheme. Keep that rule for the admin only.
+ */
+export default {
+  ...config,
+  headers: async () => [
+    ...(await config.headers!()).map((rule) =>
+      rule.source === "/:path*" && rule.headers.some((h) => h.key === "Critical-CH") ? { ...rule, source: "/admin/:path*" } : rule,
+    ),
+    // Self-hosted Ethiopic fonts (D-025): versioned file names, so they can be cached for a year.
+    { source: "/fonts/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+  ],
+} satisfies NextConfig;

@@ -57,13 +57,22 @@ const clergy = await payload.create({
   ...ctx,
   data: { email: "e2e-clergy@example.org", password: crypto.randomUUID(), name: "E2E Clergy", roles: ["clergy_approver"], active: true },
 });
-const teaching = (category: string, slug: string, title: string) =>
-  payload.create({
+// In Amharic (the default language) and English, like real content.
+const teaching = async (category: string, slug: string, title: string) => {
+  const doc = await payload.create({
     collection: "teachings",
     ...ctx,
-    locale: "en",
-    data: { title, category, slug, body: text(`${title} text`), _status: "published", approvedBy: clergy.id } as never,
+    locale: "am",
+    data: { title: `${title} (am)`, category, slug, body: text(`${title} ጽሑፍ`), _status: "published", approvedBy: clergy.id } as never,
   });
+  await payload.update({
+    collection: "teachings",
+    id: doc.id,
+    ...ctx,
+    locale: "en",
+    data: { title, body: text(`${title} text`), _status: "published" } as never,
+  });
+};
 await teaching("fasting", "e2e-fasting", "Fasting test teaching");
 await teaching("christening", "e2e-baptism-guidance", "Baptism guidance test");
 

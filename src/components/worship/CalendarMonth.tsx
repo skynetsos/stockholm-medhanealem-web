@@ -5,16 +5,18 @@ import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react"
 
 import { formatIsoDate, gregorianToJdn, jdnToGregorian, parseIsoDate, toEthiopian } from "@/lib/ethiopian-calendar";
 
-/** One event date, prepared on the server (times already in Stockholm time). */
+/**
+ * One event date, prepared on the server (times already in Stockholm time). Kept compact: the page
+ * sends 13 months of these to the browser (task 10). Optional fields are left out when empty.
+ */
 export type CalendarEntry = {
-  key: string;
   title: string;
   date: string; // first day, YYYY-MM-DD (Stockholm)
-  endDate: string; // last day
-  time: string | null; // "08:00–11:30", null for all-day
-  status: "scheduled" | "cancelled" | "moved";
-  note: string | null;
-  location: string | null;
+  endDate?: string; // last day, only for multi-day events
+  time?: string; // "08:00–11:30"; absent for all-day
+  status?: "cancelled" | "moved"; // absent when scheduled
+  note?: string;
+  location?: string; // absent when it is the default location
 };
 
 type MonthKey = `ethiopianMonths.m${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13}`;
@@ -33,11 +35,13 @@ const weekdayIndex = (jdn: number) => jdn % 7;
  */
 export function CalendarMonth({
   entries,
+  defaultLocation,
   today,
   firstMonth,
   lastMonth,
 }: {
   entries: CalendarEntry[];
+  defaultLocation: string | null;
   today: string;
   firstMonth: string;
   lastMonth: string;
@@ -52,9 +56,10 @@ export function CalendarMonth({
 
   // Each entry on every day it covers (multi-day fasts).
   const byDay = useMemo(() => {
-    const map = new Map<string, CalendarEntry[]>();
-    for (const entry of entries) {
-      for (let d = jdnOf(entry.date); d <= jdnOf(entry.endDate); d++) {
+    const map = new Map<string, (CalendarEntry & { key: number })[]>();
+    for (const [key, item] of entries.entries()) {
+      const entry = { ...item, key };
+      for (let d = jdnOf(entry.date); d <= jdnOf(entry.endDate ?? entry.date); d++) {
         const iso = isoOf(d);
         map.set(iso, [...(map.get(iso) ?? []), entry]);
       }
@@ -234,7 +239,7 @@ export function CalendarMonth({
                   {entry.time ? `${entry.time} · ` : ""}
                   {entry.title}
                 </p>
-                {entry.status !== "scheduled" && (
+                {entry.status && (
                   <span
                     className={`inline-block rounded px-2 py-0.5 text-sm font-semibold ${
                       entry.status === "cancelled" ? "bg-error text-white" : "bg-primary text-cream"
@@ -243,9 +248,9 @@ export function CalendarMonth({
                     {te(entry.status)}
                   </span>
                 )}
-                {entry.location && (
+                {(entry.location || defaultLocation) && (
                   <p>
-                    <span className="font-semibold">{te("location")}:</span> {entry.location}
+                    <span className="font-semibold">{te("location")}:</span> {entry.location || defaultLocation}
                   </p>
                 )}
                 {entry.note && <p>{entry.note}</p>}
