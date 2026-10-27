@@ -69,9 +69,10 @@ export const BaptismRequests: CollectionConfig = {
   admin: {
     group: "Requests",
     useAsTitle: "reference",
-    defaultColumns: ["reference", "status", "candidate.category", "preferredPeriod", "internal.assignedTo", "createdAt"],
+    defaultColumns: ["reference", "status", "candidate.category", "preferredPeriod", "internal.assignedTo", "age"],
     listSearchableFields: ["reference", "applicant.name", "applicant.email"],
     description: "Christening requests from the website. Private: only office staff, clergy and super admins can see them.",
+    components: { beforeListTable: ["/components/admin/cases/CaseStatusFilters#CaseStatusFilters"] },
   },
   access: {
     read: hasRoleAccess("super_admin", "office_coordinator", "clergy_approver"),
@@ -235,6 +236,8 @@ export const BaptismRequests: CollectionConfig = {
         },
       ],
     },
+    // "Age" column in the list (days since the case was sent); nothing in the edit view.
+    { name: "age", type: "ui", label: "Age", admin: { components: { Cell: "/components/admin/cases/CaseAgeCell#CaseAgeCell" } } },
     stockholmDateTime({
       name: "archivedAt",
       access: { update: systemOnly },

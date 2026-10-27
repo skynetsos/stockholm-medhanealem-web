@@ -12,6 +12,13 @@
 
 ## Resolved decisions
 
+### D-031 — Case list and dashboard in the admin (2026-10-27, Phase 2 task 6a)
+- **Built into Payload's own screens, not separate views:** the standard list (search, columns, sorting, bulk actions, access control) gets a row of **status filters** above the table — All, Open, Assigned to me, then each status with its count — and an **Age** column (days since sent, Stockholm calendar days; a display-only `ui` field, no database change). Baptism requests and Inquiries both. "Open" = every status that still needs someone to act (baptism: new → confirmed; inquiries: new, in progress).
+- **Dashboard:** a "Requests" block at the top of the admin home (`beforeDashboard`; Payload's dashboard widgets are still experimental): open cases per status and "Assigned to me", per request type, each linking to the filtered list.
+- **Access:** counts are read with the viewer's own access (MFA included), so editors, translators and finance see neither the block nor the filters — tested. Filters are ordinary list addresses (`?where[and][0][status][equals]=…`), so they can be bookmarked.
+- **Checked in a browser** (headless Chromium, production build, office coordinator with MFA): dashboard counts, filters with the current one marked, "Assigned to me" listing only the user's open cases, Age column. An automated admin e2e test with MFA comes with the full-journey test (task 11).
+- **Admin texts** in `src/i18n/admin.ts` (`cases:*`), English like the rest of the admin.
+
 ### D-030 — Baptism emails (2026-10-27, Phase 2 task 5)
 - **Four emails:** on sending, an **acknowledgement** to the applicant and an **office notification**; on status **confirmed**, the date, time (Stockholm) and place; on **declined**, a short neutral notice with the office contact. A new confirmation is sent if a case is confirmed again (rescheduled).
 - **Language:** Amharic for requests made in Amharic, English otherwise — **Swedish requests get English** (spec: am/en). Swedish texts exist in `sv.json` (needed for key parity) for Phase 3. Texts live in the messages (`baptismEmails`), rendered with next-intl's `createTranslator`; the Amharic confirmation gives the Ethiopian date with the Gregorian one. The office notification is staff-facing English, like the contact form's.

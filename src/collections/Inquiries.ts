@@ -34,9 +34,10 @@ export const Inquiries: CollectionConfig = {
   admin: {
     group: "Requests",
     useAsTitle: "reference",
-    defaultColumns: ["reference", "type", "status", "name", "createdAt"],
+    defaultColumns: ["reference", "type", "status", "name", "assignedTo", "age"],
     listSearchableFields: ["reference", "name", "email"],
     description: "Messages from the website. Private: only office staff, clergy and super admins can see them.",
+    components: { beforeListTable: ["/components/admin/cases/CaseStatusFilters#CaseStatusFilters"] },
   },
   access: {
     read: hasRoleAccess("super_admin", "office_coordinator", "clergy_approver"),
@@ -108,6 +109,8 @@ export const Inquiries: CollectionConfig = {
         { name: "availability", type: "textarea", ...submitted },
       ],
     },
+    // "Age" column in the list (days since the case was sent); nothing in the edit view.
+    { name: "age", type: "ui", label: "Age", admin: { components: { Cell: "/components/admin/cases/CaseAgeCell#CaseAgeCell" } } },
     {
       name: "privacyAccepted",
       type: "checkbox",

@@ -46,6 +46,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
+      // Open requests by status, for staff who may read them (Phase 2 task 6).
+      beforeDashboard: ["/components/admin/cases/CaseDashboard#CaseDashboard"],
       views: {
         mfa: {
           Component: "/components/admin/mfa/MfaView#MfaView",
