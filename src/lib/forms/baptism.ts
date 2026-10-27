@@ -1,6 +1,7 @@
 import type { Payload } from "payload";
 
 import type { Locale } from "../../i18n/locales";
+import { notifyOfficeOfBaptism, sendApplicantEmail } from "../baptism/emails";
 import { stockholmInstant } from "../stockholm-time";
 import { type BaptismErrors, parseBaptism } from "./baptism-schema";
 import { createRateLimiter, verifyTurnstile } from "./security";
@@ -24,7 +25,8 @@ export type BaptismContext = { ipHash: string; locale: Locale; turnstileToken: s
  * 3. validation of all three steps (zod) → field errors;
  * 4. rate limit per IP hash (valid attempts only); 5. Turnstile;
  * 6. stores the request (status "new", reference BAP-YYYY-NNNN; a "created" audit entry is added by
- *    the collection). Emails to the applicant and the office follow in task 5.
+ *    the collection), then emails the applicant an acknowledgement and the office a notification
+ *    (task 5). A failed email never loses the request: it is in the admin either way.
  */
 export async function submitBaptismRequest(
   payload: Payload,
@@ -73,6 +75,8 @@ export async function submitBaptismRequest(
         source: { ipHash, userAgent: userAgent?.slice(0, 300) || null, submittedAt: now().toISOString(), submittedAt_tz: STOCKHOLM },
       },
     });
+    await sendApplicantEmail(payload, request, "acknowledgement");
+    await notifyOfficeOfBaptism(payload, request);
     return { status: "success", reference: request.reference ?? null };
   } catch (error) {
     payload.logger.error({ msg: "Baptism request: could not save", error: String(error) });

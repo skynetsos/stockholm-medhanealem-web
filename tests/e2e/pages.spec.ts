@@ -149,8 +149,9 @@ test("/support/volunteer waits for the form (task 6): 404", async ({ request }) 
 });
 
 // Baptism request form (Phase 2 task 4): the whole journey in a browser, with the reference at the end.
-test("a baptism request goes through the three steps and gets a reference", async ({ page }) => {
+test("a baptism request goes through the three steps and gets a reference", async ({ page, request }) => {
   test.setTimeout(60_000);
+  const startedAt = Date.now() - 1000;
   const f = en.baptismForm;
   await page.goto("/en/sacraments/baptism");
   await page.getByRole("link", { name: en.sacraments.requestCta }).click();
@@ -202,7 +203,14 @@ test("a baptism request goes through the three steps and gets a reference", asyn
   await page.getByRole("button", { name: f.submit }).click();
   const status = page.getByRole("status");
   await expect(status).toContainText(f.successTitle, { timeout: 20_000 });
-  await expect(status).toContainText(/BAP-\d{4}-\d{4,}/);
+  const reference = (await status.textContent())!.match(/BAP-\d{4}-\d+/)![0];
+
+  // Task 5: the applicant's acknowledgement and the office notification arrive (Mailpit).
+  const freshMail = async () => {
+    const search = await (await request.get(`http://localhost:8025/api/v1/search?query=${encodeURIComponent(`subject:"${reference}"`)}`)).json();
+    return (search.messages as { Created: string }[]).filter((m) => Date.parse(m.Created) >= startedAt).length;
+  };
+  await expect.poll(freshMail).toBe(2);
 });
 
 // Contact form (task 6): sends, shows the reference, and the office gets an email without the message.

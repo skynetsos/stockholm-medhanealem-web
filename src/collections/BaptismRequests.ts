@@ -4,6 +4,7 @@ import { hasRoleAccess, systemOnly } from "../access";
 import { hasStaffRole } from "../access/content";
 import { stockholmDateTime, stockholmDay } from "../fields/stockholmDate";
 import { locales } from "../i18n/locales";
+import { sendDecisionEmail } from "../lib/baptism/emails";
 import { BAPTISM_STATUS_VALUES } from "../lib/baptism/state";
 import { logCaseEvent } from "../lib/cases/events";
 import { enforceBaptismWorkflow, logCaseChanges } from "../lib/cases/hooks";
@@ -79,7 +80,7 @@ export const BaptismRequests: CollectionConfig = {
     delete: hasRoleAccess("super_admin"),
   },
   defaultSort: "-createdAt",
-  hooks: { beforeChange: [enforceBaptismWorkflow, setReference], afterChange: [logCreated, logChanges] },
+  hooks: { beforeChange: [enforceBaptismWorkflow, setReference], afterChange: [logCreated, logChanges, sendDecisionEmail] },
   fields: [
     {
       type: "row",

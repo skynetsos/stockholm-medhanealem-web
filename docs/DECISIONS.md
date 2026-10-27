@@ -12,6 +12,14 @@
 
 ## Resolved decisions
 
+### D-030 — Baptism emails (2026-10-27, Phase 2 task 5)
+- **Four emails:** on sending, an **acknowledgement** to the applicant and an **office notification**; on status **confirmed**, the date, time (Stockholm) and place; on **declined**, a short neutral notice with the office contact. A new confirmation is sent if a case is confirmed again (rescheduled).
+- **Language:** Amharic for requests made in Amharic, English otherwise — **Swedish requests get English** (spec: am/en). Swedish texts exist in `sv.json` (needed for key parity) for Phase 3. Texts live in the messages (`baptismEmails`), rendered with next-intl's `createTranslator`; the Amharic confirmation gives the Ethiopian date with the Gregorian one. The office notification is staff-facing English, like the contact form's.
+- **No personal data in email:** applicant emails contain the reference, the date/place and the office contact; the office email the reference and the admin link. Applicant emails have **Reply-To the public office email** (Site settings), so replies reach the office, not the no-reply sender.
+- **Logged** as CaseEvent `email_sent` ("Acknowledgement to the applicant (am)", "Office notification (2 recipients)") — without addresses, since the log outlives the personal data (task 8). The contact form's office notification is now logged on its inquiry the same way.
+- **Failures** never undo the request or the status change: a failed applicant email is logged as a note ("could not be sent: contact them directly"); a missing office address is logged too. Mail is sent while the request is saved, like the contact form; a queue isn't worth it at this volume.
+- **Place** in the confirmation: Site settings → Default event location, else the church address.
+
 ### D-029 — Baptism request form (2026-10-27, Phase 2 task 4)
 - **`/sacraments/baptism/request`**, three steps: About you (name, email, optional phone, connection to the parish) → Who is to be baptised (name, date of birth, infant/child/adult; parent or guardian with name, relationship and consent unless adult; optional preferred time and notes) → Review (everything entered, a "Change" button per step, the privacy notice and consent). No file uploads.
 - **Validation:** one zod schema per step (`src/lib/forms/baptism-schema.ts`), used by the browser on "Next" and by the server for all steps again; the server's errors open the first step that has one. Date of birth: a real day, from 1900, not in the future. An adult's guardian details are dropped even if typed before switching.

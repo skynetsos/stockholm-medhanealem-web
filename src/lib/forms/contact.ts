@@ -1,6 +1,8 @@
 import type { Payload } from "payload";
 
 import type { Locale } from "../../i18n/locales";
+import { logCaseEvent } from "../cases/events";
+import { adminLink, emailSettings, officeRecipients } from "../office-email";
 import { type ContactErrorCode, type ContactField, parseContact } from "./contact-schema";
 import { createRateLimiter, verifyTurnstile } from "./security";
 
@@ -64,14 +66,12 @@ export async function submitContact(
 /** Emails the office notification addresses (or the public office address) about a new inquiry. */
 async function notifyOffice(payload: Payload, id: number, reference: string) {
   try {
-    const settings = await payload.findGlobal({ slug: "site-settings", overrideAccess: true, depth: 0 });
-    const to = (settings.officeNotificationEmails ?? []).map((e) => e.email).filter(Boolean);
-    if (!to.length && settings.officeEmail) to.push(settings.officeEmail);
+    const to = officeRecipients(await emailSettings(payload));
     if (!to.length) {
       payload.logger.warn({ msg: "Contact form: no office email in Site settings; inquiry saved without notification", reference });
       return;
     }
-    const link = `${process.env.NEXT_PUBLIC_SERVER_URL}/admin/collections/inquiries/${id}`;
+    const link = adminLink("inquiries", id);
     // Staff-facing (the admin is in English); deliberately without the visitor's details.
     await payload.sendEmail({
       to,
@@ -84,6 +84,7 @@ async function notifyOffice(payload: Payload, id: number, reference: string) {
         "The message and the sender's details are only in the admin, so personal data stays out of email.",
       ].join("\n"),
     });
+    await logCaseEvent(payload, { collection: "inquiries", id, action: "email_sent", note: `Office notification (${to.length} recipients)` });
   } catch (error) {
     payload.logger.error({ msg: "Contact form: office email failed (inquiry is saved)", reference, error: String(error) });
   }

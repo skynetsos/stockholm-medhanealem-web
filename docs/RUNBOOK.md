@@ -257,6 +257,15 @@ Caddy uses its own local certificate for `localhost`, so browsers show a warning
 - Locally, all mail goes to Mailpit: <http://localhost:8025>.
 - Production needs `RESEND_API_KEY` (domain verified in Resend), `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` (Cloudflare dashboard → Turnstile) and `IP_HASH_SALT`. Without the Turnstile secret, production refuses every message.
 
+## Baptism requests
+
+- Turn requests on in **Settings → Baptism page → Requests open** (the button on /sacraments/baptism and the form appear; the form needs published christening guidance). Turn it off to pause new requests.
+- Requests appear under **Requests → Baptism requests**. Every change (status, assignment, notes, emails) is in **Requests → Case events**.
+- Emails (D-030), all with the reference only — never the applicant's or child's details:
+  - on sending: an acknowledgement to the applicant (Amharic or English, Reply-To the public office email) and a notification to the office notification addresses;
+  - on **Confirmed**: the date, time and place to the applicant (set the scheduled date first); on **Declined**: a short neutral notice. Place = Site settings → Default event location, else the address.
+- If an email to the applicant fails, the case events show "could not be sent: contact them directly". Set the public office email in Site settings so applicants can reply.
+
 ## Importing photos
 
 - **Church images from the old site** (`src/seed/assets/`): `pnpm payload run scripts/import-site-assets.ts` imports the church photo and logo (publication permission ticked) and sets the Site settings logo, the Default share image and the Home page hero image. Safe to run again: images already in Media (same file name) are reused.

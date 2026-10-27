@@ -238,5 +238,28 @@
       "closed": "Förfrågningar är pausade just nu. Kontakta kansliet.",
       "server": "Något gick fel. Försök igen senare eller mejla kansliet."
     }
+  },
+  "baptismEmails": {
+    "greeting": "Hej,",
+    "signature": "Med vänliga hälsningar,\n{churchName}",
+    "contact": "Frågor? Svara på det här mejlet eller kontakta kansliet: {contact}",
+    "contactReply": "Frågor? Svara på det här mejlet.",
+    "footer": "Du får det här mejlet eftersom en dopförfrågan skickades via vår webbplats. Ange referensnumret {reference} när du kontaktar oss.",
+    "acknowledgement": {
+      "subject": "Dopförfrågan mottagen ({reference})",
+      "received": "Tack. Vi har tagit emot din dopförfrågan. Ditt referensnummer är {reference}.",
+      "next": "Så här går det till: kansliet går igenom förfrågan och kontaktar dig. Prästerna går igenom varje förfrågan innan ett datum bestäms, så en förfrågan bekräftar ännu inget datum."
+    },
+    "confirmed": {
+      "subject": "Dopet är bekräftat ({reference})",
+      "text": "Vi bekräftar gärna dopet för förfrågan {reference}.",
+      "when": "När: {date} kl. {time}",
+      "where": "Var: {location}",
+      "prepare": "Kansliet hör av sig om något behöver förberedas inför dagen."
+    },
+    "declined": {
+      "subject": "Din dopförfrågan ({reference})",
+      "text": "Tyvärr kan vi inte gå vidare med dopförfrågan {reference} just nu. Kontakta gärna kansliet om du vill prata om det."
+    }
   }
 }

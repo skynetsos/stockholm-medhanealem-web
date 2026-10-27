@@ -238,5 +238,28 @@
       "closed": "Requests are paused at the moment. Please contact the office.",
       "server": "Something went wrong. Please try again later or email the office."
     }
+  },
+  "baptismEmails": {
+    "greeting": "Hello,",
+    "signature": "Kind regards,\n{churchName}",
+    "contact": "Questions? Reply to this email or contact the office: {contact}",
+    "contactReply": "Questions? Reply to this email.",
+    "footer": "You receive this email because a baptism request was sent on our website. Please quote the reference {reference} when you contact us.",
+    "acknowledgement": {
+      "subject": "Baptism request received ({reference})",
+      "received": "Thank you. We have received your baptism request. Your reference is {reference}.",
+      "next": "What happens next: the office will go through your request and contact you. The clergy review every request before a date is set, so a request does not yet confirm a date."
+    },
+    "confirmed": {
+      "subject": "Baptism confirmed ({reference})",
+      "text": "We are glad to confirm the baptism for request {reference}.",
+      "when": "When: {date} at {time}",
+      "where": "Where: {location}",
+      "prepare": "The office will tell you if anything needs to be prepared before the day."
+    },
+    "declined": {
+      "subject": "Your baptism request ({reference})",
+      "text": "We are sorry that we cannot go ahead with baptism request {reference} at this time. Please contact the office if you would like to talk about it."
+    }
   }
 }
