@@ -128,7 +128,9 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
-| Baptism (christening) guidance | Not started | Not started | Clergy | Category "Christening". WP (ክርስትና). The request form comes in Phase 2 |
+| Baptism (christening) guidance | Not started | Not started | Clergy | Category "Christening". WP (ክርስትና). Needed for /sacraments/baptism and the request form |
+| Baptism page: intro and "What to prepare" checklist | Not started | Not started | Clergy | **Settings → Baptism page** (D-028) |
+| Baptism page: **Requests open** | Off | — | Office | Turn on when the office is ready to receive requests; shows the button and the form (D-029) |
 | Marriage guidance | Not started | Not started | Clergy | Category "Marriage". WP (ጋብቻ) |
 | Fitihat guidance | Not started | Not started | Clergy | Category "Fitihat". WP (ፍትሃት) |
 
@@ -163,6 +165,7 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 |---|---|---|---|---|
 | Privacy policy `/privacy` | Not started | Not started | Committee + legal review | Must cover the contact form (name, email, phone, message), processors (hosting, Resend, Cloudflare/Turnstile, storage), retention, rights (D-022). Linked from the form once published |
 | Cookies `/cookies` | Not started | Not started | Committee | The site sets no tracking cookies; embeds load only after a click |
+| Privacy notice for baptism requests | Not started | Not started | Committee + legal review | Page, section "Other", slug `privacy-baptism`: shown in the form's last step (D-029). Must cover what the form stores (applicant, candidate incl. date of birth, guardian, notes), why, who sees it (office, clergy), retention (task 8) and rights. Without it the form links to `/privacy` |
 
 ## Committee sign-off
 

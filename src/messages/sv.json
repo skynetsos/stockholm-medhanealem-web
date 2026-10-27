@@ -172,5 +172,71 @@
       "rateLimited": "För många meddelanden från din anslutning. Försök igen om 10 minuter.",
       "server": "Något gick fel. Försök igen senare eller mejla expeditionen."
     }
+  },
+  "baptismForm": {
+    "title": "Ansök om dop",
+    "intro": "Tre korta steg. Kansliet kontaktar dig när du har skickat förfrågan.",
+    "noScript": "Formuläret kräver JavaScript. Du kan också kontakta kansliet:",
+    "contactOffice": "Kontakta kansliet",
+    "progress": "Förlopp",
+    "stepOf": "Steg {current} av {total}: {step}",
+    "steps": {
+      "applicant": "Om dig",
+      "candidate": "Den som ska döpas",
+      "review": "Granska och skicka"
+    },
+    "applicantName": "Ditt fullständiga namn",
+    "applicantEmail": "E-post",
+    "applicantPhone": "Telefon (valfritt)",
+    "parishRelationship": "Din koppling till församlingen",
+    "relationships": {
+      "member": "Medlem",
+      "regular": "Jag kommer regelbundet",
+      "new": "Ny i församlingen"
+    },
+    "candidateName": "Fullständigt namn på den som ska döpas",
+    "dateOfBirth": "Födelsedatum",
+    "category": "Den som ska döpas är",
+    "categories": {
+      "infant": "Ett spädbarn",
+      "child": "Ett barn",
+      "adult": "En vuxen"
+    },
+    "guardianTitle": "Förälder eller vårdnadshavare",
+    "guardianName": "Förälderns eller vårdnadshavarens namn",
+    "guardianRelationship": "Relation till barnet",
+    "guardianRelationshipHint": "Till exempel mamma, pappa eller vårdnadshavare.",
+    "guardianConsent": "Som förälder eller vårdnadshavare godkänner jag förfrågan.",
+    "preferredPeriod": "Önskad tid (valfritt)",
+    "preferredPeriodHint": "Till exempel ”december 2026”.",
+    "notes": "Något mer vi bör veta (valfritt)",
+    "reviewIntro": "Kontrollera dina uppgifter innan du skickar.",
+    "change": "Ändra",
+    "privacy": "Jag godkänner att kyrkan sparar uppgifterna för att hantera förfrågan.",
+    "privacyLink": "Så hanterar vi dina uppgifter",
+    "next": "Nästa",
+    "back": "Tillbaka",
+    "submit": "Skicka förfrågan",
+    "sending": "Skickar…",
+    "successTitle": "Tack, din förfrågan har skickats",
+    "successText": "Ditt referensnummer är {reference}. Kansliet kontaktar dig. En förfrågan bekräftar ännu inget datum.",
+    "successTextNoReference": "Kansliet kontaktar dig. En förfrågan bekräftar ännu inget datum.",
+    "honeypot": "Lämna fältet tomt",
+    "errorSummary": "Rätta följande:",
+    "errors": {
+      "required": "Fyll i fältet.",
+      "tooLong": "Det här är för långt.",
+      "email": "Ange en giltig e-postadress, till exempel namn@example.com.",
+      "phone": "Ange ett giltigt telefonnummer.",
+      "choice": "Välj ett alternativ.",
+      "date": "Ange ett giltigt datum.",
+      "dateFuture": "Födelsedatumet kan inte ligga i framtiden.",
+      "consent": "Föräldern eller vårdnadshavaren måste godkänna förfrågan.",
+      "privacy": "Godkänn, så att vi får spara din förfrågan.",
+      "spam": "Skräppostkontrollen är inte klar. Vänta en stund och skicka igen.",
+      "rateLimited": "För många förfrågningar från din anslutning. Försök igen om en timme.",
+      "closed": "Förfrågningar är pausade just nu. Kontakta kansliet.",
+      "server": "Något gick fel. Försök igen senare eller mejla kansliet."
+    }
   }
 }

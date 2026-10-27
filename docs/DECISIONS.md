@@ -12,6 +12,16 @@
 
 ## Resolved decisions
 
+### D-029 — Baptism request form (2026-10-27, Phase 2 task 4)
+- **`/sacraments/baptism/request`**, three steps: About you (name, email, optional phone, connection to the parish) → Who is to be baptised (name, date of birth, infant/child/adult; parent or guardian with name, relationship and consent unless adult; optional preferred time and notes) → Review (everything entered, a "Change" button per step, the privacy notice and consent). No file uploads.
+- **Validation:** one zod schema per step (`src/lib/forms/baptism-schema.ts`), used by the browser on "Next" and by the server for all steps again; the server's errors open the first step that has one. Date of birth: a real day, from 1900, not in the future. An adult's guardian details are dropped even if typed before switching.
+- **Protection** as the contact form (D-022): honeypot, Turnstile, **3 requests per hour per IP hash**, saved only through the server action (`overrideAccess`). The stored request keeps the IP hash, browser (user agent, max 300 characters) and time of sending (§2.12 `source`). The applicant's language is the page's language (emails in task 5 use Amharic or English).
+- **Open/closed:** the form exists only while **Requests open** is on (Baptism page settings, D-028) and the baptism page exists; otherwise its address is a real 404 (content-gated like D-018). The server also refuses requests when they are closed, for a form left open in a tab.
+- **Privacy notice:** the content of the CMS page section Other, slug `privacy-baptism` (unpublished pages aren't shown), plus a link to `/privacy` when published. Both are on the content checklist with legal review.
+- **Needs JavaScript (§10 default):** the steps, the guardian section and the review are built in the browser. Without JavaScript the page says so and links to the office (/visit). Keeping a no-JavaScript version of a three-step form would double the work for very few visitors.
+- **Accessibility:** a "Step n of 3" heading receives focus on every step change; the error summary receives focus and links to each field (radio groups to their first option); radio groups are fieldsets with a legend; progress list marks the current step with `aria-current`. axe: 0 issues on the form, its error states and the review (desktop and phone).
+- **Interface text:** new namespace `baptismForm` (am/en/sv). Amharic and Swedish are drafts for review (Q-004).
+
 ### D-028 — Baptism guidance page (2026-10-27, Phase 2 task 3)
 - **New global "Baptism page"** (Settings): optional intro, the "What to prepare" checklist (rows shared by all languages, text translated per language; empty rows hidden) and **"Requests open"** (off by default). The guidance itself stays in Teachings (category Christening), and the page still exists only when guidance is published (D-018).
 - **Who edits (§10 default; §3 doesn't list this global):** super admins, clergy approvers (they decide the requirements) and office coordinators (they open and pause requests). Translators translate the text in their languages but cannot add, remove or reorder rows or switch requests on/off. Editors cannot change it.

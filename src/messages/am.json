@@ -172,5 +172,71 @@
       "rateLimited": "ከግንኙነትዎ ብዙ መልእክቶች ተልከዋል። እባክዎ ከ10 ደቂቃ በኋላ እንደገና ይሞክሩ።",
       "server": "ችግር ተፈጥሯል። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለጽ/ቤቱ ኢሜይል ይላኩ።"
     }
+  },
+  "baptismForm": {
+    "title": "የክርስትና ጥያቄ",
+    "intro": "ሦስት አጭር ደረጃዎች። ጥያቄውን ከላኩ በኋላ ቢሮው ያገኝዎታል።",
+    "noScript": "ይህ ቅጽ JavaScript ያስፈልገዋል። ቢሮውንም ማግኘት ይችላሉ፦",
+    "contactOffice": "ቢሮውን ያግኙ",
+    "progress": "ሂደት",
+    "stepOf": "ደረጃ {current} ከ{total}፦ {step}",
+    "steps": {
+      "applicant": "ስለ እርስዎ",
+      "candidate": "የሚጠመቀው ሰው",
+      "review": "አረጋግጠው ይላኩ"
+    },
+    "applicantName": "ሙሉ ስምዎ",
+    "applicantEmail": "ኢሜይል",
+    "applicantPhone": "ስልክ (አማራጭ)",
+    "parishRelationship": "ከደብሩ ጋር ያለዎት ግንኙነት",
+    "relationships": {
+      "member": "አባል",
+      "regular": "በመደበኛነት እመጣለሁ",
+      "new": "ለደብሩ አዲስ ነኝ"
+    },
+    "candidateName": "የሚጠመቀው ሰው ሙሉ ስም",
+    "dateOfBirth": "የትውልድ ቀን",
+    "category": "የሚጠመቀው ሰው",
+    "categories": {
+      "infant": "ሕፃን",
+      "child": "ልጅ",
+      "adult": "አዋቂ"
+    },
+    "guardianTitle": "ወላጅ ወይም አሳዳጊ",
+    "guardianName": "የወላጅ ወይም የአሳዳጊ ስም",
+    "guardianRelationship": "ከልጁ ጋር ያለው ዝምድና",
+    "guardianRelationshipHint": "ለምሳሌ እናት፣ አባት ወይም አሳዳጊ።",
+    "guardianConsent": "እንደ ወላጅ ወይም አሳዳጊ በዚህ ጥያቄ እስማማለሁ።",
+    "preferredPeriod": "የሚመርጡት ጊዜ (አማራጭ)",
+    "preferredPeriodHint": "ለምሳሌ «ታኅሣሥ 2019»።",
+    "notes": "ልናውቀው የሚገባ ሌላ ነገር (አማራጭ)",
+    "reviewIntro": "ከመላክዎ በፊት መረጃዎን ያረጋግጡ።",
+    "change": "ይቀይሩ",
+    "privacy": "ቤተ ክርስቲያኗ ይህን ጥያቄ ለማስተናገድ እነዚህን መረጃዎች እንድታስቀምጥ እስማማለሁ።",
+    "privacyLink": "መረጃዎን እንዴት እንደምንይዝ",
+    "next": "ቀጣይ",
+    "back": "ተመለስ",
+    "submit": "ጥያቄውን ላክ",
+    "sending": "በመላክ ላይ…",
+    "successTitle": "እናመሰግናለን፤ ጥያቄዎ ተልኳል",
+    "successText": "የማጣቀሻ ቁጥርዎ {reference} ነው። ቢሮው ያገኝዎታል። ጥያቄ ገና ቀን አያረጋግጥም።",
+    "successTextNoReference": "ቢሮው ያገኝዎታል። ጥያቄ ገና ቀን አያረጋግጥም።",
+    "honeypot": "ይህን መስክ ባዶ ይተዉት",
+    "errorSummary": "እባክዎ የሚከተሉትን ያስተካክሉ፦",
+    "errors": {
+      "required": "እባክዎ ይህን መስክ ይሙሉ።",
+      "tooLong": "ይህ በጣም ረጅም ነው።",
+      "email": "ትክክለኛ የኢሜይል አድራሻ ያስገቡ፤ ለምሳሌ name@example.com።",
+      "phone": "ትክክለኛ ስልክ ቁጥር ያስገቡ።",
+      "choice": "እባክዎ አንዱን ይምረጡ።",
+      "date": "ትክክለኛ ቀን ያስገቡ።",
+      "dateFuture": "የትውልድ ቀን ወደፊት ሊሆን አይችልም።",
+      "consent": "ወላጅ ወይም አሳዳጊ በጥያቄው መስማማት አለባቸው።",
+      "privacy": "ጥያቄዎን እንድናስቀምጥ እባክዎ ይስማሙ።",
+      "spam": "የአይፈለጌ መልእክት ፍተሻው አላለቀም። እባክዎ ትንሽ ቆይተው እንደገና ይላኩ።",
+      "rateLimited": "ከግንኙነትዎ ብዙ ጥያቄዎች ተልከዋል። እባክዎ ከአንድ ሰዓት በኋላ እንደገና ይሞክሩ።",
+      "closed": "ጥያቄዎች ለጊዜው ቆመዋል። እባክዎ ቢሮውን ያግኙ።",
+      "server": "ችግር ተፈጥሯል። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለቢሮው ኢሜይል ይላኩ።"
+    }
   }
 }

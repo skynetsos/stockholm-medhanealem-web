@@ -6,7 +6,7 @@ import { getPayload } from "payload";
 import { CACHE_TAGS } from "../../hooks/revalidate";
 import { LAYOUT_TAG } from "../../hooks/revalidateLayout";
 import type { Page } from "../../payload-types";
-import { sectionPaths, worshipPaths } from "../content-paths";
+import { baptismRequestPaths, sectionPaths, worshipPaths } from "../content-paths";
 import { hasDepartmentContent } from "../departments";
 import { pagePath } from "../pages";
 import { teachingPaths } from "../teachings";
@@ -26,7 +26,7 @@ export function getAvailablePaths(): Promise<string[]> {
       const payload = await getPayload({ config });
       // The public sees published pages and teachings only.
       const read = { overrideAccess: false, depth: 0, pagination: false } as const;
-      const [pages, teachings, events, settings, departments, posts, galleries, videos] = await Promise.all([
+      const [pages, teachings, events, settings, departments, posts, galleries, videos, baptismPage] = await Promise.all([
         payload.find({ collection: "pages", ...read, select: { section: true, slug: true } }),
         payload.find({ collection: "teachings", ...read, select: { category: true, slug: true } }),
         // Event types aren't translated, so any language's list will do.
@@ -38,12 +38,15 @@ export function getAvailablePaths(): Promise<string[]> {
         // depth 1: only images that may be shown publicly are populated.
         payload.find({ collection: "galleries", overrideAccess: false, depth: 1, pagination: false, select: { slug: true, images: true } }),
         payload.count({ collection: "videos", overrideAccess: false }),
+        payload.findGlobal({ slug: "baptism-page", overrideAccess: false, depth: 0, select: { requestsOpen: true } }),
       ]);
       const pagePaths = pages.docs.map((p) => pagePath(p.section, p.slug)).filter((p): p is string => Boolean(p));
+      const faithPaths = teachingPaths(teachings.docs, pagePaths.includes("/our-faith"));
       return [
         ...new Set([
           ...pagePaths,
-          ...teachingPaths(teachings.docs, pagePaths.includes("/our-faith")),
+          ...faithPaths,
+          ...baptismRequestPaths(faithPaths, baptismPage.requestsOpen),
           ...worshipPaths(events, settings.livestreamUrl),
           ...sectionPaths({
             hasSundaySchoolIntro: pagePaths.includes("/sunday-school"),

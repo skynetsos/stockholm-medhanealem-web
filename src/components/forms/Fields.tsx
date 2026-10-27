@@ -97,6 +97,51 @@ export function Checkbox({
   );
 }
 
+/**
+ * Radio buttons in a fieldset whose legend is the question. The error summary links to the first
+ * option (`${id}-${options[0].value}`).
+ */
+export function RadioGroup({
+  id,
+  name,
+  label,
+  options,
+  value,
+  onChange,
+  error,
+  hint,
+  className,
+}: Common & {
+  name: string;
+  options: { value: string; label: string }[];
+  value?: string;
+  onChange?: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <fieldset id={id} aria-describedby={describedBy(id, error, hint)} className={className}>
+      <legend className="font-semibold">{label}</legend>
+      <div className="mt-2 flex flex-col gap-1">
+        {options.map((option) => (
+          <div key={option.value} className="flex min-h-11 items-center gap-3">
+            <input
+              id={`${id}-${option.value}`}
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={value === undefined ? undefined : value === option.value}
+              onChange={() => onChange?.(option.value)}
+              className="h-6 w-6 shrink-0 accent-primary"
+            />
+            <label htmlFor={`${id}-${option.value}`}>{option.label}</label>
+          </div>
+        ))}
+      </div>
+      <Message id={id} error={error} hint={hint} />
+    </fieldset>
+  );
+}
+
 /** List of errors at the top of the form, focused after a failed send; each links to its field. */
 export const ErrorSummary = forwardRef<
   HTMLDivElement,

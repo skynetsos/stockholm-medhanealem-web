@@ -4,10 +4,8 @@ import { CmsRichText } from "@/components/richtext/CmsRichText";
 import { Link } from "@/i18n/navigation";
 import type { BaptismPage } from "@/payload-types";
 import { baptismRequirements } from "@/lib/cms/sacraments";
+import { BAPTISM_REQUEST_PATH } from "@/lib/content-paths";
 import { hasRichText } from "@/lib/richtext";
-
-/** Where the request form lives (Phase 2 task 4). */
-export const BAPTISM_REQUEST_PATH = "/sacraments/baptism/request";
 
 /**
  * Top of /sacraments/baptism (spec Phase 2 task 3): intro, the "what to prepare" checklist, the

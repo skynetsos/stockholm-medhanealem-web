@@ -7,6 +7,13 @@ import { SACRAMENT_PAGES } from "./teachings";
  * imports: the middleware uses this.
  */
 
+/** The baptism request form (Phase 2 task 4). */
+export const BAPTISM_REQUEST_PATH = "/sacraments/baptism/request";
+
+/** The request form exists while requests are open and the baptism page itself exists (D-029). */
+export const baptismRequestPaths = (paths: readonly string[], requestsOpen: boolean | null | undefined) =>
+  requestsOpen && paths.includes("/sacraments/baptism") ? [BAPTISM_REQUEST_PATH] : [];
+
 /** Worship list pages and the event types each one shows. */
 export const WORSHIP_LISTS = {
   weekly: ["weekly_service"],
@@ -18,7 +25,10 @@ export type WorshipList = keyof typeof WORSHIP_LISTS;
 export function isContentGatedPath(path: string): boolean {
   const [first, second, third, ...more] = path.split("/").filter(Boolean);
   if (more.length) return false;
-  if (third !== undefined) return first === "media" && second === "galleries"; // /media/galleries/<slug>
+  if (third !== undefined) {
+    if (path === BAPTISM_REQUEST_PATH) return true;
+    return first === "media" && second === "galleries"; // /media/galleries/<slug>
+  }
   switch (first) {
     case "our-faith":
     case "sunday-school":

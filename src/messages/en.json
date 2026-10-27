@@ -172,5 +172,71 @@
       "rateLimited": "Too many messages from your connection. Please try again in 10 minutes.",
       "server": "Something went wrong. Please try again later or email the office."
     }
+  },
+  "baptismForm": {
+    "title": "Request a baptism",
+    "intro": "Three short steps. The office will contact you after you send the request.",
+    "noScript": "This form needs JavaScript. You can also contact the office:",
+    "contactOffice": "Contact the office",
+    "progress": "Progress",
+    "stepOf": "Step {current} of {total}: {step}",
+    "steps": {
+      "applicant": "About you",
+      "candidate": "Who is to be baptised",
+      "review": "Review and send"
+    },
+    "applicantName": "Your full name",
+    "applicantEmail": "Email",
+    "applicantPhone": "Phone (optional)",
+    "parishRelationship": "Your connection to the parish",
+    "relationships": {
+      "member": "Member",
+      "regular": "I attend regularly",
+      "new": "New to the parish"
+    },
+    "candidateName": "Full name of the person to be baptised",
+    "dateOfBirth": "Date of birth",
+    "category": "The person to be baptised is",
+    "categories": {
+      "infant": "An infant",
+      "child": "A child",
+      "adult": "An adult"
+    },
+    "guardianTitle": "Parent or guardian",
+    "guardianName": "Name of the parent or guardian",
+    "guardianRelationship": "Relationship to the child",
+    "guardianRelationshipHint": "For example mother, father or guardian.",
+    "guardianConsent": "As parent or guardian, I agree to this request.",
+    "preferredPeriod": "Preferred time (optional)",
+    "preferredPeriodHint": "For example “December 2026”.",
+    "notes": "Anything else we should know (optional)",
+    "reviewIntro": "Please check your details before sending.",
+    "change": "Change",
+    "privacy": "I agree that the church stores these details to handle this request.",
+    "privacyLink": "How we handle your data",
+    "next": "Next",
+    "back": "Back",
+    "submit": "Send request",
+    "sending": "Sending…",
+    "successTitle": "Thank you, your request has been sent",
+    "successText": "Your reference is {reference}. The office will contact you. A request does not yet confirm a date.",
+    "successTextNoReference": "The office will contact you. A request does not yet confirm a date.",
+    "honeypot": "Leave this field empty",
+    "errorSummary": "Please correct the following:",
+    "errors": {
+      "required": "Please fill in this field.",
+      "tooLong": "This is too long.",
+      "email": "Enter a valid email address, for example name@example.com.",
+      "phone": "Enter a valid phone number.",
+      "choice": "Please choose one.",
+      "date": "Enter a valid date.",
+      "dateFuture": "The date of birth can’t be in the future.",
+      "consent": "The parent or guardian must agree to the request.",
+      "privacy": "Please agree, so that we may store your request.",
+      "spam": "The spam check hasn’t finished. Please wait a moment and send again.",
+      "rateLimited": "Too many requests from your connection. Please try again in an hour.",
+      "closed": "Requests are paused at the moment. Please contact the office.",
+      "server": "Something went wrong. Please try again later or email the office."
+    }
   }
 }

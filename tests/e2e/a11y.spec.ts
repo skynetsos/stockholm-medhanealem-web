@@ -31,6 +31,8 @@ const PAGES = [
   "/en/our-faith/e2e-fasting",
   "/en/sacraments",
   "/en/sacraments/baptism",
+  "/en/sacraments/baptism/request",
+  "/am/sacraments/baptism/request",
   "/en/worship/weekly",
   "/en/worship/calendar",
   "/am/worship/calendar",
@@ -73,6 +75,32 @@ test("contact form with errors", async ({ page }) => {
   await page.getByRole("button", { name: en.contact.submit }).click();
   await expect(page.locator("#contact-errors")).toBeFocused();
   await expectAccessible(page, "contact form errors");
+});
+
+test("baptism request form: errors, guardian and review", async ({ page }) => {
+  const f = en.baptismForm;
+  await page.goto("/en/sacraments/baptism/request");
+  await page.getByRole("button", { name: f.next }).click();
+  await expect(page.locator("#baptism-errors")).toBeFocused();
+  await expectAccessible(page, "baptism form errors");
+
+  await page.getByLabel(f.applicantName).fill("Axe Applicant");
+  await page.getByLabel(f.applicantEmail).fill("axe@example.org");
+  await page.getByLabel(f.relationships.member).check();
+  await page.getByRole("button", { name: f.next }).click();
+  await page.getByLabel(f.categories.child).check();
+  await page.getByRole("button", { name: f.next }).click();
+  await expect(page.locator("#baptism-errors")).toBeFocused();
+  await expectAccessible(page, "baptism form guardian errors");
+
+  await page.getByLabel(f.candidateName).fill("Axe Child");
+  await page.getByLabel(f.dateOfBirth).fill("2024-01-15");
+  await page.getByLabel(f.guardianName).fill("Axe Applicant");
+  await page.getByLabel(f.guardianRelationship).fill("Mother");
+  await page.getByLabel(f.guardianConsent).check();
+  await page.getByRole("button", { name: f.next }).click();
+  await expect(page.getByRole("heading", { level: 2, name: new RegExp(f.steps.review) })).toBeFocused();
+  await expectAccessible(page, "baptism form review");
 });
 
 test("phone menu open", async ({ page }) => {

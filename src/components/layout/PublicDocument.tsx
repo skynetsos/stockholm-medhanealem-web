@@ -17,7 +17,7 @@ import { SiteHeader } from "./SiteHeader";
  * UI text the browser needs: only the namespaces client components use (task 10). Everything else
  * is rendered on the server, so it never has to travel to the browser as JSON.
  */
-const CLIENT_NAMESPACES = ["common", "calendar", "contact", "events", "gallery", "video", "visit"] as const;
+const CLIENT_NAMESPACES = ["common", "baptismForm", "calendar", "contact", "events", "gallery", "video", "visit"] as const;
 
 /** The Ethiopic fonts declared in globals.css, preloaded on Amharic pages (D-025). */
 const ETHIOPIC_FONTS = ["/fonts/noto-sans-ethiopic-v1.woff2", "/fonts/noto-serif-ethiopic-v1.woff2"];

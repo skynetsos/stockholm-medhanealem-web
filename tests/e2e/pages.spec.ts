@@ -148,6 +148,63 @@ test("/support/volunteer waits for the form (task 6): 404", async ({ request }) 
   expect((await request.get("/en/support/volunteer")).status()).toBe(404);
 });
 
+// Baptism request form (Phase 2 task 4): the whole journey in a browser, with the reference at the end.
+test("a baptism request goes through the three steps and gets a reference", async ({ page }) => {
+  test.setTimeout(60_000);
+  const f = en.baptismForm;
+  await page.goto("/en/sacraments/baptism");
+  await page.getByRole("link", { name: en.sacraments.requestCta }).click();
+  await expect(page).toHaveURL(/\/en\/sacraments\/baptism\/request$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(f.title);
+
+  // Step 1: errors first, then the applicant.
+  await page.getByRole("button", { name: f.next }).click();
+  const summary = page.locator("#baptism-errors");
+  await expect(summary).toBeFocused();
+  await expect(summary.getByRole("link")).toHaveText([
+    `${f.applicantName}: ${f.errors.required}`,
+    `${f.applicantEmail}: ${f.errors.required}`,
+    `${f.parishRelationship}: ${f.errors.choice}`,
+  ]);
+  await page.getByLabel(f.applicantName).fill("E2E Applicant");
+  await page.getByLabel(f.applicantEmail).fill("e2e-applicant@example.org");
+  await page.getByLabel(f.relationships.regular).check();
+  await page.getByRole("button", { name: f.next }).click();
+
+  // Step 2: the guardian appears for a child, not for an adult.
+  await expect(page.getByRole("heading", { level: 2, name: new RegExp(f.steps.candidate) })).toBeFocused();
+  await page.getByLabel(f.categories.adult).check();
+  await expect(page.getByLabel(f.guardianName)).toBeHidden();
+  await page.getByLabel(f.categories.infant).check();
+  await expect(page.getByLabel(f.guardianName)).toBeVisible();
+  await page.getByLabel(f.candidateName).fill("E2E Infant");
+  await page.getByLabel(f.dateOfBirth).fill("2026-05-02");
+  await page.getByLabel(f.guardianName).fill("E2E Applicant");
+  await page.getByLabel(f.guardianRelationship).fill("Father");
+  await page.getByLabel(f.guardianConsent).check();
+  await page.getByLabel(f.preferredPeriod).fill("December 2026");
+  await page.getByRole("button", { name: f.next }).click();
+
+  // Step 3: review, go back to change something, then consent and send.
+  const review = page.getByRole("region", { name: f.steps.candidate });
+  await expect(review).toContainText("E2E Infant");
+  await expect(review).toContainText(/2 May 2026|May 2, 2026/);
+  await review.getByRole("button", { name: new RegExp(f.change) }).click();
+  await page.getByLabel(f.candidateName).fill("E2E Infant Changed");
+  await page.getByRole("button", { name: f.next }).click();
+  await expect(review).toContainText("E2E Infant Changed");
+
+  await page.getByRole("button", { name: f.submit }).click();
+  await expect(summary).toContainText(f.errors.privacy);
+  await page.getByLabel(f.privacy).check();
+  // Turnstile (Cloudflare test key) passes by itself once the form is in use; give it a moment.
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
+  await page.getByRole("button", { name: f.submit }).click();
+  const status = page.getByRole("status");
+  await expect(status).toContainText(f.successTitle, { timeout: 20_000 });
+  await expect(status).toContainText(/BAP-\d{4}-\d{4,}/);
+});
+
 // Contact form (task 6): sends, shows the reference, and the office gets an email without the message.
 test("contact form sends a message and the office is notified", async ({ page, request }) => {
   test.setTimeout(60_000);
