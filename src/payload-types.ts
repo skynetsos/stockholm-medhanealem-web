@@ -31,7 +31,9 @@ export interface Config {
     galleries: Gallery;
     videos: Video;
     posts: Post;
+    'baptism-requests': BaptismRequest;
     inquiries: Inquiry;
+    'case-events': CaseEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -50,7 +52,9 @@ export interface Config {
     galleries: GalleriesSelect<false> | GalleriesSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    'baptism-requests': BaptismRequestsSelect<false> | BaptismRequestsSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
+    'case-events': CaseEventsSelect<false> | CaseEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -764,6 +768,79 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Christening requests from the website. Private: only office staff, clergy and super admins can see them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "baptism-requests".
+ */
+export interface BaptismRequest {
+  id: number;
+  reference?: string | null;
+  status: 'new' | 'info_needed' | 'clergy_review' | 'scheduling' | 'confirmed' | 'completed' | 'declined';
+  applicant: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    /**
+     * Emails to the applicant use this language (Amharic or English).
+     */
+    preferredLocale: 'am' | 'en' | 'sv';
+    parishRelationship?: ('member' | 'regular' | 'new') | null;
+  };
+  candidate: {
+    fullName?: string | null;
+    dateOfBirth?: string | null;
+    dateOfBirth_tz?: SupportedTimezones;
+    category: 'infant' | 'child' | 'adult';
+  };
+  guardian?: {
+    name?: string | null;
+    relationship?: string | null;
+    consentConfirmed?: boolean | null;
+  };
+  /**
+   * For example "December 2026".
+   */
+  preferredPeriod?: string | null;
+  notes?: string | null;
+  internal?: {
+    assignedTo?: (number | null) | User;
+    scheduledDate?: string | null;
+    scheduledDate_tz?: SupportedTimezones;
+    officeNotes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    clergyDecision?: ('approve' | 'decline' | 'needs_prep') | null;
+    clergyNotes?: string | null;
+  };
+  privacyAccepted?: boolean | null;
+  source?: {
+    ipHash?: string | null;
+    userAgent?: string | null;
+    submittedAt?: string | null;
+    submittedAt_tz?: SupportedTimezones;
+  };
+  /**
+   * Set by the retention job: personal data removed.
+   */
+  archivedAt?: string | null;
+  archivedAt_tz?: SupportedTimezones;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Messages from the website. Private: only office staff, clergy and super admins can see them.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -788,6 +865,34 @@ export interface Inquiry {
   interests?: string[] | null;
   availability?: string | null;
   privacyAccepted: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Audit log of every change to a request. Entries cannot be edited.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-events".
+ */
+export interface CaseEvent {
+  id: number;
+  request:
+    | {
+        relationTo: 'baptism-requests';
+        value: number | BaptismRequest;
+      }
+    | {
+        relationTo: 'inquiries';
+        value: number | Inquiry;
+      };
+  actorType: 'user' | 'system';
+  actor?: (number | null) | User;
+  action: 'created' | 'status_changed' | 'note_added' | 'email_sent' | 'assigned';
+  from?: string | null;
+  to?: string | null;
+  note?: string | null;
+  at: string;
+  at_tz: SupportedTimezones;
   updatedAt: string;
   createdAt: string;
 }
@@ -860,8 +965,16 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
+        relationTo: 'baptism-requests';
+        value: number | BaptismRequest;
+      } | null)
+    | ({
         relationTo: 'inquiries';
         value: number | Inquiry;
+      } | null)
+    | ({
+        relationTo: 'case-events';
+        value: number | CaseEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1299,6 +1412,63 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "baptism-requests_select".
+ */
+export interface BaptismRequestsSelect<T extends boolean = true> {
+  reference?: T;
+  status?: T;
+  applicant?:
+    | T
+    | {
+        name?: T;
+        email?: T;
+        phone?: T;
+        preferredLocale?: T;
+        parishRelationship?: T;
+      };
+  candidate?:
+    | T
+    | {
+        fullName?: T;
+        dateOfBirth?: T;
+        dateOfBirth_tz?: T;
+        category?: T;
+      };
+  guardian?:
+    | T
+    | {
+        name?: T;
+        relationship?: T;
+        consentConfirmed?: T;
+      };
+  preferredPeriod?: T;
+  notes?: T;
+  internal?:
+    | T
+    | {
+        assignedTo?: T;
+        scheduledDate?: T;
+        scheduledDate_tz?: T;
+        officeNotes?: T;
+        clergyDecision?: T;
+        clergyNotes?: T;
+      };
+  privacyAccepted?: T;
+  source?:
+    | T
+    | {
+        ipHash?: T;
+        userAgent?: T;
+        submittedAt?: T;
+        submittedAt_tz?: T;
+      };
+  archivedAt?: T;
+  archivedAt_tz?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "inquiries_select".
  */
 export interface InquiriesSelect<T extends boolean = true> {
@@ -1316,6 +1486,23 @@ export interface InquiriesSelect<T extends boolean = true> {
   interests?: T;
   availability?: T;
   privacyAccepted?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-events_select".
+ */
+export interface CaseEventsSelect<T extends boolean = true> {
+  request?: T;
+  actorType?: T;
+  actor?: T;
+  action?: T;
+  from?: T;
+  to?: T;
+  note?: T;
+  at?: T;
+  at_tz?: T;
   updatedAt?: T;
   createdAt?: T;
 }
