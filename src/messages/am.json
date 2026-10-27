@@ -102,7 +102,11 @@
     "baptism": "ክርስትና (ጥምቀት)",
     "marriage": "ጋብቻ",
     "fitihat": "ፍትሐት",
-    "onThisPage": "በዚህ ገጽ"
+    "onThisPage": "በዚህ ገጽ",
+    "requirementsTitle": "የሚያስፈልጉ ነገሮች",
+    "noticeTitle": "ማሳሰቢያ",
+    "baptismNotice": "ጥያቄ መላክ ቀን አያረጋግጥም። ቢሮው ያገኝዎታል፤ ቀኑ የሚወሰነው ካህናት ጥያቄውን ከመረመሩ በኋላ ብቻ ነው።",
+    "requestCta": "የክርስትና ጥያቄ ያቅርቡ"
   },
   "worship": {
     "weekly": "ሳምንታዊ አገልግሎቶች",

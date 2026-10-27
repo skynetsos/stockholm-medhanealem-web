@@ -12,6 +12,13 @@
 
 ## Resolved decisions
 
+### D-028 — Baptism guidance page (2026-10-27, Phase 2 task 3)
+- **New global "Baptism page"** (Settings): optional intro, the "What to prepare" checklist (rows shared by all languages, text translated per language; empty rows hidden) and **"Requests open"** (off by default). The guidance itself stays in Teachings (category Christening), and the page still exists only when guidance is published (D-018).
+- **Who edits (§10 default; §3 doesn't list this global):** super admins, clergy approvers (they decide the requirements) and office coordinators (they open and pause requests). Translators translate the text in their languages but cannot add, remove or reorder rows or switch requests on/off. Editors cannot change it.
+- **The notice** "a request does not confirm a date" is fixed interface text (am/en/sv in `src/messages`), not CMS content, so it can never be missing. Amharic and Swedish wording are drafts for review with the other interface text (Q-004).
+- **The "Request a baptism" button** appears only while requests are open, so it never points to a form that is closed — or, until task 4, doesn't exist yet. Task 4 gates the form on the same switch.
+- **E2E fix:** the production server also keeps the pages it rendered on demand (ISR) on disk in `.next/server/app/{am,en,sv}`; the e2e prepare step now clears them with the cached data, so an e2e run never sees a page rendered from an earlier database.
+
 ### D-027 — Baptism status workflow and audit log (2026-10-27, Phase 2 task 2)
 - **Transitions** exactly as the spec (`src/lib/baptism/state.ts`, pure functions; the admin's status buttons in task 6 will use `allowedTransitions`). A save that breaks them is refused with a message ("A request cannot go from … to …", "Only a clergy approver can change a request in clergy_review", "Set the scheduled date before confirming").
 - **Who moves a case (§10 default):** out of `clergy_review` only a **clergy approver** — the spec says "clergy_approver only", so a super admin without that role cannot decide either (give them the role if needed). Every other step: **office coordinators and super admins**; clergy approvers only decide. This matches the exit-checklist journey (office → clergy_review, clergy → scheduling, office → confirmed → completed).

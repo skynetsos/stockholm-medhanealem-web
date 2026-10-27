@@ -56,6 +56,19 @@ test("faith teachings and sacrament guidance are served", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 2, name: "Baptism guidance test" })).toBeVisible();
 });
 
+// Phase 2 task 3: checklist and notice from the Baptism page settings, request button while open.
+test("the baptism page shows what to prepare, the notice and the request button", async ({ page }) => {
+  await page.goto("/en/sacraments/baptism");
+  const checklist = page.getByRole("region", { name: en.sacraments.requirementsTitle });
+  await expect(checklist.getByRole("listitem")).toHaveText(["A godparentAn Orthodox Tewahedo Christian"]);
+  await expect(page.getByRole("complementary", { name: en.sacraments.noticeTitle })).toContainText(en.sacraments.baptismNotice);
+  await expect(page.getByRole("link", { name: en.sacraments.requestCta })).toHaveAttribute("href", "/en/sacraments/baptism/request");
+
+  // Untranslated rows fall back to Amharic like other content; the notice is always translated.
+  await page.goto("/sv/sacraments/baptism");
+  await expect(page.getByText("የክርስትና አባት/እናት")).toBeVisible();
+});
+
 for (const path of ["/en/our-faith/unknown", "/en/our-faith/e2e-baptism-guidance", "/en/sacraments/marriage"]) {
   test(`${path} without content gets the server-rendered 404`, async ({ request }) => {
     const response = await request.get(path);

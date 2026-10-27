@@ -69,12 +69,14 @@ export interface Config {
     navigation: Navigation;
     footer: Footer;
     homepage: Homepage;
+    'baptism-page': BaptismPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'baptism-page': BaptismPageSelect<false> | BaptismPageSelect<true>;
   };
   locale: 'am' | 'en' | 'sv';
   widgets: {
@@ -1808,6 +1810,49 @@ export interface Homepage {
   createdAt?: string | null;
 }
 /**
+ * Shown on /sacraments/baptism with the christening guidance (Content → Teachings).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "baptism-page".
+ */
+export interface BaptismPage {
+  id: number;
+  /**
+   * Shows the "Request a baptism" button and the request form. Turn off to pause new requests.
+   */
+  requestsOpen?: boolean | null;
+  /**
+   * Optional. Shown under the page title.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * A checklist for families, e.g. godparents, the candidate's documents. Hidden when empty.
+   */
+  requirements?:
+    | {
+        item: string;
+        detail?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -2024,6 +2069,24 @@ export interface HomepageSelect<T extends boolean = true> {
         heading?: T;
         text?: T;
         image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "baptism-page_select".
+ */
+export interface BaptismPageSelect<T extends boolean = true> {
+  requestsOpen?: T;
+  intro?: T;
+  requirements?:
+    | T
+    | {
+        item?: T;
+        detail?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

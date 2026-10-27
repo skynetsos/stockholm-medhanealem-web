@@ -34,6 +34,8 @@ for (const args of [["seed:base"], ["user:create-super-admin"], ["payload", "run
   const result = spawnSync("pnpm", args, { env, stdio: "inherit", shell: true });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
-// The production server keeps cached CMS data on disk; it belonged to the database just replaced.
+// The production server keeps cached CMS data and the pages it rendered on demand (ISR) on disk;
+// they belong to the database just replaced. Pages are rendered again on the first visit.
 rmSync(".next/cache/fetch-cache", { recursive: true, force: true });
+for (const locale of ["am", "en", "sv"]) rmSync(`.next/server/app/${locale}`, { recursive: true, force: true });
 console.log(`E2E database ready: ${e2eDb}`);

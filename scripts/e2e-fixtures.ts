@@ -122,5 +122,19 @@ await payload.create({
 // Contact form (task 6): where office notifications go.
 await payload.updateGlobal({ slug: "site-settings", ...ctx, data: { officeNotificationEmails: [{ email: "e2e-office@example.org" }] } });
 
+// Baptism page (Phase 2 task 3): a requirement in Amharic and English, requests open.
+const baptismPage = await payload.updateGlobal({
+  slug: "baptism-page",
+  ...ctx,
+  locale: "am",
+  data: { requestsOpen: true, requirements: [{ item: "የክርስትና አባት/እናት", detail: "ኦርቶዶክስ ተዋሕዶ" }] },
+});
+await payload.updateGlobal({
+  slug: "baptism-page",
+  ...ctx,
+  locale: "en",
+  data: { requirements: baptismPage.requirements!.map((r) => ({ id: r.id, item: "A godparent", detail: "An Orthodox Tewahedo Christian" })) },
+});
+
 console.log("E2E fixtures created");
 process.exit(0);

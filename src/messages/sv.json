@@ -102,7 +102,11 @@
     "baptism": "Dop",
     "marriage": "Äktenskap",
     "fitihat": "Fitihat (bön för de avlidna)",
-    "onThisPage": "På den här sidan"
+    "onThisPage": "På den här sidan",
+    "requirementsTitle": "Det här behöver ni förbereda",
+    "noticeTitle": "Observera",
+    "baptismNotice": "En förfrågan bekräftar inget datum. Kansliet kontaktar dig, och datumet bestäms först när prästerna har gått igenom förfrågan.",
+    "requestCta": "Ansök om dop"
   },
   "worship": {
     "weekly": "Veckans gudstjänster",

@@ -20,6 +20,7 @@ import { Posts } from "./collections/Posts";
 import { Teachings } from "./collections/Teachings";
 import { Users } from "./collections/Users";
 import { Videos } from "./collections/Videos";
+import { BaptismPage } from "./globals/BaptismPage";
 import { Footer } from "./globals/Footer";
 import { Homepage } from "./globals/Homepage";
 import { Navigation } from "./globals/Navigation";
@@ -57,7 +58,7 @@ export default buildConfig({
     translations: adminTranslations,
   },
   collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments, Galleries, Videos, Posts, BaptismRequests, Inquiries, CaseEvents],
-  globals: [SiteSettings, Navigation, Footer, Homepage],
+  globals: [SiteSettings, Navigation, Footer, Homepage, BaptismPage],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),
     defaultLocale,

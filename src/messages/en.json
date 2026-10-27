@@ -102,7 +102,11 @@
     "baptism": "Baptism (Christening)",
     "marriage": "Marriage",
     "fitihat": "Fitihat (prayer for the departed)",
-    "onThisPage": "On this page"
+    "onThisPage": "On this page",
+    "requirementsTitle": "What to prepare",
+    "noticeTitle": "Please note",
+    "baptismNotice": "Sending a request does not confirm a date. The office will contact you, and a date is set only after the clergy have reviewed the request.",
+    "requestCta": "Request a baptism"
   },
   "worship": {
     "weekly": "Weekly services",
