@@ -215,7 +215,7 @@ describe("baptism requests are private (spec §3)", () => {
 
 describe("case events are an immutable audit log (spec §2.13)", () => {
   it("staff read them; nobody creates them through the API; only super_admin changes or deletes them", async () => {
-    const [event] = (await payload.find({ collection: "case-events", ...as(office), where: { "request.value": { equals: caseId } } })).docs;
+    const [event] = (await payload.find({ collection: "case-events", ...as(office), where: { "request.value": { equals: caseId }, action: { equals: "created" } } })).docs;
     expect(event.action).toBe("created");
     expect((await payload.find({ collection: "case-events", ...as(clergy) })).totalDocs).toBeGreaterThan(0);
 

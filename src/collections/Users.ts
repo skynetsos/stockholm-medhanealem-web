@@ -1,6 +1,6 @@
-import { APIError, type CollectionConfig } from "payload";
+import { type Access, APIError, type CollectionConfig } from "payload";
 
-import { isSuperAdmin, isSuperAdminField, isSuperAdminOrSelf, ROLES, systemOnly } from "../access";
+import { hasRole, isStaff, isSuperAdmin, isSuperAdminField, isSuperAdminOrSelf, isSuperAdminRequest, PRIVILEGED_ROLES, ROLES, systemOnly } from "../access";
 import { localeNames, locales } from "../i18n/locales";
 import { mfaEndpoints } from "../lib/mfa/endpoints";
 import { MFA_SESSION_SECONDS } from "../lib/mfa/session";
@@ -12,6 +12,20 @@ const roleLabels: Record<(typeof ROLES)[number], string> = {
   editor: "Editor",
   translator: "Translator",
   finance: "Finance",
+};
+
+/**
+ * Office coordinators and clergy approvers assign requests to each other (spec §2.12/§2.14), so
+ * they may read the accounts of staff who handle requests (active, privileged roles) — nothing else
+ * about Users. Super admins read everyone; everyone reads themselves.
+ */
+const readUsers: Access = (args) => {
+  const { req } = args;
+  if (isSuperAdminRequest(req)) return true;
+  if (isStaff(req) && hasRole(req.user as { roles?: string[] }, "office_coordinator", "clergy_approver")) {
+    return { or: [{ id: { equals: req.user!.id } }, { and: [{ roles: { in: [...PRIVILEGED_ROLES] } }, { active: { not_equals: false } }] }] };
+  }
+  return isSuperAdminOrSelf(args);
 };
 
 /** Hidden MFA state: never returned by the API and never writable except by server code. */
@@ -31,6 +45,8 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "email", "roles", "active"],
+    // Only super admins manage accounts; others reach their own through "Account".
+    hidden: ({ user }) => !hasRole(user as { roles?: string[] }, "super_admin"),
   },
   access: {
     admin: ({ req }) => {
@@ -38,7 +54,7 @@ export const Users: CollectionConfig = {
       return Boolean(user && user.active !== false && user.roles?.length);
     },
     create: isSuperAdmin,
-    read: isSuperAdminOrSelf,
+    read: readUsers,
     update: isSuperAdminOrSelf,
     delete: isSuperAdmin,
     unlock: isSuperAdmin,

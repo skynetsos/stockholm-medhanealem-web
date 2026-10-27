@@ -2,6 +2,7 @@ import type { CollectionBeforeChangeHook, CollectionConfig } from "payload";
 
 import { hasRoleAccess, systemOnly } from "../access";
 import { locales } from "../i18n/locales";
+import { logCaseChanges } from "../lib/cases/hooks";
 import { nextReference } from "../lib/reference";
 
 /** Spec §2.14 inquiry types. Phase 1 uses "contact" (the Visit page form); the others come in Phase 2. */
@@ -44,7 +45,8 @@ export const Inquiries: CollectionConfig = {
     delete: hasRoleAccess("super_admin"),
   },
   defaultSort: "-createdAt",
-  hooks: { beforeChange: [setReference] },
+  // Status changes and assignments go to the audit log (CaseEvents); any status may follow any other.
+  hooks: { beforeChange: [setReference], afterChange: [logCaseChanges("inquiries", { assignedTo: "assignedTo" })] },
   fields: [
     {
       type: "row",

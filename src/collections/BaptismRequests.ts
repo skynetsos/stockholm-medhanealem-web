@@ -4,19 +4,29 @@ import { hasRoleAccess, systemOnly } from "../access";
 import { hasStaffRole } from "../access/content";
 import { stockholmDateTime, stockholmDay } from "../fields/stockholmDate";
 import { locales } from "../i18n/locales";
+import { BAPTISM_STATUS_VALUES } from "../lib/baptism/state";
 import { logCaseEvent } from "../lib/cases/events";
+import { enforceBaptismWorkflow, logCaseChanges } from "../lib/cases/hooks";
 import { nextReference } from "../lib/reference";
 
-/** Spec §2.12 statuses, in workflow order. Allowed transitions: src/lib/baptism/state.ts (task 2). */
-export const BAPTISM_STATUSES = [
-  { value: "new", label: "New" },
-  { value: "info_needed", label: "Information needed" },
-  { value: "clergy_review", label: "Clergy review" },
-  { value: "scheduling", label: "Scheduling" },
-  { value: "confirmed", label: "Confirmed" },
-  { value: "completed", label: "Completed" },
-  { value: "declined", label: "Declined" },
-] as const;
+/** Spec §2.12 statuses with admin labels. Allowed transitions: src/lib/baptism/state.ts. */
+const STATUS_LABELS: Record<(typeof BAPTISM_STATUS_VALUES)[number], string> = {
+  new: "New",
+  info_needed: "Information needed",
+  clergy_review: "Clergy review",
+  scheduling: "Scheduling",
+  confirmed: "Confirmed",
+  completed: "Completed",
+  declined: "Declined",
+};
+export const BAPTISM_STATUSES = BAPTISM_STATUS_VALUES.map((value) => ({ value, label: STATUS_LABELS[value] }));
+
+const logChanges = logCaseChanges("baptism-requests", {
+  assignedTo: "internal.assignedTo",
+  notes: { "internal.officeNotes": "Office notes updated", "internal.clergyNotes": "Clergy notes updated" },
+  decisions: { "internal.clergyDecision": "Clergy decision" },
+  dates: { "internal.scheduledDate": "Scheduled date" },
+});
 
 const setReference: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
   if (operation === "create" && !data.reference) data.reference = await nextReference(req.payload, "BAP");
@@ -69,7 +79,7 @@ export const BaptismRequests: CollectionConfig = {
     delete: hasRoleAccess("super_admin"),
   },
   defaultSort: "-createdAt",
-  hooks: { beforeChange: [setReference], afterChange: [logCreated] },
+  hooks: { beforeChange: [enforceBaptismWorkflow, setReference], afterChange: [logCreated, logChanges] },
   fields: [
     {
       type: "row",
@@ -81,7 +91,7 @@ export const BaptismRequests: CollectionConfig = {
           required: true,
           defaultValue: "new",
           index: true,
-          options: BAPTISM_STATUSES.map((s) => ({ ...s })),
+          options: BAPTISM_STATUSES,
           admin: { width: "50%" },
         },
       ],
