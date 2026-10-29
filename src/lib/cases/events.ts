@@ -3,7 +3,7 @@ import type { Payload, PayloadRequest } from "payload";
 import type { CaseEvent } from "../../payload-types";
 
 /** Spec §2.13 audit actions. */
-export const CASE_ACTIONS = ["created", "status_changed", "note_added", "email_sent", "assigned"] as const;
+export const CASE_ACTIONS = ["created", "status_changed", "note_added", "email_sent", "assigned", "archived"] as const;
 export type CaseAction = (typeof CASE_ACTIONS)[number];
 
 export type CaseCollection = "baptism-requests" | "inquiries";

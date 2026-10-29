@@ -892,7 +892,7 @@ export interface CaseEvent {
       };
   actorType: 'user' | 'system';
   actor?: (number | null) | User;
-  action: 'created' | 'status_changed' | 'note_added' | 'email_sent' | 'assigned';
+  action: 'created' | 'status_changed' | 'note_added' | 'email_sent' | 'assigned' | 'archived';
   from?: string | null;
   to?: string | null;
   note?: string | null;

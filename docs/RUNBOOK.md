@@ -267,6 +267,33 @@ Caddy uses its own local certificate for `localhost`, so browsers show a warning
   - on **Confirmed**: the date, time and place to the applicant (set the scheduled date first); on **Declined**: a short neutral notice. Place = Site settings → Default event location, else the address.
 - If an email to the applicant fails, the case events show "could not be sent: contact them directly". Set the public office email in Site settings so applicants can reply.
 
+## Retention of baptism requests
+
+Completed and declined baptism cases are **archived** a set number of months after they closed
+(spec Phase 2 task 8, D-035): names, contact details, date of birth, notes, IP hash and browser are
+removed; the reference, status, dates and the audit trail (without free-text notes) stay.
+
+- **How long:** Site settings → Requests & privacy → **Retention months (baptism)**, default 24.
+  The number is for the **legal review** to decide (CONTENT-CHECKLIST.md, Legal).
+- **Daily on the server** (`crontab -e` as the deploy user), after the backup:
+
+  ```cron
+  15 3 * * * curl -fsS -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= /opt/medhanealem/.env | cut -d= -f2-)" https://medhanealem.se/api/cron/retention >> /var/log/medhanealem-retention.log 2>&1
+  ```
+
+  The response lists the archived references (never personal data). Without a real `CRON_SECRET`
+  on the server the endpoint answers 503 and archives nothing.
+- **Check first / by hand:**
+
+  ```bash
+  pnpm retention:dry-run   # lists what would be archived, changes nothing
+  pnpm retention           # archives now
+  ```
+
+  or `POST /api/cron/retention?dryRun=1` with the secret.
+- Archiving can't be undone (the personal data is gone); restoring it would need a database backup
+  from before, which also expires (backups are kept 30 days).
+
 ## Importing photos
 
 - **Church images from the old site** (`src/seed/assets/`): `pnpm payload run scripts/import-site-assets.ts` imports the church photo and logo (publication permission ticked) and sets the Site settings logo, the Default share image and the Home page hero image. Safe to run again: images already in Media (same file name) are reused.

@@ -50,7 +50,8 @@ export type CaseLogFields = {
  */
 export function logCaseChanges(collection: CaseCollection, fields: CaseLogFields): CollectionAfterChangeHook {
   return async ({ doc, previousDoc, operation, req }) => {
-    if (operation !== "update") return doc;
+    // The retention job logs one "archived" entry instead of each cleared field (D-035).
+    if (operation !== "update" || (req.context as { retention?: boolean } | undefined)?.retention) return doc;
     const actorId = (req.user as { id?: number } | null)?.id ?? null;
     const log = (action: CaseAction, entry: { from?: string | null; to?: string | null; note?: string | null }) =>
       logCaseEvent(req.payload, { collection, id: doc.id, action, actorId, ...entry }, req);

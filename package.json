@@ -22,7 +22,9 @@
     "payload": "payload",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "lighthouse": "node scripts/lighthouse.mjs"
+    "lighthouse": "node scripts/lighthouse.mjs",
+    "retention": "payload run scripts/retention.ts",
+    "retention:dry-run": "payload run scripts/retention-dry-run.ts"
   },
   "engines": {
     "node": ">=22 <23"

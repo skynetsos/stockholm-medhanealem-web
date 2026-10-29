@@ -157,6 +157,7 @@ describe("baptism requests are private (spec §3)", () => {
   });
 
   it("the public, editors and translators get nothing through GraphQL", async () => {
+    const countBefore = (await payload.count({ collection: "baptism-requests", overrideAccess: true })).totalDocs;
     const accounts: Cookies[] = [{}, await login("bap-editor@test.local"), await login("bap-translator@test.local")];
     for (const cookies of accounts) {
       for (const query of [
@@ -174,7 +175,8 @@ describe("baptism requests are private (spec §3)", () => {
       );
       expect(created.errors?.length).toBeGreaterThan(0);
     }
-    expect((await payload.count({ collection: "baptism-requests", overrideAccess: true, where: { "applicant.name": { exists: false } } })).totalDocs).toBe(0);
+    // The create mutation added nothing (archived cases elsewhere also have no name, so count all).
+    expect((await payload.count({ collection: "baptism-requests", overrideAccess: true })).totalDocs).toBe(countBefore);
   });
 
   it("nobody creates a request through the API, staff included; only super_admin deletes", async () => {

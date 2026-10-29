@@ -165,6 +165,7 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 |---|---|---|---|---|
 | Privacy policy `/privacy` | Not started | Not started | Committee + legal review | Must cover the contact form (name, email, phone, message), processors (hosting, Resend, Cloudflare/Turnstile, storage), retention, rights (D-022). Linked from the form once published |
 | Cookies `/cookies` | Not started | Not started | Committee | The site sets no tracking cookies; embeds load only after a click |
+| Retention period for baptism requests | 24 months (default) | — | Committee + legal review | Site settings → Requests & privacy → Retention months. Closed cases are archived (personal data removed) after it (D-035). State it in the privacy notice |
 | Privacy notice for baptism requests | Not started | Not started | Committee + legal review | Page, section "Other", slug `privacy-baptism`: shown in the form's last step (D-029). Must cover what the form stores (applicant, candidate incl. date of birth, guardian, notes), why, who sees it (office, clergy), retention (task 8) and rights. Without it the form links to `/privacy` |
 
 ## Committee sign-off

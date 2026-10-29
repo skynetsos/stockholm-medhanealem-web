@@ -12,6 +12,13 @@
 
 ## Resolved decisions
 
+### D-035 — Retention job for baptism requests (2026-10-29, Phase 2 task 8)
+- **What is archived:** baptism cases with status **completed** or **declined** whose final status change (from the audit log; else their last update) is older than **Site settings → Retention months (baptism)** (default 24, for the legal review to decide).
+- **What archiving removes** (spec: "personal fields nulled; reference, status, dates kept"): applicant name, email, phone and parish relationship; candidate name and date of birth; guardian name, relationship and consent; preferred period; applicant notes; office notes and clergy notes; IP hash and browser. **Kept:** reference, status, candidate category (infant/child/adult), language, assignee, clergy decision, scheduled date, sent/created/updated dates, the privacy-consent flag and `archivedAt`. In the **audit log** the notes written with status changes (e.g. why a request was declined, D-032) are cleared; other entries hold no personal data (D-030, D-027). One "archived" entry is added; the cleared fields aren't logged one by one. Each case is archived in one transaction.
+- **Running it:** `POST /api/cron/retention` with `Authorization: Bearer <CRON_SECRET>` (constant-time check; without a real secret on the server it answers 503 and does nothing), `?dryRun=1` to only report. The report lists references, statuses and closing dates, never personal data. Scheduled daily at 03:15 by the server's cron (RUNBOOK, after the 02:30 backup). From the command line: `pnpm retention:dry-run` and `pnpm retention` — two commands, not a flag, because `payload run` drops arguments (found when `--dry-run` silently ran for real on the dev database; nothing was due, so nothing changed).
+- **Running it twice** changes nothing: archived cases are skipped.
+- **Inquiries are not covered** (the spec's retention is for baptism cases only): contact, Sunday School, marriage, fitihat and volunteer messages keep their personal data until deleted by a super admin. **Open question for Biruk / legal review:** should closed inquiries be archived the same way (e.g. after 12 months)?
+
 ### D-034 — Atomic reference numbers (2026-10-29, after Phase 2 task 7; requested by Biruk)
 - **What was wrong** (`src/lib/reference.ts`): `nextval` itself is atomic, but the generator ran its statements on separate pool connections, outside the save's transaction and without a lock:
   1. **Pool deadlock:** each submission's save holds a connection in its transaction and then asked the pool for a second one. With ~10 simultaneous submissions (pool size), all waited for a connection that never came free and the site hung. Found by the new test (20 at once: timeout).
