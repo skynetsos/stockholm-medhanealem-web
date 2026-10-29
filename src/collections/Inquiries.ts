@@ -16,7 +16,7 @@ export const INQUIRY_TYPES = [
 ] as const;
 
 const setReference: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
-  if (operation === "create" && !data.reference) data.reference = await nextReference(req.payload, "INQ");
+  if (operation === "create" && !data.reference) data.reference = await nextReference(req.payload, "INQ", new Date(), req);
   return data;
 };
 

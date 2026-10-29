@@ -106,7 +106,7 @@ describe("baptism requests: reference and audit log", () => {
     expect(first.reference).toMatch(/^BAP-\d{4}-\d{4,}$/);
     expect(Number(second.reference!.split("-")[2])).toBe(Number(first.reference!.split("-")[2]) + 1);
 
-    const events = await payload.find({ collection: "case-events", overrideAccess: true, where: { "request.value": { equals: second.id } } });
+    const events = await payload.find({ collection: "case-events", overrideAccess: true, where: { "request.relationTo": { equals: "baptism-requests" }, "request.value": { equals: second.id } } });
     expect(events.docs).toHaveLength(1);
     expect(events.docs[0]).toMatchObject({ action: "created", actorType: "system", to: "new", request: { relationTo: "baptism-requests" } });
   });
@@ -244,7 +244,7 @@ describe("status action over HTTP (D-032)", () => {
 
 describe("case events are an immutable audit log (spec §2.13)", () => {
   it("staff read them; nobody creates them through the API; only super_admin changes or deletes them", async () => {
-    const [event] = (await payload.find({ collection: "case-events", ...as(office), where: { "request.value": { equals: caseId }, action: { equals: "created" } } })).docs;
+    const [event] = (await payload.find({ collection: "case-events", ...as(office), where: { "request.relationTo": { equals: "baptism-requests" }, "request.value": { equals: caseId }, action: { equals: "created" } } })).docs;
     expect(event.action).toBe("created");
     expect((await payload.find({ collection: "case-events", ...as(clergy) })).totalDocs).toBeGreaterThan(0);
 

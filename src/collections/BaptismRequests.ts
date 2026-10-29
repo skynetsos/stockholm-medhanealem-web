@@ -31,7 +31,7 @@ const logChanges = logCaseChanges("baptism-requests", {
 });
 
 const setReference: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
-  if (operation === "create" && !data.reference) data.reference = await nextReference(req.payload, "BAP");
+  if (operation === "create" && !data.reference) data.reference = await nextReference(req.payload, "BAP", new Date(), req);
   return data;
 };
 
