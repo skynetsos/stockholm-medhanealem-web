@@ -3,6 +3,7 @@ import { getPayload, type Payload } from "payload";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import config from "../../src/payload.config";
+import { changeStatus } from "../../src/lib/baptism/transition";
 import type { BaptismRequest, CaseEvent } from "../../src/payload-types";
 import { type Actor, as, createActor, rich } from "./helpers";
 
@@ -26,8 +27,11 @@ const newCase = async (status?: BaptismRequest["status"]) =>
     },
   });
 
-const setStatus = (actor: Actor, id: number, status: BaptismRequest["status"], extra: Partial<BaptismRequest> = {}) =>
-  payload.update({ collection: "baptism-requests", id, ...as(actor), data: { status, ...extra } });
+/** Save `extra` as the actor, then use the status action (the only way to change status, D-032). */
+async function setStatus(actor: Actor, id: number, status: BaptismRequest["status"], extra: Partial<BaptismRequest> = {}, note?: string) {
+  if (Object.keys(extra).length) await payload.update({ collection: "baptism-requests", id, ...as(actor), data: extra });
+  return changeStatus(payload, { id, to: status, note: note ?? (status === "declined" ? "Test reason" : undefined) }, actor);
+}
 
 const timeline = async (id: number) =>
   (
@@ -91,6 +95,31 @@ describe("baptism workflow", () => {
     await expect(setStatus(superAdmin, id, "declined")).rejects.toThrow(/Only a clergy approver/);
     await setStatus(clergy, id, "info_needed");
     expect((await payload.findByID({ collection: "baptism-requests", id, overrideAccess: true })).status).toBe("info_needed");
+  });
+
+  it("changes status only through the status action, never by saving the form", async () => {
+    const { id } = await newCase();
+    const saved = await payload.update({ collection: "baptism-requests", id, ...as(office), data: { status: "clergy_review", preferredPeriod: "Spring" } });
+    expect(saved).toMatchObject({ status: "new", preferredPeriod: "Spring" });
+    expect(statusLog(await timeline(id))).toEqual([]);
+  });
+
+  it("needs an internal note to decline, and keeps it in the audit log", async () => {
+    const { id } = await newCase();
+    await expect(setStatus(office, id, "declined", {}, "   ")).rejects.toThrow(/internal note/);
+    await setStatus(office, id, "declined", {}, "Family moved to another parish");
+    const events = await timeline(id);
+    expect(events.find((e) => e.action === "status_changed")).toMatchObject({ to: "declined", note: "Family moved to another parish" });
+    // The decline email follows the status change.
+    expect(events.at(-1)).toMatchObject({ action: "email_sent", note: "Decline notice to the applicant (en)" });
+  });
+
+  it("lets only staff who handle requests use the status action", async () => {
+    const { id } = await newCase();
+    const editor = await createActor(payload, "wf-editor-action@test.local", ["editor"]);
+    await expect(changeStatus(payload, { id, to: "info_needed" }, editor)).rejects.toThrow(/not allowed/);
+    await expect(changeStatus(payload, { id, to: "info_needed" }, { user: null })).rejects.toThrow(/Sign in/);
+    expect((await payload.findByID({ collection: "baptism-requests", id, overrideAccess: true })).status).toBe("new");
   });
 
   it("starts every new request as 'new', whatever the form sends", async () => {

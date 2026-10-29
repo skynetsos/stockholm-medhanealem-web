@@ -807,6 +807,9 @@ export interface BaptismRequest {
   notes?: string | null;
   internal?: {
     assignedTo?: (number | null) | User;
+    /**
+     * Stockholm time.
+     */
     scheduledDate?: string | null;
     scheduledDate_tz?: SupportedTimezones;
     officeNotes?: {

@@ -12,6 +12,16 @@
 
 ## Resolved decisions
 
+### D-032 — Case page: status buttons, dialogs, timeline, schedule (2026-10-29, Phase 2 task 6b)
+As specified by Biruk for 6b:
+- **Status buttons** in the case sidebar show **only** the transitions the signed-in user may make from the current status (hidden, not disabled), e.g. office on a new case: "Ask for information", "Send to clergy review", "Decline…"; clergy see nothing there ("the next step is for someone with another role"). Final statuses show "No further steps".
+- **Confirmed and Declined ask first**, since both email the applicant: Confirm shows the date in Stockholm time with the Ethiopian date and refuses without a saved date; Decline requires an **internal note** (staff only, not emailed). The server enforces the note too (`enforceBaptismWorkflow`), so declining without one is impossible by any route.
+- **Status changes only through the action** (`POST /api/baptism-requests/:id/status`, `src/lib/baptism/transition.ts`): the status field is read-only in the form and closed to API updates, so a page opened before a change can't save an old status back. The action checks the user handles requests (with MFA), then saves as them; the workflow hook checks transition and role as before. Buttons refuse while the form has unsaved changes, and the page reloads after a change.
+- **The decline note is kept in the audit log** with the status change (shown in the timeline). Other notes fields are still logged without their text (D-027). The retention job (task 8) must clear these notes when it archives a case.
+- **Timeline** at the bottom of the case page (baptism requests and inquiries): every audit entry, oldest first, with who (or "System") and when in Stockholm time.
+- **Schedule picker:** Payload's date-time picker in Stockholm time, with the Ethiopian date shown under it as soon as a date is chosen, e.g. "ኅዳር 27 ቀን 2019 ዓ.ም. (Hidar 27, 2019 E.C.)".
+- **Bug found in the browser check:** the action passed a copy of the request made with `{ ...req }`, which drops its headers (a getter), so the MFA check failed and every real click got 403 although the tests (plain objects) passed. Fixed, and a test now goes through Payload's real HTTP handler with a signed-in, MFA-verified office account.
+
 ### D-031 — Case list and dashboard in the admin (2026-10-27, Phase 2 task 6a)
 - **Built into Payload's own screens, not separate views:** the standard list (search, columns, sorting, bulk actions, access control) gets a row of **status filters** above the table — All, Open, Assigned to me, then each status with its count — and an **Age** column (days since sent, Stockholm calendar days; a display-only `ui` field, no database change). Baptism requests and Inquiries both. "Open" = every status that still needs someone to act (baptism: new → confirmed; inquiries: new, in progress).
 - **Dashboard:** a "Requests" block at the top of the admin home (`beforeDashboard`; Payload's dashboard widgets are still experimental): open cases per status and "Assigned to me", per request type, each linking to the filtered list.

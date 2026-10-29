@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import config from "../../src/payload.config";
 import { sendApplicantEmail } from "../../src/lib/baptism/emails";
+import { changeStatus } from "../../src/lib/baptism/transition";
 import { submitBaptismRequest } from "../../src/lib/forms/baptism";
 import { createRateLimiter } from "../../src/lib/forms/security";
 import type { BaptismRequest } from "../../src/payload-types";
@@ -109,21 +110,22 @@ describe.skipIf(!process.env.SMTP_HOST)("baptism emails", () => {
 
   it("on confirmed: the date, time and place; on declined: a neutral notice", async () => {
     const doc = await submit("en", "mail-ip-2");
-    await payload.update({ collection: "baptism-requests", id: doc.id, ...as(office), data: { status: "clergy_review" } });
-    await payload.update({ collection: "baptism-requests", id: doc.id, ...as(clergy), data: { status: "scheduling" } });
+    await changeStatus(payload, { id: doc.id, to: "clergy_review" }, office);
+    await changeStatus(payload, { id: doc.id, to: "scheduling" }, clergy);
     await payload.update({
       collection: "baptism-requests",
       id: doc.id,
       ...as(office),
-      data: { status: "confirmed", internal: { scheduledDate: "2026-12-06T09:00:00.000Z", scheduledDate_tz: STOCKHOLM } },
+      data: { internal: { scheduledDate: "2026-12-06T09:00:00.000Z", scheduledDate_tz: STOCKHOLM } },
     });
+    await changeStatus(payload, { id: doc.id, to: "confirmed" }, office);
     const [confirmation] = await mails(`Baptism confirmed (${doc.reference})`);
     expect(confirmation.To[0].Address).toBe("mail-applicant@example.org");
     expect(confirmation.Text).toMatch(/When: Sunday, .*2026 at 10:00/);
     for (const personal of PERSONAL) expect(confirmation.Text).not.toContain(personal);
 
     const other = await submit("en", "mail-ip-3");
-    await payload.update({ collection: "baptism-requests", id: other.id, ...as(office), data: { status: "declined" } });
+    await changeStatus(payload, { id: other.id, to: "declined", note: "No longer needed" }, office);
     const [decline] = await mails(`Your baptism request (${other.reference})`);
     expect(decline.Text).toContain(`cannot go ahead with baptism request ${other.reference}`);
 

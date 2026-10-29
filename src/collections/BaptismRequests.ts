@@ -8,6 +8,7 @@ import { sendDecisionEmail } from "../lib/baptism/emails";
 import { BAPTISM_STATUS_VALUES } from "../lib/baptism/state";
 import { logCaseEvent } from "../lib/cases/events";
 import { enforceBaptismWorkflow, logCaseChanges } from "../lib/cases/hooks";
+import { statusEndpoint } from "../lib/baptism/transition";
 import { nextReference } from "../lib/reference";
 
 /** Spec §2.12 statuses with admin labels. Allowed transitions: src/lib/baptism/state.ts. */
@@ -82,7 +83,14 @@ export const BaptismRequests: CollectionConfig = {
   },
   defaultSort: "-createdAt",
   hooks: { beforeChange: [enforceBaptismWorkflow, setReference], afterChange: [logCreated, logChanges, sendDecisionEmail] },
+  endpoints: [statusEndpoint],
   fields: [
+    // Current status and the buttons for the next steps this user may take (D-032).
+    {
+      name: "statusActions",
+      type: "ui",
+      admin: { position: "sidebar", disableListColumn: true, components: { Field: "/components/admin/cases/CaseStatusActions#CaseStatusActions" } },
+    },
     {
       type: "row",
       fields: [
@@ -94,7 +102,9 @@ export const BaptismRequests: CollectionConfig = {
           defaultValue: "new",
           index: true,
           options: BAPTISM_STATUSES,
-          admin: { width: "50%" },
+          // Changed only with the status buttons (src/lib/baptism/transition.ts), never by saving the form.
+          access: { update: systemOnly },
+          admin: { width: "50%", readOnly: true },
         },
       ],
     },
@@ -195,7 +205,14 @@ export const BaptismRequests: CollectionConfig = {
               filterOptions: { roles: { in: ["super_admin", "office_coordinator", "clergy_approver"] } },
               admin: { width: "50%" },
             },
-            stockholmDateTime({ name: "scheduledDate", admin: { width: "50%" } }),
+            stockholmDateTime({
+              name: "scheduledDate",
+              admin: {
+                width: "50%",
+                description: "Stockholm time.",
+                components: { afterInput: [{ path: "/components/admin/cases/EthiopianDateHint#EthiopianDateHint", clientProps: { path: "internal.scheduledDate" } }] },
+              },
+            }),
           ],
         },
         { name: "officeNotes", type: "richText" },
@@ -237,6 +254,8 @@ export const BaptismRequests: CollectionConfig = {
       ],
     },
     // "Age" column in the list (days since the case was sent); nothing in the edit view.
+    // The audit log of this case, oldest first (D-032).
+    { name: "timeline", type: "ui", admin: { disableListColumn: true, components: { Field: "/components/admin/cases/CaseTimeline#CaseTimeline" } } },
     { name: "age", type: "ui", label: "Age", admin: { components: { Cell: "/components/admin/cases/CaseAgeCell#CaseAgeCell" } } },
     stockholmDateTime({
       name: "archivedAt",

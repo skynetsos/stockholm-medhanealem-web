@@ -4,11 +4,13 @@
  * REST and GraphQL handlers (what anyone on the internet can call).
  */
 import { GRAPHQL_POST, REST_DELETE, REST_GET, REST_PATCH, REST_POST } from "@payloadcms/next/routes";
+import { generate } from "otplib";
 import { getPayload, type Payload } from "payload";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import config from "../../src/payload.config";
 import type { BaptismRequest } from "../../src/payload-types";
+import { MFA_COOKIE } from "../../src/lib/mfa/session";
 import { type Actor, as, createActor } from "./helpers";
 
 const BASE = process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000";
@@ -146,6 +148,8 @@ describe("baptism requests are private (spec §3)", () => {
       }
       expect((await api.post("baptism-requests", cookies, childRequest())).status).toBe(403);
       expect((await api.patch(`baptism-requests/${caseId}`, cookies, { status: "declined" })).status).toBe(403);
+      // The status action (D-032): 401 without an account, 403 for other roles.
+      expect([401, 403]).toContain((await api.post(`baptism-requests/${caseId}/status`, cookies, { to: "declined", note: "x" })).status);
       expect((await api.delete(`baptism-requests/${caseId}`, cookies)).status).toBe(403);
     }
     const unchanged = await payload.findByID({ collection: "baptism-requests", id: caseId, overrideAccess: true });
@@ -210,6 +214,31 @@ describe("baptism requests are private (spec §3)", () => {
     });
     expect(byClergy.applicant?.name).toBe("Private Applicant");
     expect(byClergy.internal).toMatchObject({ clergyDecision: "approve", clergyNotes: "Ready" });
+  });
+});
+
+describe("status action over HTTP (D-032)", () => {
+  it("works for a signed-in office coordinator with MFA, through Payload's real handler", async () => {
+    await payload.create({
+      collection: "users",
+      overrideAccess: true,
+      data: { email: "bap-http-office@test.local", password: PASSWORD, name: "HTTP Office", roles: ["office_coordinator"], active: true },
+    });
+    const cookies = await login("bap-http-office@test.local");
+    const { secret } = (await (await api.post("users/mfa/setup", cookies)).json()) as { secret: string };
+    const enrolled = await api.post("users/mfa/enroll", cookies, { code: await generate({ secret }) });
+    const mfa = (enrolled.headers.get("set-cookie") ?? "").match(new RegExp(`${MFA_COOKIE}=([^;]+)`))?.[1];
+    const session = { ...cookies, [MFA_COOKIE]: mfa! };
+
+    const { id } = await serverCreate(childRequest());
+    const res = await api.post(`baptism-requests/${id}/status`, session, { to: "info_needed" });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ status: "info_needed" });
+    const declined = await api.post(`baptism-requests/${id}/status`, session, { to: "declined" });
+    expect(declined.status).toBe(400);
+    expect((await declined.json()).error).toMatch(/internal note/);
+    // Without the MFA cookie the same account may not.
+    expect((await api.post(`baptism-requests/${id}/status`, cookies, { to: "declined", note: "x" })).status).toBe(403);
   });
 });
 

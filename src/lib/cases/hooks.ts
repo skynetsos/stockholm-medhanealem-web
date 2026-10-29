@@ -45,8 +45,8 @@ export type CaseLogFields = {
 
 /**
  * Writes the audit log (CaseEvents) for a change made to a case: status, assignment, notes,
- * decisions and dates, each with the staff member who made it (or the system). Note contents are
- * never copied into the log: it is kept longer than the personal data (retention, task 8).
+ * decisions and dates, each with the staff member who made it (or the system). The contents of the
+ * notes fields are never copied into the log; only a note written with a status change is (D-032).
  */
 export function logCaseChanges(collection: CaseCollection, fields: CaseLogFields): CollectionAfterChangeHook {
   return async ({ doc, previousDoc, operation, req }) => {
@@ -55,7 +55,8 @@ export function logCaseChanges(collection: CaseCollection, fields: CaseLogFields
     const log = (action: CaseAction, entry: { from?: string | null; to?: string | null; note?: string | null }) =>
       logCaseEvent(req.payload, { collection, id: doc.id, action, actorId, ...entry }, req);
 
-    if (doc.status !== previousDoc?.status) await log("status_changed", { from: previousDoc?.status, to: doc.status });
+    // A note given with the status change (required when declining) goes with it in the log.
+    if (doc.status !== previousDoc?.status) await log("status_changed", { from: previousDoc?.status, to: doc.status, note: transitionNote(req) });
 
     const [before, after] = [relationId(at(previousDoc, fields.assignedTo)), relationId(at(doc, fields.assignedTo))];
     if (before !== after) await log("assigned", { from: await staffName(req, before), to: await staffName(req, after) });
@@ -73,6 +74,12 @@ export function logCaseChanges(collection: CaseCollection, fields: CaseLogFields
   };
 }
 
+/** The internal note sent with a status change (src/lib/baptism/transition.ts), if any. */
+export const transitionNote = (req: PayloadRequest): string | null => {
+  const note = (req.context as { transitionNote?: unknown } | undefined)?.transitionNote;
+  return typeof note === "string" && note.trim() ? note.trim() : null;
+};
+
 const STATUS_ROLE_LABEL: Record<string, string> = {
   clergy_approver: "a clergy approver",
   office_coordinator: "the office",
@@ -81,7 +88,7 @@ const STATUS_ROLE_LABEL: Record<string, string> = {
 /**
  * Baptism request status rules (spec Phase 2 task 2): a new request always starts as "new"; a
  * change must follow the allowed transitions and be made by the right role; "confirmed" needs a
- * scheduled date (the applicant's email gives it, task 5).
+ * scheduled date (the applicant's email gives it, task 5); "declined" needs an internal note (D-032).
  */
 export const enforceBaptismWorkflow: CollectionBeforeChangeHook = ({ data, operation, originalDoc, req }) => {
   if (operation === "create") return { ...data, status: "new" };
@@ -96,5 +103,6 @@ export const enforceBaptismWorkflow: CollectionBeforeChangeHook = ({ data, opera
 
   const scheduled = data.internal?.scheduledDate !== undefined ? data.internal.scheduledDate : originalDoc?.internal?.scheduledDate;
   if (to === "confirmed" && !scheduled) throw new APIError("Set the scheduled date before confirming.", 400);
+  if (to === "declined" && !transitionNote(req)) throw new APIError("Write an internal note on why the request is declined.", 400);
   return data;
 };

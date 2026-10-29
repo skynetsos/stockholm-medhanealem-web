@@ -260,7 +260,8 @@ Caddy uses its own local certificate for `localhost`, so browsers show a warning
 ## Baptism requests
 
 - Turn requests on in **Settings → Baptism page → Requests open** (the button on /sacraments/baptism and the form appear; the form needs published christening guidance). Turn it off to pause new requests.
-- Requests appear under **Requests → Baptism requests**. Every change (status, assignment, notes, emails) is in **Requests → Case events**.
+- Requests appear under **Requests → Baptism requests** (filters by status and "Assigned to me" above the list; open cases on the admin home page). Every change (status, assignment, notes, emails) is in the case's **Timeline** and in **Requests → Case events**.
+- Change the status with the buttons under **Next step** on the case page; you only see the steps your role may take. Save other edits first. **Confirm** needs the scheduled date saved; **Decline** needs an internal note. Both email the applicant.
 - Emails (D-030), all with the reference only — never the applicant's or child's details:
   - on sending: an acknowledgement to the applicant (Amharic or English, Reply-To the public office email) and a notification to the office notification addresses;
   - on **Confirmed**: the date, time and place to the applicant (set the scheduled date first); on **Declined**: a short neutral notice. Place = Site settings → Default event location, else the address.

@@ -110,6 +110,8 @@ export const Inquiries: CollectionConfig = {
       ],
     },
     // "Age" column in the list (days since the case was sent); nothing in the edit view.
+    // The audit log of this case, oldest first (D-032).
+    { name: "timeline", type: "ui", admin: { disableListColumn: true, components: { Field: "/components/admin/cases/CaseTimeline#CaseTimeline" } } },
     { name: "age", type: "ui", label: "Age", admin: { components: { Cell: "/components/admin/cases/CaseAgeCell#CaseAgeCell" } } },
     {
       name: "privacyAccepted",
