@@ -75,6 +75,8 @@ const teaching = async (category: string, slug: string, title: string) => {
 };
 await teaching("fasting", "e2e-fasting", "Fasting test teaching");
 await teaching("christening", "e2e-baptism-guidance", "Baptism guidance test");
+// Fitihat guidance, so /sacraments/fitihat and its inquiry form exist (marriage stays without: 404 test).
+await teaching("fitihat", "e2e-fitihat-guidance", "Fitihat guidance test");
 
 // A weekly service (Sunday 08:00–11:30 Stockholm) for the worship pages, calendar and iCal feed.
 await payload.create({

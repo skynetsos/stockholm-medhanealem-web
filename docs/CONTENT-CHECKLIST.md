@@ -131,8 +131,8 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | Baptism (christening) guidance | Not started | Not started | Clergy | Category "Christening". WP (ክርስትና). Needed for /sacraments/baptism and the request form |
 | Baptism page: intro and "What to prepare" checklist | Not started | Not started | Clergy | **Settings → Baptism page** (D-028) |
 | Baptism page: **Requests open** | Off | — | Office | Turn on when the office is ready to receive requests; shows the button and the form (D-029) |
-| Marriage guidance | Not started | Not started | Clergy | Category "Marriage". WP (ጋብቻ) |
-| Fitihat guidance | Not started | Not started | Clergy | Category "Fitihat". WP (ፍትሃት) |
+| Marriage guidance | Not started | Not started | Clergy | Category "Marriage". WP (ጋብቻ). The marriage inquiry form appears under it (D-033) |
+| Fitihat guidance | Not started | Not started | Clergy | Category "Fitihat". WP (ፍትሃት). The fitihat contact form appears under it (D-033) |
 
 ## News & Media (Content → Posts, Galleries, Videos; Media)
 
@@ -149,7 +149,7 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
 | Landing page `/support` | Not started | Not started | Committee | Donations only if approved (spec §10 #8) |
-| Volunteer page `/support/volunteer` | — | — | — | Form comes later (built on the task 6 form setup) |
+| Volunteer form `/support/volunteer` | Ready (draft text) | Ready | Committee | Review the list of ways to help (liturgy, choir, Sunday School, kitchen, cleaning, media, events, other) and the intro text (D-033) |
 
 ## Visit & Contact (Pages, section "Visit"; Site settings)
 

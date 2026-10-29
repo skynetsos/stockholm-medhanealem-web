@@ -170,7 +170,9 @@
       "privacy": "Godkänn, så att vi får spara ditt meddelande.",
       "spam": "Skräppostkontrollen är inte klar. Vänta en stund och skicka igen.",
       "rateLimited": "För många meddelanden från din anslutning. Försök igen om 10 minuter.",
-      "server": "Något gick fel. Försök igen senare eller mejla expeditionen."
+      "server": "Något gick fel. Försök igen senare eller mejla expeditionen.",
+      "childAge": "Ange en ålder från 3 till 18.",
+      "interests": "Välj minst ett sätt att hjälpa till."
     }
   },
   "baptismForm": {
@@ -260,6 +262,47 @@
     "declined": {
       "subject": "Din dopförfrågan ({reference})",
       "text": "Tyvärr kan vi inte gå vidare med dopförfrågan {reference} just nu. Kontakta gärna kansliet om du vill prata om det."
+    }
+  },
+  "inquiryForms": {
+    "sunday_school": {
+      "title": "Anmäl till söndagsskolan",
+      "intro": "Anmäl ditt barn till söndagsskolan. Söndagsskolans ledare kontaktar dig om tider och vad barnet behöver ta med.",
+      "name": "Ditt namn (förälder eller vårdnadshavare)",
+      "childName": "Barnets namn",
+      "childAge": "Barnets ålder",
+      "message": "Något vi bör veta? (valfritt)",
+      "submit": "Skicka anmälan"
+    },
+    "marriage": {
+      "title": "Fråga om vigsel",
+      "intro": "Berätta om era planer och vilken tid ni tänker er. Kansliet kontaktar er; ett meddelande bokar inget datum.",
+      "message": "Ditt meddelande",
+      "submit": "Skicka meddelande"
+    },
+    "funeral": {
+      "title": "Kontakta oss om fitihat",
+      "intro": "Skriv till oss om bön för en avliden. Kansliet kontaktar dig så snart som möjligt; om det är brådskande, ring också kansliet.",
+      "message": "Ditt meddelande",
+      "submit": "Skicka meddelande"
+    },
+    "volunteer": {
+      "title": "Bli volontär",
+      "intro": "Tack för att du vill hjälpa till. Berätta hur du vill hjälpa till så kontaktar kansliet dig.",
+      "interests": "Hur vill du hjälpa till?",
+      "interest": {
+        "liturgy": "Liturgi och gudstjänst",
+        "choir": "Kör (mezmur)",
+        "sunday_school": "Söndagsskolan",
+        "hospitality": "Kök och värdskap",
+        "property": "Städning och fastighet",
+        "media": "Media och IT",
+        "events": "Evenemang och högtider",
+        "other": "Något annat"
+      },
+      "availability": "När kan du? (valfritt)",
+      "message": "Något mer vi bör veta? (valfritt)",
+      "submit": "Skicka"
     }
   }
 }

@@ -12,6 +12,15 @@
 
 ## Resolved decisions
 
+### D-033 — Inquiry forms: Sunday School, marriage, fitihat, volunteer (2026-10-29, Phase 2 task 7)
+- **One form, five kinds.** The Phase 1 contact form is now the general inquiry form (`InquiryForm`, `submitInquiry`, server action `sendInquiry`): contact, Sunday School, marriage, fitihat (type `funeral`) and volunteer share contact details, privacy consent, honeypot, Turnstile, validation (one zod schema per kind), storage as an Inquiry, the office email (reference, kind and admin link only), the audit log and the admin list with filters. The kind comes from a hidden field and must be one of the public kinds.
+- **Fields per kind:** Sunday School — parent's name, email, phone, child's name and age (3–18), optional message. Marriage and fitihat — message required (≥ 10 characters, like contact). Volunteer — at least one way to help from a fixed list, optional availability and message.
+- **Ways to help** (`VOLUNTEER_INTERESTS`): liturgy and church service, choir (mezmur), Sunday School, kitchen and hospitality, cleaning and property, media and IT, events and feasts, something else. §10 default, on the content checklist for the committee to review; changing the list is a small code change.
+- **Where they are:** `/sunday-school/join` (with a "Register for Sunday School" button on /sunday-school; exists while the Sunday School section does; "join" can no longer be a department address); the marriage and fitihat forms under the guidance on `/sacraments/marriage` and `/sacraments/fitihat` (so they appear with the guidance, D-018); `/support/volunteer` always (reserved for it since Phase 1).
+- **One rate limit for all inquiry forms:** 5 per 10 minutes per IP hash across the five kinds, so each form doesn't add its own allowance. The baptism form keeps its own (3 per hour).
+- **No acknowledgement email to the sender** for inquiries, as for the contact form (the page shows the reference); only baptism requests get one (task 5).
+- **Texts:** `inquiryForms` (am/en/sv), common labels and errors from `contact`. Amharic and Swedish are drafts for review (Q-004).
+
 ### D-032 — Case page: status buttons, dialogs, timeline, schedule (2026-10-29, Phase 2 task 6b)
 As specified by Biruk for 6b:
 - **Status buttons** in the case sidebar show **only** the transitions the signed-in user may make from the current status (hidden, not disabled), e.g. office on a new case: "Ask for information", "Send to clergy review", "Decline…"; clergy see nothing there ("the next step is for someone with another role"). Final statuses show "No further steps".

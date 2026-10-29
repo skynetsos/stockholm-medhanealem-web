@@ -2,6 +2,7 @@ import type { CollectionConfig } from "payload";
 
 import { staffContentAccess } from "../access/content";
 import { CACHE_TAGS, revalidateTags } from "../hooks/revalidate";
+import { RESERVED_DEPARTMENT_SLUGS } from "../lib/content-paths";
 import { validateSlugFormat } from "../lib/pages";
 
 /** Spec §3 (same row as Pages): editors and super_admin manage; clergy/office read; translators edit text. */
@@ -40,7 +41,8 @@ export const Departments: CollectionConfig = {
           unique: true,
           ...structural,
           admin: { width: "40%", description: "Address: /sunday-school/<slug>" },
-          validate: (value: unknown) => validateSlugFormat(value),
+          validate: (value: unknown) =>
+            (RESERVED_DEPARTMENT_SLUGS as readonly unknown[]).includes(value) ? `"${String(value)}" is used by the site itself; choose another address.` : validateSlugFormat(value),
         },
       ],
     },

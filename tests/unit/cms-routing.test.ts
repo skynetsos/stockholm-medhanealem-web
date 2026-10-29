@@ -114,7 +114,7 @@ describe("Sunday School, News and Media (D-020)", () => {
       ],
       hasVideos: false,
     });
-    expect(paths.sort()).toEqual(["/media", "/media/galleries/timket", "/news", "/news/first", "/sunday-school", "/sunday-school/mezmur"].sort());
+    expect(paths.sort()).toEqual(["/media", "/media/galleries/timket", "/news", "/news/first", "/sunday-school", "/sunday-school/join", "/sunday-school/mezmur"].sort());
     expect(sectionPaths({ hasSundaySchoolIntro: false, departments: [], posts: [], galleries: [], hasVideos: true })).toEqual([
       "/media/videos",
       "/media",

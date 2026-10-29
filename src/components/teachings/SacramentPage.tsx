@@ -29,9 +29,20 @@ export async function sacramentMetadata(locale: string, page: SacramentPageName)
 /**
  * /sacraments/baptism, /marriage, /fitihat: the clergy-approved guidance teachings of that category
  * in full (spec §4). Exists only with guidance (D-018). `children` (e.g. the baptism checklist and
- * request button) appear under the title, before the guidance.
+ * request button) appear under the title, before the guidance; `after` (the marriage and fitihat
+ * inquiry forms) after it.
  */
-export async function SacramentPage({ locale, page, children }: { locale: string; page: SacramentPageName; children?: ReactNode }) {
+export async function SacramentPage({
+  locale,
+  page,
+  children,
+  after,
+}: {
+  locale: string;
+  page: SacramentPageName;
+  children?: ReactNode;
+  after?: ReactNode;
+}) {
   setRequestLocale(locale as Locale); // validated by the [locale] layout
   const [t, items] = await Promise.all([getTranslations("sacraments"), guidance(locale, page)]);
   if (!items.length) return <NotFoundContent />;
@@ -62,6 +73,7 @@ export async function SacramentPage({ locale, page, children }: { locale: string
           <CmsRichText data={teaching.body} className="mt-4" />
         </section>
       ))}
+      {after}
     </main>
   );
 }

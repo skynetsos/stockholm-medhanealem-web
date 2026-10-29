@@ -14,6 +14,10 @@ export const BAPTISM_REQUEST_PATH = "/sacraments/baptism/request";
 export const baptismRequestPaths = (paths: readonly string[], requestsOpen: boolean | null | undefined) =>
   requestsOpen && paths.includes("/sacraments/baptism") ? [BAPTISM_REQUEST_PATH] : [];
 
+/** Sunday School registration (Phase 2 task 7); "join" can't be a department's address. */
+export const SUNDAY_SCHOOL_JOIN_PATH = "/sunday-school/join";
+export const RESERVED_DEPARTMENT_SLUGS = ["join"] as const;
+
 /** Worship list pages and the event types each one shows. */
 export const WORSHIP_LISTS = {
   weekly: ["weekly_service"],
@@ -57,7 +61,8 @@ export function worshipPaths(events: { type?: string | null }[], livestreamUrl: 
 
 /**
  * Sunday School, News and Media addresses that exist given this content (D-020):
- * - /sunday-school with an intro page or a department with text; each such department's page
+ * - /sunday-school (and its registration form) with an intro page or a department with text; each
+ *   such department's page
  * - /news and each published post
  * - /media, each published gallery with at least one image that may be shown, /media/videos
  */
@@ -76,7 +81,8 @@ export function sectionPaths({
 }): string[] {
   const paths: string[] = [];
   const shownDepartments = departments.filter((d) => d.hasContent);
-  if (hasSundaySchoolIntro || shownDepartments.length) paths.push("/sunday-school");
+  // The registration form (Phase 2 task 7) belongs to the Sunday School section.
+  if (hasSundaySchoolIntro || shownDepartments.length) paths.push("/sunday-school", SUNDAY_SCHOOL_JOIN_PATH);
   paths.push(...shownDepartments.map((d) => `/sunday-school/${d.slug}`));
   if (posts.length) paths.push("/news", ...posts.map((p) => `/news/${p.slug}`));
   const shownGalleries = galleries.filter((g) => g.hasPublicImage);

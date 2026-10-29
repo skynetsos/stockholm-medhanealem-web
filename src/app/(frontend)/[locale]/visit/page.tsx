@@ -3,7 +3,7 @@ import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
-import { ContactForm } from "@/components/forms/ContactForm";
+import { InquiryForm } from "@/components/forms/InquiryForm";
 import { PageHeader } from "@/components/pages/PageHeader";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { VisitDetails } from "@/components/visit/VisitDetails";
@@ -56,7 +56,9 @@ export default async function VisitPage({ params }: Props) {
         <h2 id="contact-title" className="mb-4">
           {tc("title")}
         </h2>
-        <ContactForm
+        <InquiryForm
+          form="contact"
+          titleId="contact-title"
           turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
           privacyHref={available.includes("/privacy") ? "/privacy" : null}
         />

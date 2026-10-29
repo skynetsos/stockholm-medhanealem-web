@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/pages/PageHeader";
 import { localeAlternates } from "@/i18n/alternates";
 import { getPage } from "@/lib/cms/pages";
 import { getDepartments } from "@/lib/cms/sections";
+import { Link } from "@/i18n/navigation";
 import { hasDepartmentContent } from "@/lib/departments";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -28,13 +29,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /**
  * /sunday-school (spec §4): the optional CMS landing page (section Sunday School, slug "index") as
- * introduction, then the departments that have content (D-020).
+ * introduction, the Sunday School registration link (Phase 2 task 7), then the departments that
+ * have content (D-020).
  */
 export default async function SundaySchoolPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
-  const [t, intro, departments] = await Promise.all([
+  const [t, tf, intro, departments] = await Promise.all([
     getTranslations("sundaySchool"),
+    getTranslations("inquiryForms"),
     getPage(locale as Locale, "sunday-school", "index"),
     getDepartments(locale as Locale),
   ]);
@@ -45,6 +48,11 @@ export default async function SundaySchoolPage({ params }: Props) {
     <main id="main">
       <PageHeader title={intro?.title || t("title")} hero={intro?.hero} />
       {intro && <RenderBlocks blocks={intro.layout} locale={locale as Locale} />}
+      <p className="mx-auto max-w-site px-gutter pt-10">
+        <Link href="/sunday-school/join" className="inline-flex min-h-11 items-center rounded bg-primary px-6 font-medium text-cream no-underline hover:bg-ink">
+          {tf("sunday_school.title")}
+        </Link>
+      </p>
       {shown.length > 0 && (
         <ul className="mx-auto grid max-w-site gap-6 px-gutter py-10 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((d) => (

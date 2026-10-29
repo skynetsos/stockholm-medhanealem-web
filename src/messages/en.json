@@ -170,7 +170,9 @@
       "privacy": "Please agree, so that we may store your message.",
       "spam": "The spam check hasn't finished. Please wait a moment and send again.",
       "rateLimited": "Too many messages from your connection. Please try again in 10 minutes.",
-      "server": "Something went wrong. Please try again later or email the office."
+      "server": "Something went wrong. Please try again later or email the office.",
+      "childAge": "Enter an age from 3 to 18.",
+      "interests": "Choose at least one way to help."
     }
   },
   "baptismForm": {
@@ -260,6 +262,47 @@
     "declined": {
       "subject": "Your baptism request ({reference})",
       "text": "We are sorry that we cannot go ahead with baptism request {reference} at this time. Please contact the office if you would like to talk about it."
+    }
+  },
+  "inquiryForms": {
+    "sunday_school": {
+      "title": "Register for Sunday School",
+      "intro": "Register your child for Sunday School. The Sunday School team will contact you with times and what to bring.",
+      "name": "Your name (parent or guardian)",
+      "childName": "Child's name",
+      "childAge": "Child's age",
+      "message": "Anything we should know? (optional)",
+      "submit": "Send registration"
+    },
+    "marriage": {
+      "title": "Ask about marriage",
+      "intro": "Tell us about your plans and the time you have in mind. The office will contact you; a message does not book a date.",
+      "message": "Your message",
+      "submit": "Send message"
+    },
+    "funeral": {
+      "title": "Contact us about fitihat",
+      "intro": "Write to us about a prayer for the departed. The office will contact you as soon as possible; if it is urgent, please also call the office.",
+      "message": "Your message",
+      "submit": "Send message"
+    },
+    "volunteer": {
+      "title": "Volunteer",
+      "intro": "Thank you for wanting to serve. Tell us how you would like to help and the office will contact you.",
+      "interests": "How would you like to help?",
+      "interest": {
+        "liturgy": "Liturgy and church service",
+        "choir": "Choir (mezmur)",
+        "sunday_school": "Sunday School",
+        "hospitality": "Kitchen and hospitality",
+        "property": "Cleaning and property",
+        "media": "Media and IT",
+        "events": "Events and feasts",
+        "other": "Something else"
+      },
+      "availability": "When are you available? (optional)",
+      "message": "Anything else we should know? (optional)",
+      "submit": "Send"
     }
   }
 }

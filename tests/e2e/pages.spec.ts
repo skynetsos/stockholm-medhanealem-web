@@ -144,10 +144,6 @@ test("/visit shows the address and loads nothing from map services", async ({ pa
   expect(requests.filter((url) => !url.startsWith("http://localhost"))).toEqual([]);
 });
 
-test("/support/volunteer waits for the form (task 6): 404", async ({ request }) => {
-  expect((await request.get("/en/support/volunteer")).status()).toBe(404);
-});
-
 // Baptism request form (Phase 2 task 4): the whole journey in a browser, with the reference at the end.
 test("a baptism request goes through the three steps and gets a reference", async ({ page, request }) => {
   test.setTimeout(60_000);
@@ -211,6 +207,52 @@ test("a baptism request goes through the three steps and gets a reference", asyn
     return (search.messages as { Created: string }[]).filter((m) => Date.parse(m.Created) >= startedAt).length;
   };
   await expect.poll(freshMail).toBe(2);
+});
+
+// Inquiry forms (Phase 2 task 7). Turnstile (Cloudflare test key) passes by itself once a form is in use.
+test("a child is registered for Sunday School from the Sunday School page", async ({ page }) => {
+  test.setTimeout(60_000);
+  const f = en.inquiryForms.sunday_school;
+  await page.goto("/en/sunday-school");
+  await page.getByRole("link", { name: f.title }).click();
+  await expect(page).toHaveURL(/\/en\/sunday-school\/join$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(f.title);
+  await page.getByLabel(f.name).fill("E2E Parent");
+  await page.getByLabel(en.contact.email, { exact: true }).fill("e2e-parent@example.org");
+  await page.getByLabel(f.childName).fill("E2E Child");
+  await page.getByLabel(f.childAge).fill("2");
+  await page.getByLabel(en.contact.privacy).check();
+  await page.getByRole("button", { name: f.submit }).click();
+  await expect(page.locator("#inquiry-sunday-school-errors")).toContainText(en.contact.errors.childAge);
+  await page.getByLabel(f.childAge).fill("8");
+  await page.getByLabel(en.contact.privacy).check();
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
+  await page.getByRole("button", { name: f.submit }).click();
+  await expect(page.getByRole("status")).toContainText(/INQ-\d{4}-\d+/, { timeout: 20_000 });
+});
+
+test("someone offers to volunteer", async ({ page }) => {
+  test.setTimeout(60_000);
+  const f = en.inquiryForms.volunteer;
+  await page.goto("/en/support/volunteer");
+  await page.getByLabel(en.contact.name, { exact: true }).fill("E2E Volunteer");
+  await page.getByLabel(en.contact.email, { exact: true }).fill("e2e-volunteer@example.org");
+  await page.getByLabel(f.interest.choir).check();
+  await page.getByLabel(f.interest.media).check();
+  await page.getByLabel(f.availability).fill("Saturday mornings");
+  await page.getByLabel(en.contact.privacy).check();
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
+  await page.getByRole("button", { name: f.submit }).click();
+  await expect(page.getByRole("status")).toContainText(/INQ-\d{4}-\d+/, { timeout: 20_000 });
+});
+
+test("the fitihat page has a contact form under the guidance; join is not a department", async ({ page, request }) => {
+  await page.goto("/en/sacraments/fitihat");
+  await expect(page.getByRole("heading", { level: 2, name: "Fitihat guidance test" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: en.inquiryForms.funeral.title })).toBeVisible();
+  await expect(page.getByRole("button", { name: en.inquiryForms.funeral.submit })).toBeVisible();
+  // Marriage has no guidance in the fixtures: no page, so no form either.
+  expect((await request.get("/en/sacraments/marriage")).status()).toBe(404);
 });
 
 // Contact form (task 6): sends, shows the reference, and the office gets an email without the message.

@@ -32,6 +32,10 @@ const PAGES = [
   "/en/sacraments",
   "/en/sacraments/baptism",
   "/en/sacraments/baptism/request",
+  "/en/sacraments/fitihat",
+  "/en/sunday-school/join",
+  "/en/support/volunteer",
+  "/am/support/volunteer",
   "/am/sacraments/baptism/request",
   "/en/worship/weekly",
   "/en/worship/calendar",
@@ -101,6 +105,13 @@ test("baptism request form: errors, guardian and review", async ({ page }) => {
   await page.getByRole("button", { name: f.next }).click();
   await expect(page.getByRole("heading", { level: 2, name: new RegExp(f.steps.review) })).toBeFocused();
   await expectAccessible(page, "baptism form review");
+});
+
+test("volunteer form with errors", async ({ page }) => {
+  await page.goto("/en/support/volunteer");
+  await page.getByRole("button", { name: en.inquiryForms.volunteer.submit }).click();
+  await expect(page.locator("#inquiry-volunteer-errors")).toBeFocused();
+  await expectAccessible(page, "volunteer form errors");
 });
 
 test("phone menu open", async ({ page }) => {
