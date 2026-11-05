@@ -92,19 +92,20 @@ async function gate(cookies: Cookies, segments: string[]) {
   return adminMfaRedirect({ user, headers, segments });
 }
 
-/** Enrol via the real endpoints. Returns session cookies (incl. MFA cookie), secret and recovery codes. */
+/** Enrol via the real endpoints. Returns session cookies (incl. MFA cookie), secret, recovery codes and the code used. */
 async function enrol(cookies: Cookies) {
   const setup = await api.post("users/mfa/setup", cookies);
   expect(setup.status).toBe(200);
   const { secret, qrDataUrl } = (await setup.json()) as { secret: string; qrDataUrl: string };
   expect(qrDataUrl).toMatch(/^data:image\/png;base64,/);
 
-  const res = await api.post("users/mfa/enroll", cookies, { code: await generate({ secret }) });
+  const code = await generate({ secret });
+  const res = await api.post("users/mfa/enroll", cookies, { code });
   expect(res.status).toBe(200);
   const { recoveryCodes } = (await res.json()) as { recoveryCodes: string[] };
   const mfa = cookieValue(res, MFA_COOKIE);
   expect(mfa).toBeTruthy();
-  return { cookies: { ...cookies, [MFA_COOKIE]: mfa! }, secret, recoveryCodes };
+  return { cookies: { ...cookies, [MFA_COOKIE]: mfa! }, secret, recoveryCodes, code };
 }
 
 /** A valid code for the next 30 s step (the current one may already be used). */
@@ -179,7 +180,9 @@ describe("enrolment and verification", () => {
     const enrolled = await enrol(await login("verify@test.local"));
 
     const session = await login("verify@test.local");
-    const usedCode = await generate({ secret: enrolled.secret });
+    // Exactly the code used to enrol (generating "the current code" again can cross into the next
+    // 30-second step, which is a new, valid code).
+    const usedCode = enrolled.code;
     const replay = await api.post("users/mfa/verify", session, { code: usedCode });
     expect(replay.status).toBe(400);
 
