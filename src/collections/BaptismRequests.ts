@@ -1,6 +1,7 @@
 import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, CollectionConfig, FieldAccess, Validate } from "payload";
 
 import { hasRoleAccess, systemOnly } from "../access";
+import { isArchived, requiredUnlessArchived } from "../fields/archived";
 import { hasStaffRole } from "../access/content";
 import { stockholmDateTime, stockholmDay } from "../fields/stockholmDate";
 import { locales } from "../i18n/locales";
@@ -46,7 +47,6 @@ const clergyOnly: FieldAccess = ({ req }) => hasStaffRole(req, ["super_admin", "
 const applicantData = { access: { update: officeOnly } } as const;
 
 /** Archived cases have their personal data removed (retention job), so nothing is required any more. */
-const isArchived = (data: unknown) => Boolean((data as { archivedAt?: unknown } | undefined)?.archivedAt);
 const needsGuardian = (data: unknown) => {
   const category = (data as { candidate?: { category?: string } } | undefined)?.candidate?.category;
   return Boolean(category) && category !== "adult" && !isArchived(data);
@@ -56,7 +56,6 @@ const needsGuardian = (data: unknown) => {
 const guardianRequired: Validate = (value, { data }) => (needsGuardian(data) && !value ? "Required when the candidate is not an adult." : true);
 const guardianConsent: Validate = (value, { data }) =>
   needsGuardian(data) && value !== true ? "The guardian's consent is required when the candidate is not an adult." : true;
-const requiredUnlessArchived: Validate = (value, { data }) => (isArchived(data) || (value !== null && value !== undefined && value !== "") ? true : "Required.");
 
 /**
  * BaptismRequests — PRIVATE (spec §2.12, §3): read/update by super_admin, office coordinators and

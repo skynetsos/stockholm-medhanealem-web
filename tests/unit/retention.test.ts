@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { retentionCutoff } from "../../src/lib/baptism/retention";
+import { retentionCutoff } from "../../src/lib/cases/retention";
 import { cronAuth } from "../../src/lib/cron-auth";
 
 describe("retention (D-035)", () => {

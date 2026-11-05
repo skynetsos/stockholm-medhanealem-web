@@ -857,8 +857,8 @@ export interface Inquiry {
   type: 'contact' | 'pastoral' | 'marriage' | 'sunday_school' | 'volunteer' | 'funeral';
   status: 'new' | 'in_progress' | 'closed';
   assignedTo?: (number | null) | User;
-  name: string;
-  email: string;
+  name?: string | null;
+  email?: string | null;
   phone?: string | null;
   message?: string | null;
   /**
@@ -870,6 +870,11 @@ export interface Inquiry {
   interests?: string[] | null;
   availability?: string | null;
   privacyAccepted: boolean;
+  /**
+   * Set by the retention job: personal data removed.
+   */
+  archivedAt?: string | null;
+  archivedAt_tz?: SupportedTimezones;
   updatedAt: string;
   createdAt: string;
 }
@@ -1491,6 +1496,8 @@ export interface InquiriesSelect<T extends boolean = true> {
   interests?: T;
   availability?: T;
   privacyAccepted?: T;
+  archivedAt?: T;
+  archivedAt_tz?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1624,6 +1631,10 @@ export interface SiteSetting {
    * Months after completion before baptism cases are archived (legal review).
    */
   retentionMonthsBaptism?: number | null;
+  /**
+   * Months after an inquiry is closed before it is archived (legal review).
+   */
+  retentionMonthsInquiries?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1898,6 +1909,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         id?: T;
       };
   retentionMonthsBaptism?: T;
+  retentionMonthsInquiries?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

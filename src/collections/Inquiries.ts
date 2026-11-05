@@ -1,6 +1,8 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from "payload";
 
 import { hasRoleAccess, systemOnly } from "../access";
+import { requiredUnlessArchived } from "../fields/archived";
+import { stockholmDateTime } from "../fields/stockholmDate";
 import { locales } from "../i18n/locales";
 import { logCaseChanges } from "../lib/cases/hooks";
 import { nextReference } from "../lib/reference";
@@ -84,8 +86,8 @@ export const Inquiries: CollectionConfig = {
     {
       type: "row",
       fields: [
-        { name: "name", type: "text", required: true, ...submitted, admin: { ...submitted.admin, width: "34%" } },
-        { name: "email", type: "email", required: true, ...submitted, admin: { ...submitted.admin, width: "33%" } },
+        { name: "name", type: "text", validate: requiredUnlessArchived, ...submitted, admin: { ...submitted.admin, width: "34%" } },
+        { name: "email", type: "email", validate: requiredUnlessArchived, ...submitted, admin: { ...submitted.admin, width: "33%" } },
         { name: "phone", type: "text", ...submitted, admin: { ...submitted.admin, width: "33%" } },
       ],
     },
@@ -120,5 +122,10 @@ export const Inquiries: CollectionConfig = {
       label: "Agreed to the privacy notice",
       ...submitted,
     },
+    stockholmDateTime({
+      name: "archivedAt",
+      access: { update: systemOnly },
+      admin: { readOnly: true, position: "sidebar", description: "Set by the retention job: personal data removed." },
+    }),
   ],
 };

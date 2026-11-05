@@ -1,10 +1,10 @@
-/** Retention job (spec Phase 2 task 8, D-035): archive old closed baptism cases; dry run; cron endpoint. */
+/** Retention job (spec Phase 2 task 8, D-035): archive old closed baptism cases and inquiries; dry run; cron endpoint. */
 import { getPayload, type Payload } from "payload";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import config from "../../src/payload.config";
 import { POST } from "../../src/app/api/cron/retention/route";
-import { runRetention } from "../../src/lib/baptism/retention";
+import { type RetentionReport, runRetention } from "../../src/lib/cases/retention";
 import type { BaptismRequest } from "../../src/payload-types";
 import { rich } from "./helpers";
 
@@ -13,7 +13,17 @@ const STOCKHOLM = "Europe/Stockholm" as const;
 // The job runs "in 2029": 24 months back is January 2027, so everything created now (2026) is old.
 const NOW = new Date("2029-01-15T12:00:00.000Z");
 
-const ids: Record<"completed" | "declined" | "recent" | "open", number> = { completed: 0, declined: 0, recent: 0, open: 0 };
+const ids: Record<"completed" | "declined" | "recent" | "open" | "closedInquiry" | "openInquiry", number> = {
+  completed: 0,
+  declined: 0,
+  recent: 0,
+  open: 0,
+  closedInquiry: 0,
+  openInquiry: 0,
+};
+
+/** The part of the report for one collection. */
+const part = (report: RetentionReport, collection: "baptism-requests" | "inquiries") => report.results.find((r) => r.collection === collection)!;
 
 async function newCase(name: string) {
   return payload.create({
@@ -67,6 +77,17 @@ beforeAll(async () => {
   const [closing] = (await caseEvents(ids.recent)).filter((e) => e.action === "status_changed");
   await payload.update({ collection: "case-events", id: closing.id, overrideAccess: true, data: { at: "2028-06-01T10:00:00.000Z", at_tz: STOCKHOLM } });
   ids.open = (await newCase("Open Person")).id;
+
+  const inquiry = (name: string) =>
+    payload.create({
+      collection: "inquiries",
+      overrideAccess: true,
+      data: { type: "sunday_school", status: "new", name, email: "parent@example.org", phone: "070", childName: `${name} Kid`, childAge: 8, message: "Private message", privacyAccepted: true },
+    });
+  ids.closedInquiry = (await inquiry("Inquiry Person")).id;
+  await payload.update({ collection: "inquiries", id: ids.closedInquiry, overrideAccess: true, data: { status: "closed" } });
+  ids.openInquiry = (await inquiry("Open Inquirer")).id;
+  await payload.updateGlobal({ slug: "site-settings", overrideAccess: true, context: { disableRevalidate: true }, data: { retentionMonthsInquiries: 12 } });
 });
 
 afterAll(async () => {
@@ -76,8 +97,12 @@ afterAll(async () => {
 describe("retention job", () => {
   it("dry run: lists the old closed cases and changes nothing", async () => {
     const report = await runRetention(payload, { dryRun: true, now: NOW });
-    expect(report).toMatchObject({ dryRun: true, months: 24, cutoff: "2027-01-15T12:00:00.000Z" });
-    const listed = report.cases.map((c) => c.id);
+    expect(report.dryRun).toBe(true);
+    expect(part(report, "baptism-requests")).toMatchObject({ months: 24, cutoff: "2027-01-15T12:00:00.000Z" });
+    expect(part(report, "inquiries")).toMatchObject({ months: 12, cutoff: "2028-01-15T12:00:00.000Z" });
+    expect(part(report, "inquiries").cases.map((c) => c.id)).toContain(ids.closedInquiry);
+    expect(part(report, "inquiries").cases.map((c) => c.id)).not.toContain(ids.openInquiry);
+    const listed = part(report, "baptism-requests").cases.map((c) => c.id);
     expect(listed).toEqual(expect.arrayContaining([ids.completed, ids.declined]));
     expect(listed).not.toContain(ids.recent);
     expect(listed).not.toContain(ids.open);
@@ -89,7 +114,7 @@ describe("retention job", () => {
   it("archives them: personal data removed; reference, status and dates kept; audit notes cleared", async () => {
     const before = await payload.findByID({ collection: "baptism-requests", id: ids.completed, overrideAccess: true });
     const report = await runRetention(payload, { dryRun: false, now: NOW });
-    expect(report.cases.map((c) => c.id)).toEqual(expect.arrayContaining([ids.completed, ids.declined]));
+    expect(part(report, "baptism-requests").cases.map((c) => c.id)).toEqual(expect.arrayContaining([ids.completed, ids.declined]));
 
     const archived = await payload.findByID({ collection: "baptism-requests", id: ids.completed, overrideAccess: true });
     expect(archived).toMatchObject({
@@ -122,7 +147,28 @@ describe("retention job", () => {
     expect(recent.applicant?.name).toBe("Recent Person");
     expect(open.applicant?.name).toBe("Open Person");
     expect((await caseEvents(ids.recent)).find((e) => e.action === "status_changed")?.note).toBe("Another reason");
-    expect((await runRetention(payload, { dryRun: false, now: NOW })).cases).toEqual([]);
+    const again = await runRetention(payload, { dryRun: false, now: NOW });
+    expect(again.results.map((r) => r.cases)).toEqual([[], []]);
+  });
+
+  it("archives closed inquiries the same way; open ones stay", async () => {
+    const archived = await payload.findByID({ collection: "inquiries", id: ids.closedInquiry, overrideAccess: true });
+    expect(archived).toMatchObject({
+      type: "sunday_school",
+      status: "closed",
+      archivedAt: NOW.toISOString(),
+      name: null,
+      email: null,
+      phone: null,
+      message: null,
+      childName: null,
+      childAge: null,
+      privacyAccepted: true,
+    });
+    expect(archived.reference).toMatch(/^INQ-/);
+    expect(JSON.stringify(archived)).not.toMatch(/Inquiry Person|parent@example\.org|Private message/);
+    const open = await payload.findByID({ collection: "inquiries", id: ids.openInquiry, overrideAccess: true });
+    expect(open.name).toBe("Open Inquirer");
   });
 });
 
@@ -139,7 +185,7 @@ describe("cron endpoint", () => {
       const ok = await call("Bearer test-cron-secret-0123456789");
       expect(ok.status).toBe(200);
       const body = await ok.json();
-      expect(body).toMatchObject({ dryRun: true, months: 24 });
+      expect(body).toMatchObject({ dryRun: true, results: [{ collection: "baptism-requests", months: 24 }, { collection: "inquiries", months: 12 }] });
       expect(JSON.stringify(body)).not.toMatch(/Person|example\.org/);
 
       process.env.CRON_SECRET = "replace-with-random-hex";
