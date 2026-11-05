@@ -14,15 +14,10 @@ type Props = Readonly<{
   params: Promise<{ locale: string }>;
 }>;
 
-// Pages render on first request and are cached for 5 minutes (spec §4 ISR); no database is
-// needed at build time. Saving a global refreshes header/footer immediately (LAYOUT_TAG).
-// An empty generateStaticParams is what makes Next.js cache [locale] pages on demand instead of
-// rendering every request dynamically.
-export const revalidate = 300;
-
-export function generateStaticParams() {
-  return [];
-}
+// Every page is rendered per request, because its Content Security Policy carries a fresh nonce that
+// Next.js puts on its scripts (D-037; this replaces the 5-minute page cache of D-007). The content
+// itself stays cached (unstable_cache, refreshed on save), so a render doesn't query the database.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Pick<Props, "params">): Promise<Metadata> {
   const { locale } = await params;

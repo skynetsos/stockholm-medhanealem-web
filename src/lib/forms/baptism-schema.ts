@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "./zod";
 
 /**
  * Baptism request form (spec Phase 2 task 4): one zod schema per step, used by the browser to check

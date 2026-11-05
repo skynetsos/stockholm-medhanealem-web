@@ -69,11 +69,16 @@ test("unknown file-like paths get a localized 404, not a server error", async ({
   expect(await response.text()).toContain(`<h1>${am.notFound.title}</h1>`);
 });
 
-test("public pages are cached (ISR, spec §4)", async ({ request }) => {
-  // After a fresh build the first requests generate the page (MISS); other tests may be doing that
-  // concurrently, so poll briefly. HIT = from cache; STALE = cached copy refreshed in the background.
-  await expect
-    .poll(async () => (await request.get("/en")).headers()["x-nextjs-cache"], { timeout: 15_000 })
-    .toMatch(/^(HIT|STALE)$/);
-  expect((await request.get("/en")).headers()["x-nextjs-stale-time"]).toBe("300");
+// D-037 replaces the page cache of spec §4 (ISR): every page carries a fresh CSP nonce, so it is
+// rendered per request and must never be stored by Cloudflare or the browser (a cached nonce
+// would be shared by everyone). Content data stays cached on the server.
+test("public pages are rendered per request with a fresh nonce, never cached publicly", async ({ request }) => {
+  for (const path of ["/en", "/en/e2e-test-page"]) {
+    const [first, second] = [await request.get(path), await request.get(path)];
+    const nonce = (r: typeof first) => r.headers()["content-security-policy"]?.match(/'nonce-([^']+)'/)?.[1];
+    expect(nonce(first), path).toBeTruthy();
+    expect(nonce(second), path).not.toBe(nonce(first));
+    expect(first.headers()["cache-control"], path).toMatch(/private|no-store/);
+    expect(first.headers()["cache-control"], path).not.toMatch(/s-maxage/);
+  }
 });

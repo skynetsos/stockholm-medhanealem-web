@@ -37,12 +37,6 @@ test("built-in pages win over CMS addresses: /our-church/clergy", async ({ page 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(en.clergy.title);
 });
 
-test("CMS pages are cached like other pages (ISR)", async ({ request }) => {
-  await expect
-    .poll(async () => (await request.get("/en/e2e-test-page")).headers()["x-nextjs-cache"], { timeout: 15_000 })
-    .toMatch(/^(HIT|STALE)$/);
-});
-
 // Teachings and sacrament pages exist only with published content (D-018).
 test("faith teachings and sacrament guidance are served", async ({ page }) => {
   await page.goto("/en/our-faith");

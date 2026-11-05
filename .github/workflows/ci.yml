@@ -96,6 +96,9 @@ jobs:
           done
           echo "S3 service did not come up" && exit 1
 
+      - name: Dependency audit (high and critical; known exceptions in pnpm-workspace.yaml, D-037)
+        run: pnpm audit --prod --audit-level=high
+
       - name: Lint
         run: pnpm lint
 

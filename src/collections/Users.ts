@@ -3,6 +3,7 @@ import { type Access, APIError, type CollectionConfig } from "payload";
 import { hasRole, isStaff, isSuperAdmin, isSuperAdminField, isSuperAdminOrSelf, isSuperAdminRequest, PRIVILEGED_ROLES, ROLES, systemOnly } from "../access";
 import { localeNames, locales } from "../i18n/locales";
 import { mfaEndpoints } from "../lib/mfa/endpoints";
+import { limitAdminLogins } from "../lib/security/login-limit";
 import { MFA_SESSION_SECONDS } from "../lib/mfa/session";
 
 const roleLabels: Record<(typeof ROLES)[number], string> = {
@@ -61,6 +62,7 @@ export const Users: CollectionConfig = {
   },
   endpoints: mfaEndpoints,
   hooks: {
+    beforeOperation: [limitAdminLogins],
     beforeLogin: [
       ({ user }) => {
         if ((user as { active?: boolean | null }).active === false) {

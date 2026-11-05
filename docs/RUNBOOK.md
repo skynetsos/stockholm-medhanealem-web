@@ -310,6 +310,19 @@ requests** in the sidebar (D-036):
 - Both are recorded in the case's timeline with your name. Someone may have several cases (e.g. a
   contact message and a baptism request): search both lists.
 
+## Security checks
+
+- **Content Security Policy** (D-037): the public site sends a strict policy with a fresh nonce on
+  every page; the admin and APIs have their own. Adding an outside service (another video site, a
+  map provider, analytics) means adding it to `src/lib/security/csp.ts`, or it will be blocked —
+  check the browser console for "Content Security Policy" errors. `pnpm test:e2e` fails on any
+  violation on the contact form, a video and the admin case page.
+- **Dependency audit:** CI runs `pnpm audit --prod --audit-level=high`. When it fails, upgrade the
+  package (or add an `overrides` entry in `pnpm-workspace.yaml` for an indirect one). Exceptions go
+  in `auditConfig.ignoreGhsas` there only with a reason in DECISIONS.md.
+- **Admin sign-in:** 10 attempts per connection per 15 minutes, and 5 wrong passwords lock an
+  account for 15 minutes. A locked-out staff member waits, or a super admin unlocks them (Users).
+
 ## Importing photos
 
 - **Church images from the old site** (`src/seed/assets/`): `pnpm payload run scripts/import-site-assets.ts` imports the church photo and logo (publication permission ticked) and sets the Site settings logo, the Default share image and the Home page hero image. Safe to run again: images already in Media (same file name) are reused.

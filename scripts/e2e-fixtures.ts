@@ -138,5 +138,23 @@ await payload.updateGlobal({
   data: { requirements: baptismPage.requirements!.map((r) => ({ id: r.id, item: "A godparent", detail: "An Orthodox Tewahedo Christian" })) },
 });
 
+// CSP checks in the admin (Phase 2 task 10): a super admin with a test password (this database only;
+// MFA is set up by the test itself) and a baptism request to open.
+await payload.create({
+  collection: "users",
+  ...ctx,
+  data: { email: "e2e-csp-admin@example.org", name: "E2E CSP Admin", password: "E2e-csp-admin-Pa55!", roles: ["super_admin"], active: true },
+});
+await payload.create({
+  collection: "baptism-requests",
+  ...ctx,
+  data: {
+    status: "new",
+    applicant: { name: "E2E Applicant", email: "e2e-csp-applicant@example.org", preferredLocale: "en" },
+    candidate: { fullName: "E2E Candidate", category: "adult" },
+    privacyAccepted: true,
+  },
+});
+
 console.log("E2E fixtures created");
 process.exit(0);

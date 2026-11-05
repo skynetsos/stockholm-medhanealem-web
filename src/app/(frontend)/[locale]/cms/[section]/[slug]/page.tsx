@@ -12,11 +12,6 @@ import { pagePath } from "@/lib/pages";
 
 type Props = { params: Promise<{ locale: string; section: string; slug: string }> };
 
-// Cached for 5 minutes on first visit like other pages (D-007): an empty list builds nothing ahead.
-export function generateStaticParams() {
-  return [];
-}
-
 /**
  * A CMS page (spec §2.2). Reached only through the middleware, which rewrites the public address
  * of a published page ("/our-church/history") to this route (D-017).

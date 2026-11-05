@@ -40,6 +40,9 @@ export default buildConfig({
   secret: requireEnv("PAYLOAD_SECRET"),
   admin: {
     user: Users.slug,
+    // Payload's own avatar, not Gravatar: no staff email hash sent to gravatar.com, and the admin's
+    // CSP allows no outside images (D-037).
+    avatar: "default",
     // Everything is entered and shown in Stockholm time (stored as UTC).
     timezones: { supportedTimezones: [STOCKHOLM_TIMEZONE], defaultTimezone: STOCKHOLM_TIMEZONE.value },
     importMap: {

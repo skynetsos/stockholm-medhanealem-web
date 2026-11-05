@@ -14,11 +14,6 @@ import { mediaSource, publicMedia } from "@/lib/media";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-// Cached for 5 minutes on first visit like other pages (D-007): an empty list builds nothing ahead.
-export function generateStaticParams() {
-  return [];
-}
-
 async function findPost(locale: string, slug: string) {
   return (await getPosts(locale as Locale)).find((p) => p.slug === slug) ?? null;
 }

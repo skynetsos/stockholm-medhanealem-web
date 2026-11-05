@@ -13,11 +13,6 @@ import { galleryItems } from "@/lib/media";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-// Cached for 5 minutes on first visit like other pages (D-007): an empty list builds nothing ahead.
-export function generateStaticParams() {
-  return [];
-}
-
 async function findGallery(locale: string, slug: string) {
   const gallery = (await getGalleries(locale as Locale)).find((g) => g.slug === slug);
   const images = gallery ? galleryItems(gallery.images) : [];

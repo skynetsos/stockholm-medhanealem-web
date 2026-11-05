@@ -4,6 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
 import { availablePaths, rewriteTarget } from "./lib/cms-routing";
 import { isContentGatedPath } from "./lib/content-paths";
+import { createNonce, cspOptions, publicCsp } from "./lib/security/csp";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -14,12 +15,41 @@ const handleI18nRouting = createMiddleware(routing);
 const internalOrigin = () => process.env.INTERNAL_SERVER_URL ?? `http://127.0.0.1:${process.env.PORT ?? "3000"}`;
 
 /**
+ * Content Security Policy with a fresh nonce for this response (D-037). Next.js puts the nonce on its
+ * own scripts when it finds it in the *request's* CSP header, and middleware changes request headers
+ * through an override list that must name every request header to keep; next-intl may have set
+ * some already, so they are merged.
+ */
+function withCsp(request: NextRequest, response: NextResponse): NextResponse {
+  const nonce = createNonce();
+  const csp = publicCsp(nonce, cspOptions());
+  const forward = new Headers(request.headers);
+  const overridden = response.headers.get("x-middleware-override-headers");
+  for (const name of overridden ? overridden.split(",") : []) {
+    const value = response.headers.get(`x-middleware-request-${name}`);
+    if (value === null) forward.delete(name);
+    else forward.set(name, value);
+  }
+  forward.set("content-security-policy", csp);
+  forward.set("x-nonce", nonce);
+  response.headers.set("x-middleware-override-headers", [...forward.keys()].join(","));
+  forward.forEach((value, name) => response.headers.set(`x-middleware-request-${name}`, value));
+  response.headers.set("Content-Security-Policy", csp);
+  return response;
+}
+
+/**
  * 1. next-intl: every public path gets a locale ("/" → "/am", "/wp-login.php" → "/am/wp-login.php").
  * 2. Content-dependent addresses (D-017, D-018): a published CMS page is rewritten to the internal
  *    CMS route; a teaching or sacrament address without content is sent to the 404; anything else
  *    is left alone, so unknown addresses get the server-rendered 404.
+ * 3. The Content Security Policy with this response's nonce (D-037).
  */
 export default async function middleware(request: NextRequest) {
+  return withCsp(request, await route(request));
+}
+
+async function route(request: NextRequest): Promise<NextResponse> {
   const response = handleI18nRouting(request);
   if (response.headers.has("location")) return response;
 

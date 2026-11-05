@@ -12,11 +12,6 @@ import { isFaithCategory } from "@/lib/teachings";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-// Cached for 5 minutes on first visit like other pages (D-007): an empty list builds nothing ahead.
-export function generateStaticParams() {
-  return [];
-}
-
 async function findTeaching(locale: string, slug: string) {
   const teachings = await getPublishedTeachings(locale as Locale);
   return teachings.find((t) => t.slug === slug && isFaithCategory(t.category)) ?? null;

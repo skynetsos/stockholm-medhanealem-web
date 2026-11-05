@@ -8,7 +8,7 @@
 import { readdirSync, readFileSync } from "fs";
 import path from "path";
 import { getPayload } from "payload";
-import sharp from "sharp";
+import sharp, { type OutputInfo } from "sharp";
 
 import config from "../src/payload.config";
 import { stockholmDate } from "../src/lib/ethiopian-calendar";
@@ -60,7 +60,7 @@ for (const file of readdirSync(dir).sort()) {
     continue;
   }
 
-  let output: { data: Buffer; info: sharp.OutputInfo };
+  let output: { data: Buffer; info: OutputInfo };
   try {
     // rotate() applies the EXIF orientation; sharp writes no metadata unless asked to.
     output = await sharp(readFileSync(path.join(dir, file)))

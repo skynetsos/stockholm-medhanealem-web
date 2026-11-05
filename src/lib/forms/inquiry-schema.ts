@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "./zod";
 
 /**
  * Inquiry forms (spec §2.14, Phase 1 task 6 and Phase 2 task 7): one schema per type, sharing the

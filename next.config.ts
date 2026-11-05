@@ -2,6 +2,8 @@ import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
+import { adminCsp, API_CSP, cspOptions } from "./src/lib/security/csp";
+
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
@@ -29,5 +31,19 @@ export default {
     ),
     // Self-hosted Ethiopic fonts (D-025): versioned file names, so they can be cached for a year.
     { source: "/fonts/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+    // Security headers everywhere (D-037; Caddy sends the same in production, plus HSTS).
+    {
+      source: "/:path*",
+      headers: [
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+      ],
+    },
+    // Content Security Policy: the public site gets a nonce policy from the middleware; the admin and
+    // the APIs (which the middleware skips) get theirs here.
+    { source: "/admin/:path*", headers: [{ key: "Content-Security-Policy", value: adminCsp(cspOptions()) }] },
+    { source: "/api/:path*", headers: [{ key: "Content-Security-Policy", value: API_CSP }] },
   ],
 } satisfies NextConfig;
