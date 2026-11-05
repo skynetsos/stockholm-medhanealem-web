@@ -45,7 +45,7 @@ function withCsp(request: NextRequest, response: NextResponse): NextResponse {
  *    is left alone, so unknown addresses get the server-rendered 404.
  * 3. The Content Security Policy with this response's nonce (D-037).
  */
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   return withCsp(request, await route(request));
 }
 

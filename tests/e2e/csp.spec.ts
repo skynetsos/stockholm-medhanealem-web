@@ -68,3 +68,29 @@ test("admin case page: its own policy, zero violations", async ({ page }) => {
   await page.waitForTimeout(1000);
   expect(await violations()).toEqual([]);
 });
+
+test("404 page and optimised images: zero violations, nonce on scripts, images load (Next.js 16, D-038)", async ({ page }) => {
+  const violations = await watchCsp(page);
+  const response = await page.goto("/en/does-not-exist");
+  expect(response!.status()).toBe(404);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  // Every script on the 404 page carries this response's nonce.
+  const nonce = response!.headers()["content-security-policy"].match(/'nonce-([^']+)'/)![1];
+  const scripts = await page.locator("script").evaluateAll((els) => els.map((el) => (el as HTMLScriptElement).nonce));
+  expect(scripts.length).toBeGreaterThan(0);
+  expect(scripts.every((n) => n === nonce)).toBe(true);
+
+  // Gallery thumbnails go through Next.js's image optimiser (/_next/image).
+  await page.goto("/en/media/galleries/e2e-gallery");
+  const images = page.locator('main img[src*="/_next/image"]');
+  await expect(images.first()).toBeVisible();
+  // Below-the-fold thumbnails load lazily: ask the optimiser for each one directly.
+  const sources = await images.evaluateAll((els) => els.map((el) => (el as HTMLImageElement).currentSrc || (el as HTMLImageElement).src));
+  expect(sources.length).toBeGreaterThan(0);
+  for (const src of sources) {
+    const res = await page.request.get(src);
+    expect(res.status(), src).toBe(200);
+    expect(res.headers()["content-type"], src).toMatch(/^image\//);
+  }
+  expect(await violations()).toEqual([]);
+});

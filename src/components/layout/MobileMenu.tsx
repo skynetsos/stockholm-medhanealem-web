@@ -16,8 +16,13 @@ export function MobileMenu({ children }: { children: ReactNode }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
-  // Close after navigating, and on Escape (returning focus to the toggle).
-  useEffect(() => setOpen(false), [pathname]);
+  // Close after navigating (adjusted while rendering, as React recommends, not in an effect)…
+  const [openedOn, setOpenedOn] = useState(pathname);
+  if (openedOn !== pathname) {
+    setOpenedOn(pathname);
+    setOpen(false);
+  }
+  // …and on Escape, returning focus to the toggle.
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {

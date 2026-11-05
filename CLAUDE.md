@@ -3,7 +3,7 @@
 Read STOCKHOLM-MEDHANEALEM-BUILD-SPEC.md before any work. Follow the current phase only.
 
 ## Stack
-- Next.js 15 (App Router, TypeScript, strict), Tailwind CSS, next-intl
+- Next.js 16 (App Router, TypeScript, strict; upgraded from 15 for security, D-038), Tailwind CSS, next-intl
 - Payload CMS 3 embedded in this app at /admin (Postgres adapter, Lexical rich text)
 - PostgreSQL 16, pnpm, Docker Compose for local dev
 - Email: Resend. Storage: S3-compatible (EU). Error tracking: Sentry.

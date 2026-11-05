@@ -7,7 +7,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const ROOT = path.resolve(__dirname, "../..");
-const PUBLIC_CODE = ["src/app/(frontend)", "src/app/api", "src/app/robots.ts", "src/app/sitemap.ts", "src/components", "src/lib/cms", "src/middleware.ts"];
+const PUBLIC_CODE = ["src/app/(frontend)", "src/app/api", "src/app/robots.ts", "src/app/sitemap.ts", "src/components", "src/lib/cms", "src/proxy.ts"];
 const PRIVATE_SLUGS = ["baptism-requests", "case-events", "inquiries"];
 /** Admin components render only inside the signed-in Payload admin (with access control). */
 const ADMIN_ONLY = path.join("src", "components", "admin");

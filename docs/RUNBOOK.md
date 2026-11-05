@@ -426,7 +426,7 @@ photos* above); they arrive unticked in the gallery "ፎቶዎች / Photos" for 
 | `/api/health` returns 503 | The app can't reach Postgres: `docker compose -f docker-compose.prod.yml ps`, check `postgres` is healthy and `POSTGRES_*` match. |
 | Caddy can't get a certificate | DNS doesn't point at the server yet, port 80/443 is blocked, or Cloudflare proxy is on before the first certificate (set "DNS only" first). |
 | Header/footer changes don't show | Pages are cached for 5 minutes; saving in /admin refreshes them immediately. Changes made by scripts (`seed:base`) appear within 5 minutes, or restart the app. |
-| Unknown file paths like `/robots.txt` redirect to `/am/...` | A file was added to `public/` or a new file route without adding it to the middleware skip list in `src/middleware.ts`. |
+| Unknown file paths like `/robots.txt` redirect to `/am/...` | A file was added to `public/` or a new file route without adding it to the skip list (matcher) in `src/proxy.ts`. |
 | `pnpm test` fails with connection errors | Local Postgres isn't running: `pnpm services:up`. |
 | Dev server shows stale header data after a script changed globals | Restart `pnpm dev` (the 5-minute cache only clears on admin saves). |
 | Backup script: `gpg: command not found` | Install GnuPG (`sudo apt install gnupg`). On Windows run the script from Git Bash. |

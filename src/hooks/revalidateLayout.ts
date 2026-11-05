@@ -6,7 +6,8 @@ export const LAYOUT_TAG = "layout-globals";
 function revalidateLayoutTag(req: PayloadRequest) {
   if (req.context?.disableRevalidate) return;
   try {
-    revalidateTag(LAYOUT_TAG);
+    // Expire now (Next.js 16 needs a profile; "max" would serve the old version once more, D-038).
+    revalidateTag(LAYOUT_TAG, { expire: 0 });
   } catch (error) {
     // Outside a Next.js request (scripts, tests) there is no cache to revalidate.
     req.payload.logger.debug({ msg: "revalidateTag skipped", error: String(error) });

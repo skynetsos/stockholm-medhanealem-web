@@ -1,8 +1,6 @@
-"use client";
-
 import "@/styles/globals.css";
 
-import { usePathname } from "next/navigation";
+import { headers } from "next/headers";
 
 import { defaultLocale, type Locale, locales } from "@/i18n/locales";
 import am from "@/messages/am.json";
@@ -13,14 +11,15 @@ import { fontVariables } from "@/styles/fonts";
 const messages: Record<Locale, typeof en> = { am, en, sv };
 
 /**
- * 404 for every URL that matches no route (e.g. /en/does-not-exist), server-rendered with the
- * language taken from the URL. It is a client component on purpose: Next.js renders the root
- * not-found into every page's tree, and a server component reading the request would make every
- * cached page dynamic. See docs/DECISIONS.md D-007.
+ * 404 for every URL that matches no route (e.g. /en/does-not-exist), server-rendered in the
+ * visitor's language: the proxy's next-intl step puts the locale from the URL on the request
+ * (`x-next-intl-locale`). Reading the request also makes Next.js render this page per request
+ * rather than once at build time, so its scripts get the CSP nonce (D-037, D-038). Before the
+ * nonce policy this had to be a client component so cached pages stayed cacheable (D-007).
  */
-export default function RootNotFound() {
-  const segment = usePathname()?.split("/")[1] ?? "";
-  const locale = (locales as readonly string[]).includes(segment) ? (segment as Locale) : defaultLocale;
+export default async function RootNotFound() {
+  const requested = (await headers()).get("x-next-intl-locale") ?? "";
+  const locale = (locales as readonly string[]).includes(requested) ? (requested as Locale) : defaultLocale;
   const t = messages[locale].notFound;
 
   return (

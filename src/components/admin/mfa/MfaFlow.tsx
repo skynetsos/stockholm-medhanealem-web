@@ -46,6 +46,8 @@ export function MfaFlow({ mode }: { mode: Mode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
   }, [mode]);
 
+  // A full page load on purpose: the admin must start over with the new MFA session cookie.
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
   const goToAdmin = () => window.location.assign("/admin");
 
   const onSubmit = async (event: FormEvent) => {

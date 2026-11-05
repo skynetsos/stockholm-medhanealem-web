@@ -59,37 +59,41 @@ export function BaptismRequestForm({
   const heading = useRef<HTMLHeadingElement>(null);
   const summary = useRef<HTMLDivElement>(null);
   const success = useRef<HTMLDivElement>(null);
-  const focusNext = useRef<"heading" | "summary" | null>(null);
+  // Where focus goes after the next render; a new object each time, so the same target can repeat.
+  const [focusRequest, setFocusRequest] = useState<{ to: "heading" | "summary" } | null>(null);
+  const [handledState, setHandledState] = useState(state);
 
   const values = (): Values => Object.fromEntries([...new FormData(form.current!).entries()].map(([k, v]) => [k, String(v)]));
   const index = BAPTISM_STEPS.indexOf(step);
 
-  // The server's answer: show its errors on the first step that has one.
-  useEffect(() => {
-    if (state?.status !== "error") return;
-    const fieldErrors = state.fieldErrors ?? {};
-    setErrors(fieldErrors);
-    setFormError(state.formError ? t(`errors.${state.formError}`) : null);
-    setStep(firstStepWithError(fieldErrors) ?? "review");
-    focusNext.current = "summary";
-  }, [state, t]);
+  // The server's answer: show its errors on the first step that has one (adjusted while rendering,
+  // as React recommends for state that follows other state, not in an effect).
+  if (state !== handledState) {
+    setHandledState(state);
+    if (state?.status === "error") {
+      const fieldErrors = state.fieldErrors ?? {};
+      setErrors(fieldErrors);
+      setFormError(state.formError ? t(`errors.${state.formError}`) : null);
+      setStep(firstStepWithError(fieldErrors) ?? "review");
+      setFocusRequest({ to: "summary" });
+    }
+  }
 
   useEffect(() => {
     if (state?.status === "success") success.current?.focus();
   }, [state]);
 
   useEffect(() => {
-    if (focusNext.current === "summary") summary.current?.focus();
-    if (focusNext.current === "heading") heading.current?.focus();
-    focusNext.current = null;
-  }, [step, errors, formError]);
+    if (focusRequest?.to === "summary") summary.current?.focus();
+    if (focusRequest?.to === "heading") heading.current?.focus();
+  }, [focusRequest]);
 
   const goTo = (next: BaptismStep) => {
     if (next === "review") setReview(values());
     setErrors({});
     setFormError(null);
     setStep(next);
-    focusNext.current = "heading";
+    setFocusRequest({ to: "heading" });
   };
 
   /** Check the current step; true when it may be left. */
@@ -98,7 +102,7 @@ export function BaptismRequestForm({
     if (Object.keys(stepErrors).length === 0) return true;
     setErrors(stepErrors);
     setFormError(null);
-    focusNext.current = "summary";
+    setFocusRequest({ to: "summary" });
     return false;
   };
 

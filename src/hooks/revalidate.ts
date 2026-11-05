@@ -19,7 +19,8 @@ function revalidate(req: PayloadRequest, tags: readonly string[]) {
   if (req.context?.disableRevalidate) return;
   for (const tag of tags) {
     try {
-      revalidateTag(tag);
+      // Expire now (Next.js 16 needs a profile; "max" would serve the old version once more, D-038).
+      revalidateTag(tag, { expire: 0 });
     } catch (error) {
       // Outside a Next.js request (scripts, tests) there is no cache to revalidate.
       req.payload.logger.debug({ msg: "revalidateTag skipped", tag, error: String(error) });
