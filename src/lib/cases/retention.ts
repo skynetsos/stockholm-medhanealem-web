@@ -47,7 +47,8 @@ export const RETENTION_POLICIES: Record<CaseCollection, Policy> = {
     final: ["closed"],
     setting: "retentionMonthsInquiries",
     defaultMonths: 12,
-    cleared: { name: null, email: null, phone: null, message: null, childName: null, childAge: null, interests: null, availability: null },
+    // `interests` is a list stored in its own table: only an empty list clears it (null leaves it as it was).
+    cleared: { name: null, email: null, phone: null, message: null, childName: null, childAge: null, interests: [], availability: null },
   },
 };
 
@@ -108,15 +109,25 @@ export async function runRetention(payload: Payload, { dryRun, now = new Date() 
       const closed = await closedAt(payload, collection, doc);
       if (new Date(closed) < cutoff) cases.push({ id: doc.id, reference: doc.reference ?? String(doc.id), status: doc.status, closedAt: closed });
     }
-    if (!dryRun) for (const item of cases) await archiveCase(payload, collection, policy, item.id, now);
+    if (!dryRun) for (const item of cases) await removePersonalData(payload, collection, item.id, { now, action: "archived" });
     results.push({ collection, months, cutoff: cutoff.toISOString(), cases });
   }
   return { dryRun, results };
 }
 
-/** Archives one case in one transaction: personal data removed, audit notes cleared, entry logged. */
-async function archiveCase(payload: Payload, collection: CaseCollection, policy: Policy, id: number, now: Date) {
-  // `retention` tells the audit hook not to log the cleared fields one by one (one "archived" entry instead).
+/**
+ * Removes a case's personal data in one transaction (D-035, D-036): the policy's personal fields are
+ * set to null, `archivedAt` is set, the notes written with status changes in the audit log are
+ * cleared, and one entry is logged — "archived" by the retention job (system) or "erased" by a
+ * super admin (`actorId`).
+ */
+export async function removePersonalData(
+  payload: Payload,
+  collection: CaseCollection,
+  id: number,
+  { now = new Date(), action, actorId }: { now?: Date; action: "archived" | "erased"; actorId?: number },
+) {
+  // `retention` tells the audit hook not to log the cleared fields one by one (one entry instead).
   const req = await createLocalReq({ context: { retention: true } }, payload);
   await initTransaction(req);
   try {
@@ -125,7 +136,7 @@ async function archiveCase(payload: Payload, collection: CaseCollection, policy:
       id,
       overrideAccess: true,
       req,
-      data: { ...policy.cleared, archivedAt: now.toISOString(), archivedAt_tz: "Europe/Stockholm" } as never,
+      data: { ...RETENTION_POLICIES[collection].cleared, archivedAt: now.toISOString(), archivedAt_tz: "Europe/Stockholm" } as never,
     });
     const notes = await payload.find({
       collection: "case-events",
@@ -143,7 +154,8 @@ async function archiveCase(payload: Payload, collection: CaseCollection, policy:
       },
     });
     for (const event of notes.docs) await payload.update({ collection: "case-events", id: event.id, overrideAccess: true, req, data: { note: null } });
-    await logCaseEvent(payload, { collection, id, action: "archived", note: "Personal data removed by the retention job" }, req);
+    const note = action === "archived" ? "Personal data removed by the retention job" : "Personal data erased on request";
+    await logCaseEvent(payload, { collection, id, action, actorId, note }, req);
     await commitTransaction(req);
   } catch (error) {
     await killTransaction(req);

@@ -4,6 +4,7 @@ import { hasRoleAccess, systemOnly } from "../access";
 import { requiredUnlessArchived } from "../fields/archived";
 import { stockholmDateTime } from "../fields/stockholmDate";
 import { locales } from "../i18n/locales";
+import { dataRequestEndpoints } from "../lib/cases/data-requests";
 import { logCaseChanges } from "../lib/cases/hooks";
 import { nextReference } from "../lib/reference";
 
@@ -50,6 +51,7 @@ export const Inquiries: CollectionConfig = {
   defaultSort: "-createdAt",
   // Status changes and assignments go to the audit log (CaseEvents); any status may follow any other.
   hooks: { beforeChange: [setReference], afterChange: [logCaseChanges("inquiries", { assignedTo: "assignedTo" })] },
+  endpoints: dataRequestEndpoints("inquiries"),
   fields: [
     {
       type: "row",
@@ -112,6 +114,12 @@ export const Inquiries: CollectionConfig = {
       ],
     },
     // "Age" column in the list (days since the case was sent); nothing in the edit view.
+    // Export / erase for data subject requests, super admins only (D-036).
+    {
+      name: "dataRequests",
+      type: "ui",
+      admin: { position: "sidebar", disableListColumn: true, components: { Field: "/components/admin/cases/DataRequestActions#DataRequestActions" } },
+    },
     // The audit log of this case, oldest first (D-032).
     { name: "timeline", type: "ui", admin: { disableListColumn: true, components: { Field: "/components/admin/cases/CaseTimeline#CaseTimeline" } } },
     { name: "age", type: "ui", label: "Age", admin: { components: { Cell: "/components/admin/cases/CaseAgeCell#CaseAgeCell" } } },
@@ -125,7 +133,7 @@ export const Inquiries: CollectionConfig = {
     stockholmDateTime({
       name: "archivedAt",
       access: { update: systemOnly },
-      admin: { readOnly: true, position: "sidebar", description: "Set by the retention job: personal data removed." },
+      admin: { readOnly: true, position: "sidebar", description: "Set when personal data was removed (retention job or erasure on request)." },
     }),
   ],
 };

@@ -296,6 +296,20 @@ audit trail (without free-text notes) stay.
 - Archiving can't be undone (the personal data is gone); restoring it would need a database backup
   from before, which also expires (backups are kept 30 days).
 
+## Data subject requests (copy or erasure)
+
+When someone asks for a copy of their data or for it to be erased (GDPR), a **super admin** opens
+the case (Requests → Baptism requests or Inquiries; search by name or email) and uses **Data
+requests** in the sidebar (D-036):
+
+- **Export as JSON** downloads everything held about the case and its timeline (staff names left
+  out). Send it to the person by a safe route, e.g. as a reply to their own email address.
+- **Erase personal data…** removes names, contact details, date of birth, messages and notes now,
+  after you type the case's reference. It can't be undone; the reference, status and timeline stay.
+  Decline or close the case too if it was still open.
+- Both are recorded in the case's timeline with your name. Someone may have several cases (e.g. a
+  contact message and a baptism request): search both lists.
+
 ## Importing photos
 
 - **Church images from the old site** (`src/seed/assets/`): `pnpm payload run scripts/import-site-assets.ts` imports the church photo and logo (publication permission ticked) and sets the Site settings logo, the Default share image and the Home page hero image. Safe to run again: images already in Media (same file name) are reused.

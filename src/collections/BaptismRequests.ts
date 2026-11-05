@@ -10,6 +10,7 @@ import { BAPTISM_STATUS_VALUES } from "../lib/baptism/state";
 import { logCaseEvent } from "../lib/cases/events";
 import { enforceBaptismWorkflow, logCaseChanges } from "../lib/cases/hooks";
 import { statusEndpoint } from "../lib/baptism/transition";
+import { dataRequestEndpoints } from "../lib/cases/data-requests";
 import { nextReference } from "../lib/reference";
 
 /** Spec §2.12 statuses with admin labels. Allowed transitions: src/lib/baptism/state.ts. */
@@ -82,7 +83,7 @@ export const BaptismRequests: CollectionConfig = {
   },
   defaultSort: "-createdAt",
   hooks: { beforeChange: [enforceBaptismWorkflow, setReference], afterChange: [logCreated, logChanges, sendDecisionEmail] },
-  endpoints: [statusEndpoint],
+  endpoints: [statusEndpoint, ...dataRequestEndpoints("baptism-requests")],
   fields: [
     // Current status and the buttons for the next steps this user may take (D-032).
     {
@@ -253,13 +254,19 @@ export const BaptismRequests: CollectionConfig = {
       ],
     },
     // "Age" column in the list (days since the case was sent); nothing in the edit view.
+    // Export / erase for data subject requests, super admins only (D-036).
+    {
+      name: "dataRequests",
+      type: "ui",
+      admin: { position: "sidebar", disableListColumn: true, components: { Field: "/components/admin/cases/DataRequestActions#DataRequestActions" } },
+    },
     // The audit log of this case, oldest first (D-032).
     { name: "timeline", type: "ui", admin: { disableListColumn: true, components: { Field: "/components/admin/cases/CaseTimeline#CaseTimeline" } } },
     { name: "age", type: "ui", label: "Age", admin: { components: { Cell: "/components/admin/cases/CaseAgeCell#CaseAgeCell" } } },
     stockholmDateTime({
       name: "archivedAt",
       access: { update: systemOnly },
-      admin: { readOnly: true, position: "sidebar", description: "Set by the retention job: personal data removed." },
+      admin: { readOnly: true, position: "sidebar", description: "Set when personal data was removed (retention job or erasure on request)." },
     }),
   ],
 };

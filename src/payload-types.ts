@@ -838,7 +838,7 @@ export interface BaptismRequest {
     submittedAt_tz?: SupportedTimezones;
   };
   /**
-   * Set by the retention job: personal data removed.
+   * Set when personal data was removed (retention job or erasure on request).
    */
   archivedAt?: string | null;
   archivedAt_tz?: SupportedTimezones;
@@ -871,7 +871,7 @@ export interface Inquiry {
   availability?: string | null;
   privacyAccepted: boolean;
   /**
-   * Set by the retention job: personal data removed.
+   * Set when personal data was removed (retention job or erasure on request).
    */
   archivedAt?: string | null;
   archivedAt_tz?: SupportedTimezones;
@@ -897,7 +897,7 @@ export interface CaseEvent {
       };
   actorType: 'user' | 'system';
   actor?: (number | null) | User;
-  action: 'created' | 'status_changed' | 'note_added' | 'email_sent' | 'assigned' | 'archived';
+  action: 'created' | 'status_changed' | 'note_added' | 'email_sent' | 'assigned' | 'archived' | 'exported' | 'erased';
   from?: string | null;
   to?: string | null;
   note?: string | null;

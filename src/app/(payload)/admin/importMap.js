@@ -25,6 +25,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { RolePublishButton as RolePublishButton_6207c6c49ad5eda08b7ec602fac45dae } from '../../../components/admin/RolePublishButton'
 import { CaseStatusActions as CaseStatusActions_75f3d0e101c5bb9232a26732a7726e48 } from '../../../components/admin/cases/CaseStatusActions'
 import { EthiopianDateHint as EthiopianDateHint_7a64d3c13abcf5d586c442bda8b45e56 } from '../../../components/admin/cases/EthiopianDateHint'
+import { DataRequestActions as DataRequestActions_dc54f04f06f206e4a4e1f797a61f0b25 } from '../../../components/admin/cases/DataRequestActions'
 import { CaseTimeline as CaseTimeline_453b9a83704f8b0bbbc865f60ba52185 } from '../../../components/admin/cases/CaseTimeline'
 import { CaseAgeCell as CaseAgeCell_4e9889028e897045d0ce453d0371462c } from '../../../components/admin/cases/CaseAgeCell'
 import { CaseStatusFilters as CaseStatusFilters_31750d5301c38d81ec2d5f01de1796ef } from '../../../components/admin/cases/CaseStatusFilters'
@@ -62,6 +63,7 @@ export const importMap = {
   "/components/admin/RolePublishButton#RolePublishButton": RolePublishButton_6207c6c49ad5eda08b7ec602fac45dae,
   "/components/admin/cases/CaseStatusActions#CaseStatusActions": CaseStatusActions_75f3d0e101c5bb9232a26732a7726e48,
   "/components/admin/cases/EthiopianDateHint#EthiopianDateHint": EthiopianDateHint_7a64d3c13abcf5d586c442bda8b45e56,
+  "/components/admin/cases/DataRequestActions#DataRequestActions": DataRequestActions_dc54f04f06f206e4a4e1f797a61f0b25,
   "/components/admin/cases/CaseTimeline#CaseTimeline": CaseTimeline_453b9a83704f8b0bbbc865f60ba52185,
   "/components/admin/cases/CaseAgeCell#CaseAgeCell": CaseAgeCell_4e9889028e897045d0ce453d0371462c,
   "/components/admin/cases/CaseStatusFilters#CaseStatusFilters": CaseStatusFilters_31750d5301c38d81ec2d5f01de1796ef,

@@ -43,6 +43,10 @@ export async function CaseTimeline({ id, collectionSlug, payload, req, i18n }: U
         return t("cases:event_assigned", { from: event.from || t("cases:nobody"), to: event.to || t("cases:nobody") });
       case "email_sent":
         return `${t("cases:event_email_sent")}: ${event.note ?? ""}`;
+      case "archived":
+      case "exported":
+      case "erased":
+        return t(`cases:event_${event.action}`);
       default:
         return [event.note || t("cases:event_note_added"), event.from || event.to ? `${event.from ?? "—"} → ${event.to ?? "—"}` : null].filter(Boolean).join(": ");
     }

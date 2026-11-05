@@ -13,6 +13,7 @@ import * as migration_20261027_192021_baptism_requests_case_events from './20261
 import * as migration_20261027_200552_baptism_page from './20261027_200552_baptism_page';
 import * as migration_20261029_181841_case_event_archived from './20261029_181841_case_event_archived';
 import * as migration_20261105_164650_inquiry_retention from './20261105_164650_inquiry_retention';
+import * as migration_20261105_170607_case_event_export_erase from './20261105_170607_case_event_export_erase';
 
 export const migrations = [
   {
@@ -88,6 +89,11 @@ export const migrations = [
   {
     up: migration_20261105_164650_inquiry_retention.up,
     down: migration_20261105_164650_inquiry_retention.down,
-    name: '20261105_164650_inquiry_retention'
+    name: '20261105_164650_inquiry_retention',
+  },
+  {
+    up: migration_20261105_170607_case_event_export_erase.up,
+    down: migration_20261105_170607_case_event_export_erase.down,
+    name: '20261105_170607_case_event_export_erase'
   },
 ];

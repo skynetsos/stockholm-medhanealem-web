@@ -82,7 +82,20 @@ beforeAll(async () => {
     payload.create({
       collection: "inquiries",
       overrideAccess: true,
-      data: { type: "sunday_school", status: "new", name, email: "parent@example.org", phone: "070", childName: `${name} Kid`, childAge: 8, message: "Private message", privacyAccepted: true },
+      data: {
+        type: "sunday_school",
+        status: "new",
+        name,
+        email: "parent@example.org",
+        phone: "070",
+        childName: `${name} Kid`,
+        childAge: 8,
+        message: "Private message",
+        // Not on a Sunday School form, but every personal field must be cleared, lists included.
+        interests: ["choir"],
+        availability: "Weekends",
+        privacyAccepted: true,
+      },
     });
   ids.closedInquiry = (await inquiry("Inquiry Person")).id;
   await payload.update({ collection: "inquiries", id: ids.closedInquiry, overrideAccess: true, data: { status: "closed" } });
@@ -163,8 +176,10 @@ describe("retention job", () => {
       message: null,
       childName: null,
       childAge: null,
+      availability: null,
       privacyAccepted: true,
     });
+    expect(archived.interests ?? []).toEqual([]);
     expect(archived.reference).toMatch(/^INQ-/);
     expect(JSON.stringify(archived)).not.toMatch(/Inquiry Person|parent@example\.org|Private message/);
     const open = await payload.findByID({ collection: "inquiries", id: ids.openInquiry, overrideAccess: true });
