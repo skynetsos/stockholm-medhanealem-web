@@ -304,5 +304,8 @@
       "message": "Något mer vi bör veta? (valfritt)",
       "submit": "Skicka"
     }
+  },
+  "pages": {
+    "inThisSection": "I detta avsnitt"
   }
 }

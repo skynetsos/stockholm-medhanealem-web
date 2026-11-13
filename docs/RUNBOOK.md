@@ -79,6 +79,8 @@ Keep these in the church's password manager. Back them up together, and hand the
 | `pnpm build && pnpm test:e2e:prepare && pnpm test:e2e` | Production build, fresh migrated `<db>_e2e` database, Playwright smoke tests (stop `pnpm dev` first: same port) |
 | `pnpm services:up` / `services:down` / `services:logs` | Local Docker services |
 | `pnpm seed:base` | Fill Site settings, Navigation and Footer if empty, and create any missing Sunday School departments. `SEED_FORCE=1` overwrites |
+| `pnpm import:wordpress` | Import the old site's content (snapshot in `src/seed/wordpress/`) as drafts: pages, teachings, photos (no permission, unpublished galleries), worship events, video. Safe to re-run (D-040) |
+| `pnpm import:wordpress:publish` | Development review only: publishes the imported pages and teachings with a placeholder clergy approval; refuses `SITE_ENV=production`. In production a clergy approver publishes teachings in /admin |
 | `pnpm user:create-super-admin` | Create a super_admin (or re-issue a set-password link). Needs `ADMIN_EMAIL`, `ADMIN_NAME` |
 | `pnpm user:reset-mfa` | Break-glass MFA reset. Needs `ADMIN_EMAIL` |
 | `pnpm generate:types` / `generate:importmap` | Regenerate Payload types / admin import map after config changes |
@@ -425,7 +427,7 @@ photos* above); they arrive unticked in the gallery "ፎቶዎች / Photos" for 
 | No email about new contact messages | Check Site settings → Office notification emails, `RESEND_API_KEY`, and the app log (`Contact form: office email failed`). The message itself is in Requests → Inquiries. |
 | `/api/health` returns 503 | The app can't reach Postgres: `docker compose -f docker-compose.prod.yml ps`, check `postgres` is healthy and `POSTGRES_*` match. |
 | Caddy can't get a certificate | DNS doesn't point at the server yet, port 80/443 is blocked, or Cloudflare proxy is on before the first certificate (set "DNS only" first). |
-| Header/footer changes don't show | Pages are cached for 5 minutes; saving in /admin refreshes them immediately. Changes made by scripts (`seed:base`) appear within 5 minutes, or restart the app. |
+| Header/footer changes don't show | Pages are cached for 5 minutes; saving in /admin refreshes them immediately. Changes made by scripts (`seed:base`, `import:wordpress`) appear within 5 minutes, or restart the app. |
 | Unknown file paths like `/robots.txt` redirect to `/am/...` | A file was added to `public/` or a new file route without adding it to the skip list (matcher) in `src/proxy.ts`. |
 | `pnpm test` fails with connection errors | Local Postgres isn't running: `pnpm services:up`. |
 | Dev server shows stale header data after a script changed globals | Restart `pnpm dev` (the 5-minute cache only clears on admin saves). |

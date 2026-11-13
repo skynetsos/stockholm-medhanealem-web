@@ -304,5 +304,8 @@
       "message": "Anything else we should know? (optional)",
       "submit": "Send"
     }
+  },
+  "pages": {
+    "inThisSection": "In this section"
   }
 }

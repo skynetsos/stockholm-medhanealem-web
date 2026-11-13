@@ -2,9 +2,11 @@
 
 > **Open items carried from Phase 1** (Phase 1 accepted conditionally by Biruk on 2026-10-27:
 > code-complete):
-> 1. **Task 7 — WordPress import:** waiting for the WXR export of dev.medhanealem.se. The import
->    script will also be able to read the public pages of the site if no export arrives. Rows marked
->    "WP" below are what it can prefill.
+> 1. **Task 7 — WordPress import:** done on 2026-11-13 from the old site's public pages (no WXR
+>    export; D-040). Imported rows say **Imported**. On the development site the imported pages and
+>    teachings are **published for review only**: the three teachings carry a placeholder approval
+>    ("NOT APPROVED – development review"), so **clergy must read and approve each one before
+>    production**, and the committee must review every imported page (sign-off table at the end).
 > 2. **Committee content review:** every page reviewed and signed off (table at the end of this
 >    file), including the privacy policy's legal review.
 
@@ -17,8 +19,8 @@ missing is simply hidden, and a page without content answers "page not found".
   Swedish fall back to it when a translation is missing. Swedish waits for the Phase 3 reviewer.
 - **Owner:** who writes it. The Office Coordinator and Clergy Approver are still to be named (spec
   §10 #6); until then the owner is "Committee".
-- **WP:** the WordPress import (task 7, waiting for the export of dev.medhanealem.se) can bring a
-  first version of this item; it still needs review.
+- **Imported:** brought over from dev.medhanealem.se by `pnpm import:wordpress` (D-040), Amharic
+  only. Needs review; English is not started unless stated.
 
 ## Start here: menu links that are 404 today
 
@@ -27,15 +29,15 @@ Until they are published they answer "page not found", so they come first.
 
 | Link | Page | Needs | Owner |
 |---|---|---|---|
-| Our Church | `/our-church` | CMS page, section "Our Church", slug `index` | Committee |
+| Our Church | `/our-church` | ✅ Imported (review) | Committee |
 | Our Faith | `/our-faith` | at least one faith teaching (or an intro page) | Clergy |
-| Worship & Calendar | `/worship` | CMS page, section "Worship", slug `index` | Committee |
-| Sunday School | `/sunday-school` | text (summary) for at least one department, in Amharic | Sunday School |
-| Sacraments & Requests | `/sacraments` | a christening, marriage or fitihat teaching | Clergy |
+| Worship & Calendar | `/worship` | ✅ Imported (old "services" page; review) | Committee |
+| Sunday School | `/sunday-school` | ✅ Imported intro page (review); departments still need text | Sunday School |
+| Sacraments & Requests | `/sacraments` | ✅ Imported teachings (**clergy approval needed**) | Clergy |
 | News & Media | `/news` | at least one published news post | Communications |
-| Support | `/support` | CMS page, section "Support", slug `index` | Committee |
-| Service Times (header button) | `/worship/weekly` | the weekly services as events | Office |
-| Request Baptism (header button) | `/sacraments/baptism` | christening guidance teaching(s); the request form follows in Phase 2 | Clergy |
+| Support | `/support` | ✅ Imported (old "መባዕ" page; review) | Committee |
+| Service Times (header button) | `/worship/weekly` | ✅ Imported events (Kidase, Wed/Fri prayer) | Office |
+| Request Baptism (header button) | `/sacraments/baptism` | ✅ Imported christening teaching (**clergy approval needed**); the form appears when "Requests open" is on | Clergy |
 | Privacy policy (footer) | `/privacy` | CMS page, section "Other", slug `privacy` | Committee + legal review |
 | Cookies (footer) | `/cookies` | CMS page, section "Other", slug `cookies` | Committee |
 
@@ -62,7 +64,7 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | Map link | Optional | Office | Otherwise an OpenStreetMap link is used |
 | Public transport directions (am/en) | Not started | Office | Shown on home and /visit |
 | Default event location (am/en) | Not started | Office | Used when an event has no location |
-| Office email, office phone | Not started | Office | Office numbers only, never personal ones |
+| Office email, office phone | Not started | Office | Office numbers only, never personal ones. The old contact page listed a phone number and a Gmail address: confirm which are the office's |
 | **Office notification emails** | Not started | Office | Who is emailed about contact messages (D-022) |
 | Social links | Not started | Communications | |
 | Livestream link | Not started | Media | /worship/livestream appears once set |
@@ -84,8 +86,8 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 
 | Page / item | Address | Am | En | Owner | Notes |
 |---|---|---|---|---|---|
-| Landing page | `/our-church` | Not started | Not started | Committee | WP (About) |
-| History | `/our-church/history` | Not started | Not started | Committee | |
+| Landing page | `/our-church` | Imported (old "About", incl. "What is a church?") | Not started | Committee | Review |
+| History | `/our-church/history` | Imported | Not started | Committee | Check facts and dates; the text ends with a building-fund appeal (still current?) |
 | Leadership | `/our-church/leadership` | Not started | Not started | Committee | |
 | Diocese | `/our-church/diocese` | Not started | Not started | Committee | Link to eotc-nordics.org |
 | Clergy profiles | `/our-church/clergy` | Not started | Not started | Clergy | Each needs a photo **with permission** and an Amharic bio before it can be published (D-013) |
@@ -105,19 +107,20 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
-| Landing page `/worship` | Not started | Not started | Committee | |
-| Weekly services (e.g. Sunday Kidase 08:00–11:30) | Not started | Not started | Office | Repeat: every week. **Exit checklist item.** WP (weekly services) |
-| Monthly feasts (e.g. Medhanealem on the 27th) | Not started | Not started | Office | Repeat: every Ethiopian month, day 27 |
-| Annual feasts (Timket, Meskel, Genna …) | Not started | Not started | Office | Repeat: every Ethiopian year. Movable feasts (Fasika …) are one event per year. WP (feasts) |
-| Fasts (Tsome Nebiyat, Abiy Tsom …) | Not started | Not started | Office | All-day, start and end date |
+| Landing page `/worship` | Imported (old "services" page) | Not started | Committee | Lists the worship pages below it automatically |
+| Explanations: weekly service, monthly feasts, annual feasts | Imported (`/worship/weekly-service`, `/monthly-feast-days`, `/annual-feast-days`) | Not started | Committee | Mentions an Amharic class at "Rågsved" and pastoral hours (Mon–Fri 8–12): still current? |
+| Weekly services (e.g. Sunday Kidase 08:00–11:30) | Imported: Sunday Kidase 08:00–11:30; Wednesday and Friday prayer from 18:00 (end time unknown) | Not started | Office | **Confirm times; add the Saturday diaconate class if it should be listed** |
+| Monthly feasts (e.g. Medhanealem on the 27th) | Imported: Michael (12th), Mary (21st), Medhanealem (27th), all-day | Not started | Office | **Add Kidase times**; the old site says a sermon follows only morning Kidase outside fasts |
+| Annual feasts (Timket, Meskel, Genna …) | Imported: 10 fixed-date feasts from the old page, all-day | Not started | Office | **Add times. Genna not imported** (Tahsas 29 or 28 depending on the year: enter it per year). Movable feasts (Hosanna, Siklet, Fasika, Erget) are one event per year |
+| Fasts (Tsome Nebiyat, Abiy Tsom …) | Imported: Filseta (Nehase 1–16, start day only) | Not started | Office | All-day, start and end date |
 | Single-date changes (cancelled / moved Sundays) | As needed | As needed | Office | "Changes to single dates" on the event |
 
 ## Sunday School (Content → Departments; Pages, section "Sunday School")
 
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
-| Intro page (optional) | Not started | Not started | Sunday School | Page, slug `index` |
-| ትምህርት (education) | Name only | Name only | Sunday School | A department page appears once it has a summary or text **in Amharic** (D-020). WP |
+| Intro page (optional) | Imported (aims of the Sunday School + structure chart) | Not started | Sunday School | The chart shows once **Permission to publish** is ticked on it |
+| ትምህርት (education) | Name only | Name only | Sunday School | A department page appears once it has a summary or text **in Amharic** (D-020). The old site's six department pages were empty: nothing to import |
 | ህጻናት (children) | Name only | Name only | Sunday School | |
 | መዝሙር (mezmur) | Name only | Name only | Sunday School | |
 | አይቲ (IT) | Name only | Name only | Sunday School | |
@@ -128,11 +131,11 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
-| Baptism (christening) guidance | Not started | Not started | Clergy | Category "Christening". WP (ክርስትና). Needed for /sacraments/baptism and the request form |
+| Baptism (christening) guidance | Imported (ክርስትና) | Not started | Clergy | **Clergy approval needed** (placeholder on the development site) |
 | Baptism page: intro and "What to prepare" checklist | Not started | Not started | Clergy | **Settings → Baptism page** (D-028) |
 | Baptism page: **Requests open** | Off | — | Office | Turn on when the office is ready to receive requests; shows the button and the form (D-029) |
-| Marriage guidance | Not started | Not started | Clergy | Category "Marriage". WP (ጋብቻ). The marriage inquiry form appears under it (D-033) |
-| Fitihat guidance | Not started | Not started | Clergy | Category "Fitihat". WP (ፍትሃት). The fitihat contact form appears under it (D-033) |
+| Marriage guidance | Imported (ጋብቻ) | Not started | Clergy | **Clergy approval needed**. The marriage inquiry form appears under it (D-033) |
+| Fitihat guidance | Imported (ፍትሐት) | Not started | Clergy | **Clergy approval needed**. The fitihat contact form appears under it (D-033) |
 
 ## News & Media (Content → Posts, Galleries, Videos; Media)
 
@@ -141,14 +144,15 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | First news posts | Not started | Communications | Byline is optional and public; the author account is never shown |
 | Photo galleries | Not started | Media | Only photos with **Permission to publish** appear |
 | Facebook photos for review | Waiting for photos | Biruk / Yonas | Import with `scripts/import-photos.ts` into the unpublished gallery "ፎቶዎች / Photos" (RUNBOOK) |
-| Photo permissions review | Not started | Yonas | Tick **Permission to publish** (and check **Shows children**) per photo |
-| Videos (sermons, liturgy, events) | Not started | Media | YouTube/Vimeo links. WP (videos) |
+| Old-site photos | Imported: 22 photos in 4 unpublished galleries (መጋቢት መድኃኔ ዓለም 2016, ሰንበት ት/ቤት, የዲቁና ትምህርት, ፎቶዎች ከቀድሞው ድረ ገጽ) + the Sunday School chart | Media | Alt texts are generic ("… (3)"): describe each photo. Sunday School and diaconate photos are marked **Shows children** |
+| Photo permissions review | Not started | Yonas | Tick **Permission to publish** (and check **Shows children**) per photo; then publish the galleries |
+| Videos (sermons, liturgy, events) | Imported: 1 (ሥርዓተ ቅዳሴ ዘጥቅምት 29/2019) | Media | The old site linked the YouTube channel @Dekikebetu27: add it under Social links if it is the church's |
 
 ## Support (Pages, section "Support")
 
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
-| Landing page `/support` | Not started | Not started | Committee | Donations only if approved (spec §10 #8) |
+| Landing page `/support` | Imported (old "መባዕ" page) | Not started | Committee | Donations only if approved (spec §10 #8). The old contact page listed Postgiro numbers (membership 4980549-2, building 6195429-3): confirm before showing any |
 | Volunteer form `/support/volunteer` | Ready (draft text) | Ready | Committee | Review the list of ways to help (liturgy, choir, Sunday School, kitchen, cleaning, media, events, other) and the intro text (D-033) |
 
 ## Visit & Contact (Pages, section "Visit"; Site settings)

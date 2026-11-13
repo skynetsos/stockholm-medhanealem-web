@@ -8,7 +8,7 @@ import { LAYOUT_TAG } from "../../hooks/revalidateLayout";
 import type { Page } from "../../payload-types";
 import { baptismRequestPaths, sectionPaths, worshipPaths } from "../content-paths";
 import { hasDepartmentContent } from "../departments";
-import { pagePath } from "../pages";
+import { pagePath, SECTION_INDEX_SLUG } from "../pages";
 import { teachingPaths } from "../teachings";
 import { routing } from "../../i18n/routing";
 import { getActiveEvents } from "./events";
@@ -100,5 +100,27 @@ export function getPage(locale: Locale, section: string, slug: string): Promise<
     ["page", locale, section, slug],
     // Images (publication permission) refresh through the layout tag.
     { tags: [CACHE_TAGS.pages, LAYOUT_TAG], revalidate: 300 },
+  )();
+}
+
+/** The published pages of a section other than its landing page, by title, for "In this section". */
+export function getSectionPages(locale: Locale, section: string): Promise<{ title: string; slug: string }[]> {
+  return unstable_cache(
+    async () => {
+      const payload = await getPayload({ config });
+      const result = await payload.find({
+        collection: "pages",
+        locale,
+        overrideAccess: false,
+        depth: 0,
+        pagination: false,
+        sort: "title",
+        select: { title: true, slug: true },
+        where: { and: [{ section: { equals: section } }, { slug: { not_equals: SECTION_INDEX_SLUG } }] },
+      });
+      return result.docs.map((p) => ({ title: p.title, slug: p.slug }));
+    },
+    ["section-pages", locale, section],
+    { tags: [CACHE_TAGS.pages], revalidate: 300 },
   )();
 }

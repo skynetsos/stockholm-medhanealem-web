@@ -5,10 +5,11 @@ import { setRequestLocale } from "next-intl/server";
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { PageHeader } from "@/components/pages/PageHeader";
+import { SectionLinks } from "@/components/pages/SectionLinks";
 import { localeAlternates } from "@/i18n/alternates";
 import { getPage } from "@/lib/cms/pages";
 import { mediaSource, publicMedia } from "@/lib/media";
-import { pagePath } from "@/lib/pages";
+import { pagePath, SECTION_INDEX_SLUG } from "@/lib/pages";
 
 type Props = { params: Promise<{ locale: string; section: string; slug: string }> };
 
@@ -44,6 +45,7 @@ export default async function CmsPage({ params }: Props) {
     <main id="main">
       <PageHeader title={page.title} hero={page.hero} />
       <RenderBlocks blocks={page.layout} locale={locale as Locale} />
+      {slug === SECTION_INDEX_SLUG && section !== "other" && <SectionLinks locale={locale as Locale} section={section} />}
     </main>
   );
 }
