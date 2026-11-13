@@ -4,7 +4,8 @@
     "changeLanguage": "Byt språk",
     "menu": "Meny",
     "closeMenu": "Stäng menyn",
-    "mainNavigation": "Huvudnavigering"
+    "mainNavigation": "Huvudnavigering",
+    "search": "Sök"
   },
   "footer": {
     "footerNavigation": "Sidfotsnavigering",
@@ -315,5 +316,19 @@
   },
   "pages": {
     "inThisSection": "I detta avsnitt"
+  },
+  "search": {
+    "title": "Sök",
+    "label": "Sök efter",
+    "submit": "Sök",
+    "results": "{count, plural, one {# träff} other {# träffar}} för ”{query}”",
+    "noResults": "Inget hittades för ”{query}”. Prova ett annat ord.",
+    "hint": "Till exempel: Kidase, dop, söndagsskola",
+    "kinds": {
+      "page": "Sida",
+      "teaching": "Undervisning",
+      "post": "Nyhet",
+      "event": "Kalender"
+    }
   }
 }

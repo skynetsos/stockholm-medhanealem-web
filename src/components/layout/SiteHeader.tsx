@@ -84,7 +84,15 @@ export async function SiteHeader({ data }: { data: LayoutData }) {
           </Link>
         )}
 
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          {/* Site search (Phase 3, D-043); the label shows from small screens up, always for screen readers. */}
+          <Link href="/search" className="flex min-h-11 min-w-11 items-center justify-center gap-1 rounded px-2 text-ink no-underline hover:bg-cream print:hidden">
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4-4" strokeLinecap="round" />
+            </svg>
+            <span className="sr-only sm:not-sr-only">{t("search")}</span>
+          </Link>
           <LocaleSwitcher locales={publicLocales(settings)} />
         </div>
 

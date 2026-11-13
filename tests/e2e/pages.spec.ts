@@ -311,3 +311,23 @@ test("contact form shows field errors and keeps what was typed", async ({ page }
   await expect(page.getByLabel(en.contact.email, { exact: true })).toHaveAttribute("aria-invalid", "true");
   await expect(page.getByLabel(en.contact.name, { exact: true })).toHaveValue("E2E Visitor");
 });
+
+// Site search (Phase 3 task 6, D-043): from the header, a GET form, results with highlighted words.
+test("search finds content in English and Amharic, from the header link", async ({ page }) => {
+  await page.goto("/en");
+  await page.getByRole("banner").getByRole("link", { name: en.common.search }).click();
+  await expect(page).toHaveURL(/\/en\/search$/);
+  await page.getByLabel(en.search.label).fill("fasting");
+  await page.getByRole("button", { name: en.search.submit }).click();
+  await expect(page).toHaveURL(/\/en\/search\?q=fasting$/);
+  const results = page.getByRole("region", { name: /result/ });
+  await expect(results.getByRole("link", { name: "Fasting test teaching" })).toHaveAttribute("href", "/en/our-faith/e2e-fasting");
+  await expect(results.locator("mark").first()).toBeVisible();
+
+  // Amharic: the teaching's Amharic text (ጽሑፍ), and its Amharic title.
+  await page.goto(`/am/search?q=${encodeURIComponent("ጽሑፍ")}`);
+  await expect(page.getByRole("link", { name: "Fasting test teaching (am)" })).toBeVisible();
+
+  await page.goto("/en/search?q=nothing-matches-this");
+  await expect(page.getByRole("status")).toContainText("Nothing found");
+});

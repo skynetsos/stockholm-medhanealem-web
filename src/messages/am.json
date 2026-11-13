@@ -4,7 +4,8 @@
     "changeLanguage": "ቋንቋ ይቀይሩ",
     "menu": "ማውጫ",
     "closeMenu": "ማውጫውን ይዝጉ",
-    "mainNavigation": "ዋና ማውጫ"
+    "mainNavigation": "ዋና ማውጫ",
+    "search": "ፈልግ"
   },
   "footer": {
     "footerNavigation": "የግርጌ ማውጫ",
@@ -315,5 +316,19 @@
   },
   "pages": {
     "inThisSection": "በዚህ ክፍል"
+  },
+  "search": {
+    "title": "ፍለጋ",
+    "label": "የሚፈልጉት ቃል",
+    "submit": "ፈልግ",
+    "results": "{count, plural, one {# ውጤት} other {# ውጤቶች}} ለ “{query}”",
+    "noResults": "ለ “{query}” ምንም አልተገኘም። ሌላ ቃል ይሞክሩ።",
+    "hint": "ለምሳሌ፦ ቅዳሴ፣ ክርስትና፣ ሰንበት ት/ቤት",
+    "kinds": {
+      "page": "ገጽ",
+      "teaching": "ትምህርት",
+      "post": "ዜና",
+      "event": "የቀን መቁጠሪያ"
+    }
   }
 }

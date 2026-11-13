@@ -4,7 +4,8 @@
     "changeLanguage": "Change language",
     "menu": "Menu",
     "closeMenu": "Close menu",
-    "mainNavigation": "Main navigation"
+    "mainNavigation": "Main navigation",
+    "search": "Search"
   },
   "footer": {
     "footerNavigation": "Footer navigation",
@@ -315,5 +316,19 @@
   },
   "pages": {
     "inThisSection": "In this section"
+  },
+  "search": {
+    "title": "Search",
+    "label": "Search for",
+    "submit": "Search",
+    "results": "{count, plural, one {# result} other {# results}} for “{query}”",
+    "noResults": "Nothing found for “{query}”. Try another word.",
+    "hint": "For example: Kidase, baptism, Sunday School",
+    "kinds": {
+      "page": "Page",
+      "teaching": "Teaching",
+      "post": "News",
+      "event": "Calendar"
+    }
   }
 }

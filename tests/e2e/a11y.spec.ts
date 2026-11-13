@@ -47,6 +47,8 @@ const PAGES = [
   "/en/media",
   "/en/media/galleries/e2e-gallery",
   "/en/media/videos",
+  "/en/search?q=Kidase",
+  "/am/search?q=ቅዳሴ",
   "/en/visit",
   "/am/visit",
   "/en/does-not-exist",
