@@ -8,6 +8,7 @@ import { CmsRichText } from "@/components/richtext/CmsRichText";
 import { excerpt } from "@/components/teachings/TeachingCard";
 import { localeAlternates } from "@/i18n/alternates";
 import { getPublishedTeachings } from "@/lib/cms/teachings";
+import { fallbackLang } from "@/lib/lang";
 import { SACRAMENT_PAGES, type SacramentPage as SacramentPageName } from "@/lib/teachings";
 
 async function guidance(locale: string, page: SacramentPageName) {
@@ -59,7 +60,7 @@ export async function SacramentPage({
           <ul className="mt-2">
             {items.map((teaching) => (
               <li key={teaching.id}>
-                <a href={`#${teaching.slug}`} className="inline-flex min-h-11 items-center">
+                <a href={`#${teaching.slug}`} className="inline-flex min-h-11 items-center" lang={fallbackLang(teaching.title, locale)}>
                   {teaching.title}
                 </a>
               </li>
@@ -69,7 +70,9 @@ export async function SacramentPage({
       )}
       {items.map((teaching) => (
         <section key={teaching.id} id={teaching.slug} aria-labelledby={`${teaching.slug}-title`} className="mt-10">
-          <h2 id={`${teaching.slug}-title`}>{teaching.title}</h2>
+          <h2 id={`${teaching.slug}-title`} lang={fallbackLang(teaching.title, locale)}>
+            {teaching.title}
+          </h2>
           <CmsRichText data={teaching.body} className="mt-4" />
         </section>
       ))}

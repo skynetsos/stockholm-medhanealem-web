@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { getAvailablePaths, getSectionPages } from "@/lib/cms/pages";
+import { fallbackLang } from "@/lib/lang";
 import { pagePath } from "@/lib/pages";
 
 /** The site's own worship pages, linked from the /worship landing page when they exist (D-019). */
@@ -43,7 +44,7 @@ export async function SectionLinks({ locale, section }: { locale: Locale; sectio
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {links.map((link) => (
           <li key={link.href}>
-            <Link href={link.href} className="block h-full rounded bg-white p-4 font-semibold shadow-sm">
+            <Link href={link.href} className="block h-full rounded bg-white p-4 font-semibold shadow-sm" lang={fallbackLang(link.title, locale)}>
               {link.title}
             </Link>
           </li>

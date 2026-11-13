@@ -1,6 +1,7 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import type { DateLabels } from "@/lib/date-labels";
+import { fallbackLang } from "@/lib/lang";
 import type { Occurrence } from "@/lib/events/expand";
 import type { Event } from "@/payload-types";
 
@@ -16,13 +17,15 @@ export async function EventCard({
   labels: DateLabels;
   defaultLocation?: string | null;
 }) {
-  const te = await getTranslations("events");
+  const [te, locale] = await Promise.all([getTranslations("events"), getLocale()]);
   const { event } = occurrence;
   const location = event.location || defaultLocation;
 
   return (
     <article className="h-full rounded border-t-4 border-gold bg-white p-4 shadow-sm">
-      <h3 className={`text-h4 ${occurrence.status === "cancelled" ? "line-through" : ""}`}>{event.title}</h3>
+      <h3 className={`text-h4 ${occurrence.status === "cancelled" ? "line-through" : ""}`} lang={fallbackLang(event.title, locale)}>
+        {event.title}
+      </h3>
       <div className="mt-1">
         <StatusBadge status={occurrence.status} />
       </div>

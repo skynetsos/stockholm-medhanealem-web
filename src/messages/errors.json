@@ -1,0 +1,20 @@
+{
+  "am": {
+    "title": "ችግር ተፈጥሯል",
+    "description": "ገጹን ማሳየት አልቻልንም። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።",
+    "retry": "እንደገና ይሞክሩ",
+    "backHome": "ወደ መነሻ ገጽ"
+  },
+  "en": {
+    "title": "Something went wrong",
+    "description": "We couldn't show this page. Please try again in a moment.",
+    "retry": "Try again",
+    "backHome": "Go to the home page"
+  },
+  "sv": {
+    "title": "Något gick fel",
+    "description": "Vi kunde inte visa sidan. Försök igen om en stund.",
+    "retry": "Försök igen",
+    "backHome": "Till startsidan"
+  }
+}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import type { AdminTranslationKeys, AdminTranslations } from "../../../i18n/admin";
+import { MFA_LANGUAGE_LABELS, type MfaLanguage, mfaAmharic } from "../../../i18n/mfa-am";
 import styles from "./MfaFlow.module.css";
 
 type Mode = "enrol" | "verify";
@@ -21,8 +22,15 @@ async function post(path: string, body?: unknown) {
   return { ok: res.ok, data };
 }
 
-export function MfaFlow({ mode }: { mode: Mode }) {
-  const { t } = useTranslation<AdminTranslations, AdminTranslationKeys>();
+type MfaKey = keyof AdminTranslations["mfa"];
+
+export function MfaFlow({ mode, language }: { mode: Mode; language: MfaLanguage }) {
+  const { t: payloadT } = useTranslation<AdminTranslations, AdminTranslationKeys>();
+  /** Amharic from our own list (D-044), else the admin's English text. */
+  const t = (key: `mfa:${MfaKey}`, options?: Record<string, unknown>): string => {
+    const amharic = language === "am" ? mfaAmharic[key.slice(4) as MfaKey] : undefined;
+    return amharic ?? payloadT(key, options);
+  };
   const [setup, setSetup] = useState<Setup | null>(null);
   const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null);
   const [useRecovery, setUseRecovery] = useState(false);
@@ -32,7 +40,7 @@ export function MfaFlow({ mode }: { mode: Mode }) {
   const [saved, setSaved] = useState(false);
 
   const showError = (data: Record<string, unknown>) => {
-    const key = `mfa:error_${typeof data.error === "string" ? data.error : "unknown"}` as AdminTranslationKeys;
+    const key = `mfa:error_${typeof data.error === "string" ? data.error : "unknown"}` as `mfa:${MfaKey}`;
     const message = t(key);
     setError(message === key ? t("mfa:error_unknown") : message);
   };
@@ -66,7 +74,7 @@ export function MfaFlow({ mode }: { mode: Mode }) {
 
   if (recoveryCodes) {
     return (
-      <section className={styles.panel} aria-labelledby="mfa-title">
+      <section className={styles.panel} aria-labelledby="mfa-title" lang={language}>
         <h1 id="mfa-title">{t("mfa:recoveryTitle")}</h1>
         <p>{t("mfa:recoveryIntro")}</p>
         <ol className={styles.codes}>
@@ -91,7 +99,7 @@ export function MfaFlow({ mode }: { mode: Mode }) {
   const fieldLabel = useRecovery ? t("mfa:recoveryLabel") : t("mfa:codeLabel");
 
   return (
-    <section className={styles.panel} aria-labelledby="mfa-title">
+    <section className={styles.panel} aria-labelledby="mfa-title" lang={language}>
       <h1 id="mfa-title">{enrol ? t("mfa:enrolTitle") : t("mfa:verifyTitle")}</h1>
       <p>{enrol ? t("mfa:enrolIntro") : t("mfa:verifyIntro")}</p>
 
@@ -150,6 +158,19 @@ export function MfaFlow({ mode }: { mode: Mode }) {
       <Link className={styles.link} href="/admin/logout">
         {t("mfa:signOut")}
       </Link>
+      <LanguageSwitch current={language} />
     </section>
+  );
+}
+
+/** Switches these screens between Amharic and English (a page load keeps the step: the server decides it). */
+function LanguageSwitch({ current }: { current: MfaLanguage }) {
+  const other: MfaLanguage = current === "am" ? "en" : "am";
+  return (
+    <p className={styles.link}>
+      <a href={`?lang=${other}`} lang={other} hrefLang={other}>
+        {MFA_LANGUAGE_LABELS[other]}
+      </a>
+    </p>
   );
 }

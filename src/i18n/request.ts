@@ -1,6 +1,7 @@
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 
+import errors from "../messages/errors.json";
 import { routing } from "./routing";
 
 export default getRequestConfig(async ({ locale: explicit, requestLocale }) => {
@@ -11,6 +12,7 @@ export default getRequestConfig(async ({ locale: explicit, requestLocale }) => {
   return {
     locale,
     timeZone: "Europe/Stockholm",
-    messages: (await import(`../messages/${locale}.json`)).default,
+    // Error page strings are kept apart so the last-resort error page can load just them (D-044).
+    messages: { ...(await import(`../messages/${locale}.json`)).default, errors: errors[locale] },
   };
 });

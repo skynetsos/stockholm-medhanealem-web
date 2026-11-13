@@ -1,5 +1,8 @@
+import { useLocale } from "next-intl";
+
 import { Hero } from "@/components/home/Hero";
 import { CmsLink } from "@/components/layout/CmsLink";
+import { fallbackLang } from "@/lib/lang";
 import { isRenderableLink } from "@/lib/links";
 import { publicMedia } from "@/lib/media";
 import type { Page } from "@/payload-types";
@@ -11,13 +14,19 @@ type PageHero = NonNullable<Page["hero"]>;
  * title with the optional subheading and buttons. The heading defaults to the page title.
  */
 export function PageHeader({ title, hero }: { title: string; hero?: PageHero | null }) {
+  const locale = useLocale();
   if (hero && publicMedia(hero.image)) return <Hero hero={hero} fallbackHeading={title} />;
+  const heading = hero?.heading?.trim() || title;
 
   const ctas = (hero?.ctas ?? []).filter(isRenderableLink);
   return (
     <div className="mx-auto max-w-site px-gutter pt-12">
-      <h1>{hero?.heading?.trim() || title}</h1>
-      {hero?.subheading && <p className="mt-3 max-w-2xl text-lg whitespace-pre-line">{hero.subheading}</p>}
+      <h1 lang={fallbackLang(heading, locale)}>{heading}</h1>
+      {hero?.subheading && (
+        <p className="mt-3 max-w-2xl text-lg whitespace-pre-line" lang={fallbackLang(hero.subheading, locale)}>
+          {hero.subheading}
+        </p>
+      )}
       {ctas.length > 0 && (
         <ul className="mt-5 flex flex-col gap-3 sm:flex-row">
           {ctas.map((cta, i) => (

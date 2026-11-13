@@ -1,4 +1,7 @@
+import { useLocale } from "next-intl";
+
 import { Link } from "@/i18n/navigation";
+import { fallbackLang } from "@/lib/lang";
 import { richTextToPlain } from "@/lib/richtext";
 
 const EXCERPT_LENGTH = 180;
@@ -14,14 +17,19 @@ export function excerpt(body: unknown, length = EXCERPT_LENGTH): string {
 /** Title (the link) and the first lines of a teaching (spec §5 TeachingCard). */
 export function TeachingCard({ title, href, body }: { title: string; href: string; body?: unknown }) {
   const text = excerpt(body);
+  const locale = useLocale();
   return (
     <article className="h-full rounded border-t-4 border-gold bg-white p-4 shadow-sm">
-      <h3 className="text-h4">
+      <h3 className="text-h4" lang={fallbackLang(title, locale)}>
         <Link href={href} className="no-underline hover:underline">
           {title}
         </Link>
       </h3>
-      {text && <p className="mt-2 text-muted">{text}</p>}
+      {text && (
+        <p className="mt-2 text-muted" lang={fallbackLang(text, locale)}>
+          {text}
+        </p>
+      )}
     </article>
   );
 }

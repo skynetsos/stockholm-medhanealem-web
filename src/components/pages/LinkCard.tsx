@@ -1,7 +1,9 @@
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Link } from "@/i18n/navigation";
+import { fallbackLang } from "@/lib/lang";
 import { mediaSource, publicMedia } from "@/lib/media";
 import type { Media } from "@/payload-types";
 
@@ -23,6 +25,7 @@ export function LinkCard({
   meta?: ReactNode;
   text?: string | null;
 }) {
+  const locale = useLocale();
   const media = publicMedia(image);
   const source = media ? mediaSource(media, 800) : null;
   return (
@@ -39,12 +42,16 @@ export function LinkCard({
       )}
       <div className="flex flex-1 flex-col gap-1 p-4">
         {meta && <p className="text-sm text-muted">{meta}</p>}
-        <h2 className="text-h4">
+        <h2 className="text-h4" lang={fallbackLang(title, locale)}>
           <Link href={href} className="no-underline hover:underline">
             {title}
           </Link>
         </h2>
-        {text && <p className="text-muted">{text}</p>}
+        {text && (
+          <p className="text-muted" lang={fallbackLang(text, locale)}>
+            {text}
+          </p>
+        )}
       </div>
     </article>
   );

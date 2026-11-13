@@ -10,6 +10,7 @@ import { getLocale } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
+import { fallbackLang } from "@/lib/lang";
 import { mediaSource, publicMedia } from "@/lib/media";
 import { hasRichText, richTextLinkHref } from "@/lib/richtext";
 import type { Media } from "@/payload-types";
@@ -19,6 +20,7 @@ import type { Media } from "@/payload-types";
  * - links: internal ones to published pages only, in the visitor's language; unsafe URLs dropped
  * - images: only those with publication permission (others render nothing)
  * - an editor's "Heading 1" becomes h2, since the page title is the only h1
+ * - Amharic text shown on an English/Swedish page (no translation yet) is marked lang="am" (D-044)
  */
 export async function CmsRichText({ data, className = "" }: { data: unknown; className?: string }) {
   if (!hasRichText(data)) return null;
@@ -72,5 +74,7 @@ export async function CmsRichText({ data, className = "" }: { data: unknown; cla
     upload,
   });
 
-  return <RichText data={data as SerializedEditorState} converters={converters} className={`rich-text ${className}`} />;
+  const text = <RichText data={data as SerializedEditorState} converters={converters} className={`rich-text ${className}`} />;
+  const lang = fallbackLang(data, locale);
+  return lang ? <div lang={lang}>{text}</div> : text;
 }

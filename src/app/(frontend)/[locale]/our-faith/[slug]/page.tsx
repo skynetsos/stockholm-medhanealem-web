@@ -8,6 +8,7 @@ import { excerpt } from "@/components/teachings/TeachingCard";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { getPublishedTeachings } from "@/lib/cms/teachings";
+import { fallbackLang } from "@/lib/lang";
 import { isFaithCategory } from "@/lib/teachings";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
@@ -40,7 +41,7 @@ export default async function TeachingPage({ params }: Props) {
       <p className="mb-2 text-sm font-semibold">
         <Link href={`/our-faith#${teaching.category}`}>{t(`categories.${teaching.category}`)}</Link>
       </p>
-      <h1>{teaching.title}</h1>
+      <h1 lang={fallbackLang(teaching.title, locale)}>{teaching.title}</h1>
       <CmsRichText data={teaching.body} className="mt-6" />
     </main>
   );

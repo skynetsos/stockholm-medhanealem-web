@@ -140,7 +140,7 @@ export function CalendarMonth({
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-2 print:hidden">
         <button type="button" className={navButton} onClick={() => select(shiftMonth(-1))} disabled={month <= firstMonth}>
           <span aria-hidden="true">‹ </span>
           {t("previousMonth")}
@@ -154,7 +154,7 @@ export function CalendarMonth({
         </button>
       </div>
 
-      <table aria-labelledby="calendar-caption" className="w-full table-fixed border-collapse">
+      <table aria-labelledby="calendar-caption" className="calendar-month w-full table-fixed border-collapse">
         <caption id="calendar-caption" className="mb-2 text-start font-serif text-h3 text-primary" aria-live="polite">
           {caption}
         </caption>
@@ -189,7 +189,7 @@ export function CalendarMonth({
                       aria-label={`${fullDate(iso)}, ${ethiopianFull(jdn)}: ${t("eventCount", { count: items.length })}`}
                       onClick={() => select(jdn)}
                       onKeyDown={(event) => onKeyDown(event, jdn)}
-                      className={`flex h-full min-h-14 w-full flex-col items-start gap-0.5 p-1 text-start sm:min-h-24 sm:p-2 ${
+                      className={`flex h-full min-h-14 w-full flex-col items-start gap-0.5 p-1 text-start sm:min-h-24 sm:p-2 print:min-h-20 print:bg-white print:text-ink ${
                         isSelected ? "bg-primary text-cream" : "bg-white hover:bg-cream"
                       }`}
                     >
@@ -197,8 +197,19 @@ export function CalendarMonth({
                         {jdnToGregorian(jdn).day}
                       </span>
                       <span className={`text-xs ${isSelected ? "text-cream" : "text-muted"}`}>{ethiopianLabel(jdn)}</span>
+                      {/* On paper: every event of the day, with its time (D-044). */}
                       {items.length > 0 && (
-                        <span className="mt-auto flex flex-wrap gap-1" aria-hidden="true">
+                        <span className="hidden text-[8pt] leading-tight print:block" aria-hidden="true">
+                          {items.map((item) => (
+                            <span key={`print-${item.key}`} className={`block ${item.status === "cancelled" ? "line-through" : ""}`}>
+                              {item.time ? `${item.time} ` : ""}
+                              {item.title}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                      {items.length > 0 && (
+                        <span className="mt-auto flex flex-wrap gap-1 print:hidden" aria-hidden="true">
                           {items.slice(0, 2).map((item) => (
                             <span
                               key={item.key}
@@ -224,7 +235,7 @@ export function CalendarMonth({
         </tbody>
       </table>
 
-      <section aria-live="polite" aria-labelledby="calendar-day" className="mt-6 rounded bg-white p-5 shadow-sm">
+      <section aria-live="polite" aria-labelledby="calendar-day" className="mt-6 rounded bg-white p-5 shadow-sm print:hidden">
         <h2 id="calendar-day" className="text-h3">
           {fullDate(selected)}
         </h2>

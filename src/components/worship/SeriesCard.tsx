@@ -1,7 +1,8 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { StatusBadge } from "@/components/events/StatusBadge";
 import type { DateLabels } from "@/lib/date-labels";
+import { fallbackLang } from "@/lib/lang";
 import { ethiopianAnchor } from "@/lib/events/recurrence";
 import type { Series } from "@/lib/worship";
 
@@ -22,7 +23,7 @@ export async function SeriesCard({
   livestreamUrl?: string | null;
   heading?: "h2" | "h3";
 }) {
-  const t = await getTranslations("events");
+  const [t, locale] = await Promise.all([getTranslations("events"), getLocale()]);
   const { event, next, changes } = series;
   const frequency = event.recurrence?.frequency ?? "none";
   const anchor = ethiopianAnchor(event);
@@ -39,7 +40,9 @@ export async function SeriesCard({
 
   return (
     <article className={`rounded border-s-4 border-gold bg-white p-5 shadow-sm ${event.cancelled ? "opacity-80" : ""}`}>
-      <Heading className={`text-h3 ${event.cancelled ? "line-through" : ""}`}>{event.title}</Heading>
+      <Heading className={`text-h3 ${event.cancelled ? "line-through" : ""}`} lang={fallbackLang(event.title, locale)}>
+        {event.title}
+      </Heading>
       {event.cancelled && (
         <div className="mt-1">
           <StatusBadge status="cancelled" />

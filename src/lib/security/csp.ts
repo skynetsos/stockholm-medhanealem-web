@@ -12,7 +12,8 @@ export const FRAME_SOURCES = [
   "https://www.openstreetmap.org", // map on /visit, after a click (D-021)
 ] as const;
 
-type Options = { dev?: boolean; https?: boolean };
+/** `analytics`: the Plausible server's origin when analytics is switched on (D-044), else none. */
+type Options = { dev?: boolean; https?: boolean; analytics?: string | null };
 
 const join = (directives: Record<string, string[]>) =>
   Object.entries(directives)
@@ -25,7 +26,7 @@ const join = (directives: Record<string, string[]>) =>
  * fallback for browsers without it. Styles may be inline: Next.js images and Turnstile set style
  * attributes, and CSS can't run code.
  */
-export function publicCsp(nonce: string, { dev = false, https = false }: Options = {}): string {
+export function publicCsp(nonce: string, { dev = false, https = false, analytics = null }: Options = {}): string {
   if (!/^[A-Za-z0-9+/=_-]{16,}$/.test(nonce)) throw new Error("Invalid CSP nonce");
   return join({
     "default-src": ["'self'"],
@@ -33,7 +34,7 @@ export function publicCsp(nonce: string, { dev = false, https = false }: Options
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:"],
     "font-src": ["'self'"],
-    "connect-src": ["'self'", "https://challenges.cloudflare.com"],
+    "connect-src": ["'self'", "https://challenges.cloudflare.com", ...(analytics ? [analytics] : [])],
     "frame-src": [...FRAME_SOURCES],
     "object-src": ["'none'"],
     "base-uri": ["'self'"],
@@ -80,4 +81,23 @@ export function createNonce(): string {
 export const cspOptions = (): Options => ({
   dev: process.env.NODE_ENV === "development",
   https: (process.env.NEXT_PUBLIC_SERVER_URL ?? "").startsWith("https://"),
+  analytics: analyticsConfig()?.origin ?? null,
 });
+
+/**
+ * Cookieless Plausible analytics (spec Phase 3 polish, D-044): OFF unless PLAUSIBLE_DOMAIN is set
+ * (the site's domain as registered in Plausible). PLAUSIBLE_HOST is the Plausible server (default
+ * plausible.io; a self-hosted EU instance works the same). Only an https host is accepted.
+ */
+export function analyticsConfig(): { domain: string; origin: string; script: string } | null {
+  const domain = process.env.PLAUSIBLE_DOMAIN?.trim();
+  if (!domain || !/^[a-z0-9.-]+$/i.test(domain)) return null;
+  let host: URL;
+  try {
+    host = new URL(process.env.PLAUSIBLE_HOST?.trim() || "https://plausible.io");
+  } catch {
+    return null;
+  }
+  if (host.protocol !== "https:") return null;
+  return { domain, origin: host.origin, script: `${host.origin}/js/script.js` };
+}

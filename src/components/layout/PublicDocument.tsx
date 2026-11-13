@@ -9,6 +9,7 @@ import { preload } from "react-dom";
 import { getLayoutData } from "@/lib/cms/layout";
 import { fontVariables } from "@/styles/fonts";
 
+import { Analytics } from "./Analytics";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
@@ -17,7 +18,7 @@ import { SiteHeader } from "./SiteHeader";
  * UI text the browser needs: only the namespaces client components use (task 10). Everything else
  * is rendered on the server, so it never has to travel to the browser as JSON.
  */
-const CLIENT_NAMESPACES = ["common", "baptismForm", "calendar", "contact", "events", "gallery", "inquiryForms", "video", "visit"] as const;
+const CLIENT_NAMESPACES = ["common", "baptismForm", "calendar", "contact", "errors", "events", "gallery", "inquiryForms", "video", "visit"] as const;
 
 /** The Ethiopic fonts declared in globals.css, preloaded on Amharic pages (D-025). */
 const ETHIOPIC_FONTS = ["/fonts/noto-sans-ethiopic-v1.woff2", "/fonts/noto-serif-ethiopic-v1.woff2"];
@@ -44,6 +45,7 @@ export async function PublicDocument({ locale, children }: { locale: Locale; chi
           <div className="flex-1">{children}</div>
           <SiteFooter data={data} />
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );

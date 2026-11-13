@@ -174,3 +174,46 @@
     text-decoration: underline;
   }
 }
+
+/*
+ * Print (Phase 3, D-044): mainly for the calendar month (pinned on the church notice board), also
+ * usable for any page: no site chrome, black on white, links without colour, the content full width.
+ */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  body > header,
+  body header,
+  body footer,
+  [role="banner"],
+  [role="contentinfo"],
+  a[href="#main"] {
+    display: none !important;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .calendar-month {
+    font-size: 9pt;
+  }
+  .calendar-month caption {
+    color: #000;
+  }
+  .calendar-month td,
+  .calendar-month th {
+    border: 1px solid #888 !important;
+  }
+  .calendar-month tr {
+    break-inside: avoid;
+  }
+}

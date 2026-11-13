@@ -59,6 +59,10 @@ for (const locale of locales) {
 
     await page.goto(`/${locale}/does-not-exist`);
     await expect(page.getByRole("link", { name: messages[locale].notFound.backHome })).toHaveAttribute("href", `/${locale}`);
+    // With the site's own header (menu, language switcher) and footer from the CMS (D-044).
+    await expect(page.getByRole("banner")).toBeVisible();
+    await expect(page.getByRole("navigation", { name: messages[locale].common.changeLanguage })).toBeVisible();
+    await expect(page.getByRole("contentinfo")).toBeVisible();
   });
 }
 
@@ -81,4 +85,19 @@ test("public pages are rendered per request with a fresh nonce, never cached pub
     expect(first.headers()["cache-control"], path).toMatch(/private|no-store/);
     expect(first.headers()["cache-control"], path).not.toMatch(/s-maxage/);
   }
+});
+
+// Phase 3 polish (D-044): installable (web app manifest + icons); no analytics unless configured.
+test("web app manifest and icons; no analytics script by default", async ({ request, page }) => {
+  const manifest = await request.get("/manifest.webmanifest");
+  expect(manifest.status()).toBe(200);
+  const json = (await manifest.json()) as { name: string; start_url: string; icons: { src: string; purpose: string }[] };
+  expect(json.name.length).toBeGreaterThan(0);
+  expect(json.start_url).toBe("/am");
+  for (const icon of json.icons) expect((await request.get(icon.src)).status(), icon.src).toBe(200);
+  expect(json.icons.some((i) => i.purpose === "maskable")).toBe(true);
+
+  await page.goto("/en");
+  await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
+  await expect(page.locator('script[src*="plausible"]')).toHaveCount(0);
 });

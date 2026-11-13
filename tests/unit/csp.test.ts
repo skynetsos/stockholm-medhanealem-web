@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { adminCsp, API_CSP, createNonce, FRAME_SOURCES, publicCsp } from "../../src/lib/security/csp";
 
@@ -49,5 +49,29 @@ describe("Content Security Policy (D-037)", () => {
 
   it("APIs: nothing runs, nothing loads", () => {
     expect(API_CSP).toBe("default-src 'none'; frame-ancestors 'none'; sandbox");
+  });
+});
+
+describe("analytics (Plausible, D-044)", () => {
+  const env = { ...process.env };
+  afterEach(() => {
+    process.env = { ...env };
+  });
+
+  it("is off unless PLAUSIBLE_DOMAIN is set, and then only adds the Plausible server to connect-src", async () => {
+    const { analyticsConfig, cspOptions } = await import("../../src/lib/security/csp");
+    delete process.env.PLAUSIBLE_DOMAIN;
+    expect(analyticsConfig()).toBeNull();
+    expect(directive(publicCsp("abcdefghijklmnop1234==", cspOptions()), "connect-src")).toEqual(["'self'", "https://challenges.cloudflare.com"]);
+
+    process.env.PLAUSIBLE_DOMAIN = "medhanealem.se";
+    expect(analyticsConfig()).toEqual({ domain: "medhanealem.se", origin: "https://plausible.io", script: "https://plausible.io/js/script.js" });
+    expect(directive(publicCsp("abcdefghijklmnop1234==", cspOptions()), "connect-src")).toContain("https://plausible.io");
+
+    process.env.PLAUSIBLE_HOST = "http://insecure.example";
+    expect(analyticsConfig()).toBeNull();
+    process.env.PLAUSIBLE_HOST = "https://stats.example.eu/";
+    process.env.PLAUSIBLE_DOMAIN = "bad domain\"><script>";
+    expect(analyticsConfig()).toBeNull();
   });
 });

@@ -43,3 +43,15 @@ it("Amharic strings are written in Ethiopic script", () => {
     if (!exempt.has(key)) expect(ethiopic.test(text), key).toBe(true);
   }
 });
+
+describe("messages/errors.json (error pages, D-044)", () => {
+  it("has the same non-empty strings in every language", async () => {
+    const errors = (await import("../../src/messages/errors.json")).default as Record<string, Tree>;
+    const keys = Object.keys(flatten(errors.en)).sort();
+    for (const locale of ["am", "en", "sv"]) {
+      const flat = flatten(errors[locale]);
+      expect(Object.keys(flat).sort(), locale).toEqual(keys);
+      expect(Object.values(flat).every((v) => v.trim().length > 0), locale).toBe(true);
+    }
+  });
+});
