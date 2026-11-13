@@ -1581,7 +1581,7 @@ export interface SiteSetting {
    */
   shareImage?: (number | null) | Media;
   /**
-   * Turn on once Swedish content is reviewed (Phase 3).
+   * Turn on once Swedish content is reviewed. Needs at least 80 % of pages and teachings translated (see "Missing translations").
    */
   swedishPublic?: boolean | null;
   address?: {

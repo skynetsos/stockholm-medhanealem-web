@@ -1,0 +1,32 @@
+.view {
+  max-width: 60rem;
+  padding-block: 1.5rem 3rem;
+}
+
+.language {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--theme-elevation-150);
+}
+
+.coverage {
+  font-weight: 600;
+}
+
+.list {
+  margin: 0.5rem 0 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.list li {
+  margin-block: 0.25rem;
+}
+
+.fields {
+  color: var(--theme-elevation-600);
+}
+
+.navLink {
+  display: block;
+  margin-block: 0.5rem;
+}

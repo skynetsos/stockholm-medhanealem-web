@@ -49,16 +49,31 @@ test("video embed (youtube-nocookie): zero violations", async ({ page }) => {
   expect(await violations()).toEqual([]);
 });
 
-test("admin case page: its own policy, zero violations", async ({ page }) => {
-  test.setTimeout(90_000);
-  const violations = await watchCsp(page);
+/** Signs in the fixture super admin through the API (enrolling MFA once per run; later runs verify). */
+let adminSecret: string | null = null;
+async function adminSignIn(page: Page) {
   const api = page.request;
   // Payload only accepts the session cookie on requests from its own origin, as a browser sends it.
   const origin = new URL(test.info().project.use.baseURL!).origin;
   const post = (path: string, data: unknown) => api.post(`/api/${path}`, { data, headers: { origin } });
   expect((await post("users/login", { email: "e2e-csp-admin@example.org", password: "E2e-csp-admin-Pa55!" })).ok()).toBe(true);
-  const { secret } = (await (await post("users/mfa/setup", {})).json()) as { secret: string };
-  expect((await post("users/mfa/enroll", { code: await generate({ secret }) })).ok()).toBe(true);
+  if (!adminSecret) {
+    adminSecret = ((await (await post("users/mfa/setup", {})).json()) as { secret: string }).secret;
+    expect((await post("users/mfa/enroll", { code: await generate({ secret: adminSecret }) })).ok()).toBe(true);
+  } else {
+    // A new code each time: the previous one can't be replayed.
+    await new Promise((r) => setTimeout(r, 31_000 - (Date.now() % 30_000)));
+    expect((await post("users/mfa/verify", { code: await generate({ secret: adminSecret }) })).ok()).toBe(true);
+  }
+  return { api, origin };
+}
+
+test.describe.configure({ mode: "serial" });
+
+test("admin case page: its own policy, zero violations", async ({ page }) => {
+  test.setTimeout(90_000);
+  const violations = await watchCsp(page);
+  const { api, origin } = await adminSignIn(page);
 
   const { docs } = (await (await api.get("/api/baptism-requests?limit=1&depth=0", { headers: { origin } })).json()) as { docs: { id: number }[] };
   const response = await page.goto(`/admin/collections/baptism-requests/${docs[0].id}`);
@@ -92,5 +107,19 @@ test("404 page and optimised images: zero violations, nonce on scripts, images l
     expect(res.status(), src).toBe(200);
     expect(res.headers()["content-type"], src).toMatch(/^image\//);
   }
+  expect(await violations()).toEqual([]);
+});
+
+test("admin missing translations: lists untranslated content, zero violations (D-041)", async ({ page }) => {
+  test.setTimeout(120_000);
+  const violations = await watchCsp(page);
+  await adminSignIn(page);
+  await page.goto("/admin/translations");
+  await expect(page.getByRole("heading", { level: 1, name: "Missing translations" })).toBeVisible({ timeout: 30_000 });
+  // The fixtures have English for pages and teachings, but no Swedish.
+  const swedish = page.locator("section").filter({ has: page.getByRole("heading", { level: 2, name: "Svenska" }) });
+  await expect(swedish).toContainText("Core content (pages and teachings) translated: 0 %");
+  await expect(swedish.getByRole("link", { name: "Fasting test teaching (am)" })).toHaveAttribute("href", /\/admin\/collections\/teachings\/\d+\?locale=sv$/);
+  await expect(page.getByRole("link", { name: "Missing translations" }).first()).toBeVisible();
   expect(await violations()).toEqual([]);
 });

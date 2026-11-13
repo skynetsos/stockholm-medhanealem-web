@@ -1,7 +1,8 @@
-import type { GlobalConfig } from "payload";
+import type { GlobalConfig, PayloadRequest } from "payload";
 
 import { isStaff, isSuperAdmin } from "../access";
 import { revalidateLayout } from "../hooks/revalidateLayout";
+import { SWEDISH_THRESHOLD_PERCENT, translationReport } from "../lib/translations/coverage";
 
 /** Internal-only fields: readable by signed-in staff, never by the public API. */
 const staffOnlyRead = { read: ({ req }: { req: Parameters<typeof isStaff>[0] }) => isStaff(req) };
@@ -57,7 +58,17 @@ export const SiteSettings: GlobalConfig = {
               type: "checkbox",
               defaultValue: false,
               label: "Show Swedish in the language switcher",
-              admin: { description: "Turn on once Swedish content is reviewed (Phase 3)." },
+              admin: {
+                description: `Turn on once Swedish content is reviewed. Needs at least ${SWEDISH_THRESHOLD_PERCENT} % of pages and teachings translated (see "Missing translations").`,
+              },
+              // Spec Phase 3 task 2 (D-041): only once ≥ 80 % of core content has Swedish text.
+              validate: async (value: unknown, { req, previousValue }: { req: PayloadRequest; previousValue?: unknown }) => {
+                if (value !== true || previousValue === true) return true;
+                const { corePercent } = await translationReport(req.payload, "sv");
+                return corePercent >= SWEDISH_THRESHOLD_PERCENT
+                  ? true
+                  : `Only ${corePercent} % of pages and teachings have Swedish text; Swedish can be switched on at ${SWEDISH_THRESHOLD_PERCENT} %.`;
+              },
             },
           ],
         },

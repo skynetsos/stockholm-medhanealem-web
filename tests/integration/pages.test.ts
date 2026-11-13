@@ -23,7 +23,8 @@ async function draftPage(data: Partial<Page> & { slug: string }) {
     ...as(editor),
     locale: "am",
     draft: true,
-    data: { title: `ገጽ ${data.slug}`, section: "our-church", _status: "draft", ...data },
+    // Text in the page's language: needed to publish it (D-041).
+    data: { title: `ገጽ ${data.slug}`, section: "our-church", _status: "draft", layout: [{ blockType: "richText", content: rich("ጽሑፍ") }], ...data },
   });
 }
 
@@ -78,7 +79,7 @@ describe("addresses (section + slug)", () => {
       collection: "pages",
       ...as(editor),
       locale: "am",
-      data: { title: `ገጽ ${data.slug}`, section: "our-church", _status: "published", ...data },
+      data: { title: `ገጽ ${data.slug}`, section: "our-church", _status: "published", layout: [{ blockType: "richText", content: rich("ጽሑፍ") }], ...data },
     });
 
   it("rejects badly formatted and reserved slugs on publish", async () => {

@@ -3,6 +3,7 @@ import type { CollectionConfig, PayloadRequest } from "payload";
 import { contentAccess } from "../access/content";
 import { pageBlocks } from "../blocks";
 import { labelledLinkFields } from "../fields/link";
+import { requireLocaleContentToPublish } from "../hooks/localePublishRule";
 import { CACHE_TAGS, revalidateTags } from "../hooks/revalidate";
 import { isAppOwned, PAGE_SECTIONS, pagePath, validateSlugFormat } from "../lib/pages";
 
@@ -33,7 +34,8 @@ export const Pages: CollectionConfig = {
   defaultPopulate: { title: true, slug: true, section: true },
   indexes: [{ fields: ["section", "slug"], unique: true }],
   hooks: {
-    beforeChange: [publishersOnly],
+    // Publishing needs the saved language's own title and text (D-041).
+    beforeChange: [publishersOnly, requireLocaleContentToPublish],
     afterChange: revalidation.afterChange,
     afterDelete: revalidation.afterDelete,
   },
