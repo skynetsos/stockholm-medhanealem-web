@@ -46,6 +46,13 @@ describe("toSitePath", () => {
     expect(toSitePath("/api/media/file/a.png?x=1")).toBe("/api/media/file/a.png?x=1");
     expect(toSitePath("https://cdn.example.org/a.png")).toBe("https://cdn.example.org/a.png");
   });
+
+  it("treats our own file paths as ours under another host name (cached under an old address)", () => {
+    process.env.NEXT_PUBLIC_SERVER_URL = "http://172.20.10.3:3000";
+    expect(toSitePath("http://localhost:3000/api/media/file/church-image.jpg")).toBe("/api/media/file/church-image.jpg");
+    expect(toSitePath("http://localhost:3000/api/audio/file/s.mp3")).toBe("/api/audio/file/s.mp3");
+    expect(toSitePath("https://cdn.example.org/api/other/file/x.png")).toBe("https://cdn.example.org/api/other/file/x.png");
+  });
 });
 
 describe("mediaSource", () => {

@@ -11,15 +11,21 @@ export function publicMedia(value: number | Media | null | undefined): Media | n
   return value;
 }
 
+/** Where Payload serves our own uploads (Media, Audio recordings): always this app. */
+const OWN_FILE_PATH = /^\/api\/(media|audio)\/file\//;
+
 /**
  * Payload returns absolute file URLs built from serverURL. Our own files are served by this app,
  * so use a relative path: next/image then treats them as local images (no remotePatterns needed).
+ * A file path of ours counts as ours under any host name too: URLs cached while the site ran under
+ * another address (localhost vs the LAN address, or a domain change) must not break the page.
  */
 export function toSitePath(url: string): string {
   try {
     const parsed = new URL(url, "http://local.invalid");
     const site = process.env.NEXT_PUBLIC_SERVER_URL;
-    const sameSite = parsed.origin === "http://local.invalid" || (site && parsed.origin === new URL(site).origin);
+    const sameSite =
+      parsed.origin === "http://local.invalid" || (site && parsed.origin === new URL(site).origin) || OWN_FILE_PATH.test(parsed.pathname);
     return sameSite ? `${parsed.pathname}${parsed.search}` : url;
   } catch {
     return url;
