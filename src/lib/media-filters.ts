@@ -1,5 +1,6 @@
 import type { Audio, Video } from "../payload-types";
 import { stockholmDate } from "./ethiopian-calendar";
+import { toSitePath } from "./media";
 import { parseVideoUrl, type VideoRef } from "./video";
 
 /** Video categories in display order, with their message keys. */
@@ -16,7 +17,9 @@ export type PlayableVideo = { video: Video; ref: VideoRef | null; audio: (Audio 
 /** Entries that can be played: an uploaded recording (audio entries) or a supported video link. */
 export function playable(videos: Video[]): PlayableVideo[] {
   return videos.flatMap((video) => {
-    const audio = video.kind === "audio" && video.audio && typeof video.audio === "object" && video.audio.url ? (video.audio as Audio & { url: string }) : null;
+    const file = video.kind === "audio" && video.audio && typeof video.audio === "object" && video.audio.url ? video.audio : null;
+    // Our own files: a site-relative address, so it works whatever host name the site is reached by.
+    const audio = file ? ({ ...file, url: toSitePath(file.url!) } as Audio & { url: string }) : null;
     const ref = parseVideoUrl(video.url);
     return audio || ref ? [{ video, ref, audio }] : [];
   });

@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { byYear, filterVideos, playable } from "../../src/lib/media-filters";
 import type { Video } from "../../src/payload-types";
+
+// Payload's absolute file URLs are made site-relative (toSitePath).
+vi.stubEnv("NEXT_PUBLIC_SERVER_URL", "http://localhost:3000");
 
 const video = (id: number, category: Video["category"], date: string, extra: Partial<Video> = {}) =>
   ({ id, title: `v${id}`, kind: "video", category, date, url: "https://youtu.be/dQw4w9WgXcQ", updatedAt: date, createdAt: date, ...extra }) as Video;
@@ -11,7 +14,7 @@ const items = playable([
   video(2, "liturgy", "2025-12-31T23:30:00.000Z"), // 1 January 2026 in Stockholm
   video(3, "sermon", "2024-05-05T10:00:00.000Z"),
   video(4, "event", "2026-01-01T10:00:00.000Z", { url: "https://example.org/not-a-video" }),
-  video(5, "sermon", "2026-02-01T10:00:00.000Z", { kind: "audio", url: null, audio: { id: 9, title: "a", url: "/api/audio/file/a.mp3", mimeType: "audio/mpeg" } as never }),
+  video(5, "sermon", "2026-02-01T10:00:00.000Z", { kind: "audio", url: null, audio: { id: 9, title: "a", url: "http://localhost:3000/api/audio/file/a.mp3", mimeType: "audio/mpeg" } as never }),
 ]);
 
 describe("video filters (D-042)", () => {
