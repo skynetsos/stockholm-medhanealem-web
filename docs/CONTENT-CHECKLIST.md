@@ -1,5 +1,40 @@
 # Content Checklist
 
+## Still needed from the church (2026-11-13, end of Phase 3)
+
+The site is code-complete for Phases 0–3. Everything below needs a person at the church: a name, a
+fact, a text, an approval or a permission. Details are in the sections further down.
+
+**People to name** (spec §10 #6)
+1. **Office Coordinator** and **Clergy Approver**: they get admin accounts, enrol two-factor sign-in, do the 30-minute walkthrough (RUNBOOK → Baptism requests) and sign off (Phase 2 exit item 7).
+2. **Swedish reviewer** (Phase 3 exit item 1) and a **native Amharic reviewer** for the interface text.
+
+**Approvals**
+3. **Clergy approval of the three imported teachings** (ክርስትና, ጋብቻ, ፍትሐት). On the development site they are published with a placeholder approver ("NOT APPROVED – development review"); in production a clergy approver must read and publish each one (D-040).
+4. **Committee review of every imported page:** `/our-church`, `/our-church/history`, `/worship`, `/worship/weekly-service`, `/worship/monthly-feast-days`, `/worship/annual-feast-days`, `/sunday-school`, `/support`. Check facts that may be out of date: the building-fund appeal in the history, the Amharic class at Rågsved, pastoral hours Mon–Fri 8–12, the Saturday diaconate class.
+5. **Privacy notice for baptism requests** (page `privacy-baptism`) and the **privacy policy** (`/privacy`), am/en, approved by the committee; **legal review** closed or explicitly deferred (Phase 2 exit item 5).
+6. **Retention periods:** baptism requests 24 months, inquiries 12 months are defaults; legal review to confirm (Site settings → Requests & privacy).
+
+**Facts for the office**
+7. **Service times:** confirm Sunday Kidase 08:00–11:30 and the Wednesday/Friday prayer from 18:00 (end time?). Add Kidase times for the monthly feasts (12th, 21st, 27th) and for the annual feasts, which are imported as all-day. Enter **Genna** and the movable feasts (Hosanna, Siklet, Fasika, Erget) and the fasts (Tsome Nebiyat, Abiy Tsom …) per year.
+8. **Office email and phone** (the old site listed a phone number and a Gmail address: which are the office's?), **office notification emails** (who gets form messages), **map pin**, public transport directions, default event location.
+9. **Livestream link** (Site settings), then **test the livestream page live on a Sunday** (Phase 3 exit item 2).
+10. **Social links**, e.g. the YouTube channel @Dekikebetu27 the old site linked, if it is the church's.
+11. **Postgiro numbers** from the old contact page (membership 4980549-2, building 6195429-3): show them on `/support` or not? Giving is Phase 4 (only if approved).
+
+**Photos**
+12. **Permission to publish** for the 22 imported photos and the Sunday School chart (four unpublished galleries). For the Sunday School and diaconate photos, which show children, record the **parents'/guardians' written permission** first; the site enforces it (D-042). Replace the generic alt texts with real descriptions. Then publish the galleries.
+13. A sharper **default share image and home hero** (≥ 1600 px wide); the church photo from the old site is 727 px.
+
+**Text to write or translate**
+14. **English translations** of all imported content: pages, teachings, events and department texts. "Missing translations" in the admin lists what is missing.
+15. **Swedish:** translate the core pages, then turn on "Show Swedish in the language switcher" (possible from 80 % translated; today 0 %).
+16. **Sunday School departments:** a summary for each (the old site's department pages were empty); a department page appears once it has Amharic text.
+17. **Home page:** hero heading, subheading, buttons, about teaser, Sunday School teaser (Settings → Home page).
+18. **Review the new interface text** in Amharic and Swedish: search, error pages, media filters, "In this section", the Amharic two-factor sign-in screens (`src/i18n/mfa-am.ts`).
+19. **Analytics:** decide whether to switch on cookieless Plausible (off now; D-044). If yes, mention it in the privacy policy.
+
+
 > **Open items carried from Phase 1** (Phase 1 accepted conditionally by Biruk on 2026-10-27:
 > code-complete):
 > 1. **Task 7 — WordPress import:** done on 2026-11-13 from the old site's public pages (no WXR
@@ -50,6 +85,7 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | `src/messages/en.json` | Draft | Biruk | |
 | `src/messages/am.json` | Draft: needs native Amharic review (DECISIONS Q-004; new strings listed in D-016, D-018–D-022) | Biruk | |
 | `src/messages/sv.json` | Draft: needs Swedish review (Phase 3) | Phase 3 Swedish reviewer (TBD) | |
+| `src/messages/errors.json` (error pages), `src/i18n/mfa-am.ts` (Amharic two-factor screens) | Draft (D-044) | Amharic / Swedish reviewers | |
 | Menu and footer labels | Seeded (am/en/sv) — **Settings → Navigation / Footer** | Biruk | |
 
 ## Site settings (Settings → Site settings)
@@ -67,8 +103,8 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | Office email, office phone | Not started | Office | Office numbers only, never personal ones. The old contact page listed a phone number and a Gmail address: confirm which are the office's |
 | **Office notification emails** | Not started | Office | Who is emailed about contact messages (D-022) |
 | Social links | Not started | Communications | |
-| Livestream link | Not started | Media | /worship/livestream appears once set |
-| Show Swedish in the language switcher | Off | Committee | Turn on after the Phase 3 Swedish review |
+| Livestream link | Not started | Media | /worship/livestream appears once set. YouTube, Vimeo or Facebook video link plays in the page after Play; a channel/page live tab opens as a link (D-042). Test live on a Sunday |
+| Show Swedish in the language switcher | Off | Committee | Can be turned on once 80 % of pages and teachings have Swedish text (today 0 %; see "Missing translations"), after the Swedish review |
 
 ## Home (Settings → Home page)
 
@@ -146,6 +182,7 @@ Alternatively, remove a link in **Settings → Navigation / Footer** until its p
 | Facebook photos for review | Waiting for photos | Biruk / Yonas | Import with `scripts/import-photos.ts` into the unpublished gallery "ፎቶዎች / Photos" (RUNBOOK) |
 | Old-site photos | Imported: 22 photos in 4 unpublished galleries (መጋቢት መድኃኔ ዓለም 2016, ሰንበት ት/ቤት, የዲቁና ትምህርት, ፎቶዎች ከቀድሞው ድረ ገጽ) + the Sunday School chart | Media | Alt texts are generic ("… (3)"): describe each photo. Sunday School and diaconate photos are marked **Shows children** |
 | Photo permissions review | Not started | Yonas | Tick **Permission to publish** (and check **Shows children**) per photo; then publish the galleries |
+| Audio recordings (sermons) | Not started | Media | Upload MP3/M4A under Audio recordings, then add an entry of type Audio in Videos & audio (D-042) |
 | Videos (sermons, liturgy, events) | Imported: 1 (ሥርዓተ ቅዳሴ ዘጥቅምት 29/2019) | Media | The old site linked the YouTube channel @Dekikebetu27: add it under Social links if it is the church's |
 
 ## Support (Pages, section "Support")
