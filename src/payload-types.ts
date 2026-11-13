@@ -22,6 +22,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    audio: Audio;
     pages: Page;
     teachings: Teaching;
     events: Event;
@@ -43,6 +44,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    audio: AudioSelect<false> | AudioSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     teachings: TeachingsSelect<false> | TeachingsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
@@ -182,6 +184,11 @@ export interface Media {
    * Requires written permission from a parent or guardian before "Permission to publish" is ticked.
    */
   containsMinors?: boolean | null;
+  guardianConsent?: boolean | null;
+  /**
+   * E.g. "Signed form, Sunday School folder 2026". Never names or contact details.
+   */
+  guardianConsentNote?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -228,6 +235,35 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * MP3, M4A or Ogg recordings. To show one on the site, add it to an entry in Videos & recordings with type Audio.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio".
+ */
+export interface Audio {
+  id: number;
+  /**
+   * For staff; the site shows the entry's title.
+   */
+  title: string;
+  /**
+   * Set automatically while a Videos & recordings entry uses this file.
+   */
+  attached?: boolean | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -710,9 +746,13 @@ export interface Video {
   date: string;
   date_tz: SupportedTimezones;
   /**
-   * YouTube or Vimeo link.
+   * The recording (upload it under Audio recordings).
    */
-  url: string;
+  audio?: (number | null) | Audio;
+  /**
+   * YouTube, Vimeo or Facebook video link. For an uploaded recording, leave empty.
+   */
+  url?: string | null;
   description?: string | null;
   /**
    * Keeps YouTube/Vimeo from setting cookies until the visitor chooses to play. Leave on.
@@ -939,6 +979,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'audio';
+        value: number | Audio;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -1077,6 +1121,8 @@ export interface MediaSelect<T extends boolean = true> {
   credit?: T;
   permissionObtained?: T;
   containsMinors?: T;
+  guardianConsent?: T;
+  guardianConsentNote?: T;
   _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1133,6 +1179,26 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio_select".
+ */
+export interface AudioSelect<T extends boolean = true> {
+  title?: T;
+  attached?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1396,6 +1462,7 @@ export interface VideosSelect<T extends boolean = true> {
   category?: T;
   date?: T;
   date_tz?: T;
+  audio?: T;
   url?: T;
   description?: T;
   consentRequired?: T;

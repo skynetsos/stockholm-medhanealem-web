@@ -8,6 +8,7 @@ export const FRAME_SOURCES = [
   "https://challenges.cloudflare.com", // Turnstile spam check on the forms
   "https://www.youtube-nocookie.com", // videos (privacy-enhanced player, D-019)
   "https://player.vimeo.com",
+  "https://www.facebook.com", // Facebook livestream/video player, after a click (D-042)
   "https://www.openstreetmap.org", // map on /visit, after a click (D-021)
 ] as const;
 

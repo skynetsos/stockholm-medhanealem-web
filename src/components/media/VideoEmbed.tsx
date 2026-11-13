@@ -5,12 +5,15 @@ import { useState } from "react";
 
 import type { VideoRef } from "@/lib/video";
 
-const PROVIDER_NAMES = { youtube: "YouTube", vimeo: "Vimeo" } as const;
+const PROVIDER_NAMES = { youtube: "YouTube", vimeo: "Vimeo", facebook: "Facebook" } as const;
 
-const embedUrl = ({ provider, id }: VideoRef, autoplay: boolean) =>
-  provider === "youtube"
-    ? `https://www.youtube-nocookie.com/embed/${id}?rel=0${autoplay ? "&autoplay=1" : ""}`
-    : `https://player.vimeo.com/video/${id}?dnt=1${autoplay ? "&autoplay=1" : ""}`;
+const embedUrl = ({ provider, id }: VideoRef, autoplay: boolean) => {
+  if (provider === "youtube") return `https://www.youtube-nocookie.com/embed/${id}?rel=0${autoplay ? "&autoplay=1" : ""}`;
+  if (provider === "vimeo") return `https://player.vimeo.com/video/${id}?dnt=1${autoplay ? "&autoplay=1" : ""}`;
+  // Facebook has no cookie-less player: it stays behind the Play button like the others.
+  const href = encodeURIComponent(`https://www.facebook.com/watch/?v=${id}`);
+  return `https://www.facebook.com/plugins/video.php?href=${href}&show_text=false${autoplay ? "&autoplay=true" : ""}`;
+};
 
 /**
  * Consent-gated video (spec §5 VideoEmbed, §10 #9): nothing is loaded from YouTube/Vimeo until the

@@ -7,6 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Announcements } from "./collections/Announcements";
+import { Audio } from "./collections/Audio";
 import { BaptismRequests } from "./collections/BaptismRequests";
 import { CaseEvents } from "./collections/CaseEvents";
 import { Clergy } from "./collections/Clergy";
@@ -68,7 +69,7 @@ export default buildConfig({
   i18n: {
     translations: adminTranslations,
   },
-  collections: [Users, Media, Pages, Teachings, Events, Announcements, Clergy, Departments, Galleries, Videos, Posts, BaptismRequests, Inquiries, CaseEvents],
+  collections: [Users, Media, Audio, Pages, Teachings, Events, Announcements, Clergy, Departments, Galleries, Videos, Posts, BaptismRequests, Inquiries, CaseEvents],
   globals: [SiteSettings, Navigation, Footer, Homepage, BaptismPage],
   localization: {
     locales: locales.map((code) => ({ code, label: localeNames[code] })),
@@ -88,7 +89,7 @@ export default buildConfig({
   plugins: [
     s3Storage({
       // Files are served through Payload (/api/media/file/...), so Media's read access applies to them.
-      collections: { media: true },
+      collections: { media: true, audio: true },
       bucket: requireEnv("S3_BUCKET"),
       config: {
         endpoint: requireEnv("S3_ENDPOINT"),

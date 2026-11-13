@@ -137,7 +137,15 @@
       "liturgy": "Liturgy",
       "event": "Events",
       "sundaySchool": "Sunday School"
-    }
+    },
+    "filterCategory": "Type",
+    "filterYear": "Year",
+    "all": "All",
+    "filters": "Filters",
+    "noResults": "Nothing matches this choice.",
+    "clearFilters": "Show all",
+    "audioFallback": "Your browser can't play audio here.",
+    "download": "Download"
   },
   "visit": {
     "title": "Visit us",

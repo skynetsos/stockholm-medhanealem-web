@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, PayloadRequest } from "payload";
 
 import { staffContentAccess } from "../access/content";
 import { stockholmDay } from "../fields/stockholmDate";
@@ -16,10 +16,33 @@ const structural = { access: { update: editorsOnlyField } };
 
 const revalidation = revalidateTags(CACHE_TAGS.videos);
 
+const idOf = (value: unknown): number | null =>
+  typeof value === "number" ? value : value && typeof value === "object" && "id" in value ? (value as { id: number }).id : null;
+
 /**
- * Video/audio library (spec §2.10). Phase 1 supports YouTube and Vimeo links; uploaded audio/video
- * files (e.g. sermon recordings) need their own upload collection and arrive with the Phase 3 audio
- * player (docs/DECISIONS.md D-014).
+ * A recording is public while an entry uses it (Audio read access, D-042). Runs in the save's own
+ * transaction (`req`): the new entry's reference to the recording locks that row until it commits.
+ */
+async function syncAttached(req: PayloadRequest, audioId: number | null) {
+  if (!audioId) return;
+  const used = await req.payload.count({ collection: "videos", overrideAccess: true, req, where: { audio: { equals: audioId } } });
+  await req.payload.update({ collection: "audio", id: audioId, overrideAccess: true, req, data: { attached: used.totalDocs > 0 } });
+}
+const audioAfterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, req }) => {
+  const now = idOf(doc.audio);
+  const before = idOf(previousDoc?.audio);
+  await syncAttached(req, now);
+  if (before !== now) await syncAttached(req, before);
+  return doc;
+};
+const audioAfterDelete: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  await syncAttached(req, idOf(doc.audio));
+  return doc;
+};
+
+/**
+ * Video/audio library (spec §2.10): YouTube, Vimeo and Facebook links, and (Phase 3, D-042) audio
+ * recordings uploaded to "Audio recordings", played on the site with a plain audio player.
  */
 export const Videos: CollectionConfig = {
   slug: "videos",
@@ -31,7 +54,7 @@ export const Videos: CollectionConfig = {
   },
   access,
   defaultSort: "-date",
-  hooks: { afterChange: revalidation.afterChange, afterDelete: revalidation.afterDelete },
+  hooks: { afterChange: [...revalidation.afterChange, audioAfterChange], afterDelete: [...revalidation.afterDelete, audioAfterDelete] },
   fields: [
     { name: "title", type: "text", required: true, localized: true },
     {
@@ -66,13 +89,23 @@ export const Videos: CollectionConfig = {
       ],
     },
     {
+      name: "audio",
+      type: "upload",
+      relationTo: "audio",
+      ...structural,
+      admin: { description: "The recording (upload it under Audio recordings).", condition: (_, sibling) => sibling?.kind === "audio" },
+      validate: (value: unknown, { siblingData }: { siblingData?: { kind?: string; url?: string } }) =>
+        siblingData?.kind === "audio" && !value && !siblingData.url ? "Choose a recording, or enter a video link instead." : true,
+    },
+    {
       name: "url",
       type: "text",
-      required: true,
       ...structural,
-      admin: { description: "YouTube or Vimeo link." },
-      validate: (value: unknown) =>
-        parseVideoUrl(typeof value === "string" ? value : "") ? true : "Enter a YouTube or Vimeo link (https://…)",
+      admin: { description: "YouTube, Vimeo or Facebook video link. For an uploaded recording, leave empty." },
+      validate: (value: unknown, { siblingData }: { siblingData?: { kind?: string; audio?: unknown } }) => {
+        if (siblingData?.kind === "audio" && siblingData.audio && !value) return true;
+        return parseVideoUrl(typeof value === "string" ? value : "") ? true : "Enter a YouTube, Vimeo or Facebook video link (https://…)";
+      },
     },
     { name: "description", type: "textarea", localized: true },
     {

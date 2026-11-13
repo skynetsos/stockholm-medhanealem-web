@@ -117,8 +117,34 @@ test("Sunday School, News and Media pages with content", async ({ page }) => {
 
   await page.goto("/en/media/videos");
   await expect(page.locator("iframe")).toHaveCount(0); // nothing from YouTube before Play
-  await page.getByRole("button", { name: en.video.play }).click();
+  await page.getByRole("button", { name: en.video.play }).first().click();
   await expect(page.locator('iframe[src^="https://www.youtube-nocookie.com/embed/"]')).toHaveCount(1);
+});
+
+// Media library (Phase 3 task 3, D-042): filters by type and year, uploaded recordings in an audio player.
+test("videos can be filtered by type and year; recordings play from this site", async ({ page, request }) => {
+  await page.goto("/en/media/videos");
+  const filters = page.getByRole("navigation", { name: en.media.filters });
+  await filters.getByRole("link", { name: en.media.categories.liturgy }).click();
+  await expect(page).toHaveURL(/\/en\/media\/videos\?category=liturgy$/);
+  await expect(page.getByRole("heading", { level: 3 })).toHaveText(["E2E liturgy"]);
+  await expect(filters.getByRole("link", { name: en.media.categories.liturgy })).toHaveAttribute("aria-current", "page");
+
+  await page.goto("/en/media/videos?year=2026");
+  await expect(page.getByRole("heading", { level: 3, name: "E2E liturgy" })).toHaveCount(0);
+  const audio = page.locator("audio");
+  await expect(audio).toHaveCount(1);
+  await expect(audio).toHaveAttribute("preload", "none");
+  const src = await audio.locator("source").getAttribute("src");
+  // Served by this site (same origin), never by a third party.
+  expect(new URL(src!, page.url()).origin).toBe(new URL(page.url()).origin);
+  expect(new URL(src!, page.url()).pathname).toMatch(/^\/api\/audio\/file\//);
+  const file = await request.get(src!);
+  expect(file.status()).toBe(200);
+  expect(file.headers()["content-type"]).toBe("audio/mpeg");
+
+  await page.goto("/en/media/videos?category=liturgy&year=2026");
+  await expect(page.getByText(en.media.noResults)).toBeVisible();
 });
 
 for (const path of ["/en/sunday-school/education", "/en/news/unknown", "/en/media/galleries/unknown"]) {

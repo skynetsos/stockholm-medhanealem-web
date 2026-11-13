@@ -53,6 +53,14 @@ describe("parseVideoUrl", () => {
     expect(parseVideoUrl("https://vimeo.com/123456789")).toEqual({ provider: "vimeo", id: "123456789" });
   });
 
+  it("recognises Facebook video and watch links (livestreams, D-042)", () => {
+    expect(parseVideoUrl("https://www.facebook.com/medhanealem/videos/1234567890123/")).toEqual({ provider: "facebook", id: "1234567890123" });
+    expect(parseVideoUrl("https://www.facebook.com/watch/?v=1234567890123")).toEqual({ provider: "facebook", id: "1234567890123" });
+    // A page's live tab can't be embedded by link: shown as a plain link instead.
+    expect(parseVideoUrl("https://www.facebook.com/medhanealem/live")).toBeNull();
+    expect(parseVideoUrl("https://facebook.com.evil.example/x/videos/1234567890123")).toBeNull();
+  });
+
   it("rejects other hosts, http and malformed input", () => {
     for (const bad of [
       "http://www.youtube.com/watch?v=dQw4w9WgXcQ",

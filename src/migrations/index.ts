@@ -14,6 +14,7 @@ import * as migration_20261027_200552_baptism_page from './20261027_200552_bapti
 import * as migration_20261029_181841_case_event_archived from './20261029_181841_case_event_archived';
 import * as migration_20261105_164650_inquiry_retention from './20261105_164650_inquiry_retention';
 import * as migration_20261105_170607_case_event_export_erase from './20261105_170607_case_event_export_erase';
+import * as migration_20261113_180853_media_library from './20261113_180853_media_library';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20261105_170607_case_event_export_erase.up,
     down: migration_20261105_170607_case_event_export_erase.down,
-    name: '20261105_170607_case_event_export_erase'
+    name: '20261105_170607_case_event_export_erase',
+  },
+  {
+    up: migration_20261113_180853_media_library.up,
+    down: migration_20261113_180853_media_library.down,
+    name: '20261113_180853_media_library'
   },
 ];

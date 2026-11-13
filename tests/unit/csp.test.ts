@@ -18,11 +18,12 @@ describe("Content Security Policy (D-037)", () => {
     expect(directive(publicCsp("abcdefghijklmnop1234==", { dev: true }), "script-src")).toContain("'unsafe-eval'");
   });
 
-  it("public site: frames only from Turnstile, youtube-nocookie, Vimeo and the map", () => {
+  it("public site: frames only from Turnstile, youtube-nocookie, Vimeo, Facebook's player and the map", () => {
     expect(directive(publicCsp("abcdefghijklmnop1234=="), "frame-src")).toEqual([
       "https://challenges.cloudflare.com",
       "https://www.youtube-nocookie.com",
       "https://player.vimeo.com",
+      "https://www.facebook.com",
       "https://www.openstreetmap.org",
     ]);
     expect(FRAME_SOURCES).not.toContain("https://www.youtube.com");

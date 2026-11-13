@@ -8,6 +8,7 @@ import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { getGalleries, getVideos } from "@/lib/cms/sections";
 import { getDateLabels } from "@/lib/date-labels";
+import { byYear } from "@/lib/media-filters";
 import { stockholmDate } from "@/lib/ethiopian-calendar";
 import { galleryItems } from "@/lib/media";
 
@@ -47,8 +48,13 @@ export default async function MediaPage({ params }: Props) {
           <h2 id="galleries-title" className="mb-4">
             {t("galleries")}
           </h2>
+          {byYear(shown.map((s) => ({ ...s, date: s.gallery.date }))).map(({ year, items }) => (
+            <section key={year} aria-labelledby={`galleries-${year}`} className="mt-6">
+              <h3 id={`galleries-${year}`} className="mb-3">
+                {year}
+              </h3>
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {shown.map(({ gallery, images }) => (
+            {items.map(({ gallery, images }) => (
               <li key={gallery.id}>
                 <LinkCard
                   href={`/media/galleries/${gallery.slug}`}
@@ -64,6 +70,8 @@ export default async function MediaPage({ params }: Props) {
               </li>
             ))}
           </ul>
+            </section>
+          ))}
         </section>
       )}
     </main>

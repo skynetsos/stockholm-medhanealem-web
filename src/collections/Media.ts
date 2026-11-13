@@ -90,6 +90,11 @@ export const Media: CollectionConfig = {
         position: "sidebar",
         description: "Tick only when the church has permission to publish this image (and from parents/guardians if minors appear).",
       },
+      // Spec Phase 3 task 3 (D-042): a photo of children is published only with the guardians' consent on file.
+      validate: (value: unknown, { siblingData }: { siblingData?: { containsMinors?: boolean; guardianConsent?: boolean } }) =>
+        value === true && siblingData?.containsMinors && !siblingData.guardianConsent
+          ? 'This image shows children: tick "Parents/guardians have given written permission" first.'
+          : true,
     },
     {
       name: "containsMinors",
@@ -99,6 +104,25 @@ export const Media: CollectionConfig = {
       admin: {
         position: "sidebar",
         description: "Requires written permission from a parent or guardian before \"Permission to publish\" is ticked.",
+      },
+    },
+    {
+      name: "guardianConsent",
+      type: "checkbox",
+      label: "Parents/guardians have given written permission",
+      defaultValue: false,
+      access: { read: ({ req }) => isStaff(req) },
+      admin: { position: "sidebar", condition: (_, sibling) => Boolean(sibling?.containsMinors) },
+    },
+    {
+      name: "guardianConsentNote",
+      type: "text",
+      label: "Where the permission is kept",
+      access: { read: ({ req }) => isStaff(req) },
+      admin: {
+        position: "sidebar",
+        condition: (_, sibling) => Boolean(sibling?.containsMinors),
+        description: "E.g. \"Signed form, Sunday School folder 2026\". Never names or contact details.",
       },
     },
   ],

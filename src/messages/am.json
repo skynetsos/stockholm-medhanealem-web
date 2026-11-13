@@ -137,7 +137,15 @@
       "liturgy": "ቅዳሴ",
       "event": "ዝግጅቶች",
       "sundaySchool": "ሰንበት ትምህርት ቤት"
-    }
+    },
+    "filterCategory": "ዓይነት",
+    "filterYear": "ዓመት",
+    "all": "ሁሉም",
+    "filters": "ማጣሪያዎች",
+    "noResults": "በዚህ ምርጫ ምንም አልተገኘም።",
+    "clearFilters": "ሁሉንም አሳይ",
+    "audioFallback": "አሳሽዎ የድምፅ ማጫወቻ አይደግፍም።",
+    "download": "ያውርዱ"
   },
   "visit": {
     "title": "ይጎብኙን",

@@ -137,7 +137,15 @@
       "liturgy": "Liturgi",
       "event": "Evenemang",
       "sundaySchool": "Söndagsskola"
-    }
+    },
+    "filterCategory": "Typ",
+    "filterYear": "År",
+    "all": "Alla",
+    "filters": "Filter",
+    "noResults": "Inget matchar valet.",
+    "clearFilters": "Visa alla",
+    "audioFallback": "Din webbläsare kan inte spela ljud här.",
+    "download": "Ladda ner"
   },
   "visit": {
     "title": "Besök oss",

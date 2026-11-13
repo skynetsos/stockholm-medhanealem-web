@@ -121,6 +121,34 @@ await payload.create({
   data: { title: "E2E sermon", kind: "video", category: "sermon", date: "2026-10-11T22:00:00.000Z", date_tz: "Europe/Stockholm", url: "https://youtu.be/dQw4w9WgXcQ" },
 });
 
+// Media library (Phase 3, D-042): a second category and year for the filters, and an uploaded recording.
+await payload.create({
+  collection: "videos",
+  ...ctx,
+  locale: "en",
+  data: { title: "E2E liturgy", kind: "video", category: "liturgy", date: "2025-06-01T22:00:00.000Z", date_tz: "Europe/Stockholm", url: "https://vimeo.com/123456789" },
+});
+// A short MP3 (silence): the file type is checked, not decoded.
+const mp3 = Buffer.from(
+  "SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+  "base64",
+);
+// No shared `ctx.context` here: the storage plugin keeps upload state in the request context, and the
+// object shared with the earlier photo upload made it skip this file.
+const recording = await payload.create({
+  collection: "audio",
+  overrideAccess: true,
+  locale: "en",
+  data: { title: "E2E sermon recording" },
+  file: { data: mp3, mimetype: "audio/mpeg", name: `e2e-sermon-${Date.now()}.mp3`, size: mp3.length },
+});
+await payload.create({
+  collection: "videos",
+  ...ctx,
+  locale: "en",
+  data: { title: "E2E audio sermon", kind: "audio", category: "sermon", date: "2026-10-18T22:00:00.000Z", date_tz: "Europe/Stockholm", audio: recording.id },
+});
+
 // Contact form (task 6): where office notifications go.
 await payload.updateGlobal({ slug: "site-settings", ...ctx, data: { officeNotificationEmails: [{ email: "e2e-office@example.org" }] } });
 

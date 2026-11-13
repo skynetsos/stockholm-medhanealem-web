@@ -37,9 +37,9 @@ export const getGalleries = (locale: Locale): Promise<Gallery[]> =>
     return (await payload.find({ collection: "galleries", ...read(locale), pagination: false, sort: "-date" })).docs;
   });
 
-/** Videos and recordings, newest first (up to 100). */
+/** Videos and recordings, newest first (up to 200); depth 1 populates uploaded recordings. */
 export const getVideos = (locale: Locale): Promise<Video[]> =>
   cached("videos", CACHE_TAGS.videos, locale, async () => {
     const payload = await getPayload({ config });
-    return (await payload.find({ collection: "videos", ...read(locale), depth: 0, limit: 100, sort: "-date" })).docs;
+    return (await payload.find({ collection: "videos", ...read(locale), depth: 1, limit: 200, sort: "-date" })).docs;
   });

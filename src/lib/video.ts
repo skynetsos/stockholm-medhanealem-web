@@ -1,8 +1,10 @@
-export type VideoRef = { provider: "youtube" | "vimeo"; id: string };
+export type VideoRef = { provider: "youtube" | "vimeo" | "facebook"; id: string };
 
 /**
- * Parse a YouTube or Vimeo URL into provider + id. Anything else returns null, so only these two
- * providers can ever be embedded (consent-gated, privacy-enhanced embeds are built from the id).
+ * Parse a YouTube, Vimeo or Facebook video URL into provider + id. Anything else returns null, so
+ * only these providers can ever be embedded (consent-gated embeds are built from the id). Facebook
+ * (livestreams, spec Phase 3 task 4, D-042): a page's video or a watch link; the id is the numeric
+ * video id and the embed uses Facebook's video plugin.
  */
 export function parseVideoUrl(input: string | null | undefined): VideoRef | null {
   if (!input) return null;
@@ -28,6 +30,10 @@ export function parseVideoUrl(input: string | null | undefined): VideoRef | null
   if (host === "vimeo.com" || host === "player.vimeo.com") {
     const id = url.pathname.match(/^\/(?:video\/)?(\d{6,12})(?:\/|$)/)?.[1];
     return id ? { provider: "vimeo", id } : null;
+  }
+  if (host === "facebook.com" || host === "web.facebook.com") {
+    const id = url.pathname.match(/^\/[\w.-]+\/videos\/(?:[\w.-]+\/)?(\d{6,20})\/?$/)?.[1] ?? (url.pathname.replace(/\/$/, "") === "/watch" ? url.searchParams.get("v") : null);
+    return id && /^\d{6,20}$/.test(id) ? { provider: "facebook", id } : null;
   }
   return null;
 }
