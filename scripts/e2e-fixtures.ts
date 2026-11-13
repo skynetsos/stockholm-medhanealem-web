@@ -156,5 +156,14 @@ await payload.create({
   },
 });
 
+// Full journey (Phase 2 task 11): an office coordinator and a clergy approver who sign in through the
+// admin login and MFA screens (test passwords, this database only; MFA is enrolled by the test).
+for (const [email, name, role] of [
+  ["e2e-office-staff@example.org", "E2E Office", "office_coordinator"],
+  ["e2e-journey-clergy@example.org", "E2E Journey Clergy", "clergy_approver"],
+] as const) {
+  await payload.create({ collection: "users", ...ctx, data: { email, name, password: "E2e-journey-Pa55!", roles: [role], active: true } });
+}
+
 console.log("E2E fixtures created");
 process.exit(0);
