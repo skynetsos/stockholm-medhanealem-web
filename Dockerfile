@@ -8,7 +8,7 @@
 #
 # NEXT_PUBLIC_SERVER_URL is compiled into the client bundle, so it is a build argument.
 
-ARG NODE_VERSION=22-alpine
+ARG NODE_VERSION=22.23.5-alpine
 
 # ── Dependencies ──────────────────────────────────────────────────────────
 FROM node:${NODE_VERSION} AS deps
