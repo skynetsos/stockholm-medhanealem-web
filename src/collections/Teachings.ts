@@ -1,4 +1,5 @@
 import { APIError, type CollectionBeforeChangeHook, type CollectionConfig, type FieldAccess } from "payload";
+import { contentKeyField } from "../fields/contentKey";
 
 import { contentAccess, hasStaffRole } from "../access/content";
 import { systemOnly } from "../access";
@@ -15,6 +16,7 @@ export const TEACHING_CATEGORIES = [
   { value: "fasting", label: "Fasting" },
   { value: "prayers", label: "Prayers" },
   { value: "faq", label: "Questions & answers" },
+  { value: "offerings", label: "Offerings (መባዕ)" },
 ] as const;
 
 /**
@@ -98,6 +100,7 @@ export const Teachings: CollectionConfig = {
   },
   fields: [
     { name: "title", type: "text", required: true, localized: true },
+    contentKeyField,
     {
       type: "row",
       fields: [

@@ -1,4 +1,5 @@
 import type { CollectionConfig, PayloadRequest } from "payload";
+import { contentKeyField } from "../fields/contentKey";
 
 import { contentAccess } from "../access/content";
 import { pageBlocks } from "../blocks";
@@ -41,6 +42,7 @@ export const Pages: CollectionConfig = {
   },
   fields: [
     { name: "title", type: "text", required: true, localized: true },
+    contentKeyField,
     {
       type: "row",
       fields: [

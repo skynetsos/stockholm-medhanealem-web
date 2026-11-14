@@ -95,7 +95,8 @@
       "sacraments": "The seven sacraments",
       "fasting": "Fasting",
       "prayers": "Prayers",
-      "faq": "Questions and answers"
+      "faq": "Questions and answers",
+      "offerings": "Offerings"
     }
   },
   "sacraments": {
@@ -330,5 +331,8 @@
       "post": "News",
       "event": "Calendar"
     }
+  },
+  "support": {
+    "title": "Support"
   }
 }

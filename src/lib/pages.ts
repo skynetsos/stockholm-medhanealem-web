@@ -8,6 +8,7 @@ export const PAGE_SECTIONS = [
   { value: "our-faith", label: "Our Faith" },
   { value: "sunday-school", label: "Sunday School" },
   { value: "worship", label: "Worship & Calendar" },
+  { value: "sacraments", label: "Sacraments" },
   { value: "support", label: "Support" },
   { value: "visit", label: "Visit & Contact" },
   { value: "other", label: "Other (top-level page, e.g. /privacy)" },
@@ -46,13 +47,14 @@ export const APP_OWNED_SECTION_SLUGS: Partial<Record<PageSection, readonly strin
   "sunday-school": "*",
   worship: ["weekly", "monthly-feasts", "annual-feasts", "calendar", "livestream"],
   support: ["volunteer"],
+  sacraments: "*",
 };
 
 /**
  * Sections whose landing page is one of the site's own routes, which shows the CMS landing page
  * (slug "index") as its introduction: the middleware never sends these addresses to the CMS route.
  */
-export const APP_LANDING_SECTIONS: readonly PageSection[] = ["our-faith", "sunday-school", "visit"];
+export const APP_LANDING_SECTIONS: readonly PageSection[] = ["our-faith", "sunday-school", "visit", "sacraments", "support"];
 
 /** True when the site's own routes serve this address, so it can never be a CMS page. */
 export function isAppOwned(section: string, slug: string): boolean {

@@ -95,7 +95,8 @@
       "sacraments": "ሰባቱ ምሥጢራተ ቤተ ክርስቲያን",
       "fasting": "አጽዋማት",
       "prayers": "ጸሎቶች",
-      "faq": "ጥያቄና መልስ"
+      "faq": "ጥያቄና መልስ",
+      "offerings": "መባዕ"
     }
   },
   "sacraments": {
@@ -330,5 +331,8 @@
       "post": "ዜና",
       "event": "የቀን መቁጠሪያ"
     }
+  },
+  "support": {
+    "title": "ድጋፍ"
   }
 }

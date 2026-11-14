@@ -4,7 +4,7 @@
  * - Christening, marriage and fitihat teachings are guidance, shown in full on their sacrament page
  *   (/sacraments/baptism etc.; the request forms join them in Phase 2).
  */
-export const FAITH_CATEGORIES = ["mysteries", "sacraments", "fasting", "prayers", "faq"] as const;
+export const FAITH_CATEGORIES = ["mysteries", "sacraments", "fasting", "prayers", "faq", "offerings"] as const;
 export type FaithCategory = (typeof FAITH_CATEGORIES)[number];
 
 export const SACRAMENT_PAGES = [

@@ -34,6 +34,7 @@ const PAGES = [
   "/en/sacraments/baptism/request",
   "/en/sacraments/fitihat",
   "/en/sunday-school/join",
+  "/en/support",
   "/en/support/volunteer",
   "/am/support/volunteer",
   "/am/sacraments/baptism/request",

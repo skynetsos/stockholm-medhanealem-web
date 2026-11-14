@@ -17,12 +17,13 @@
  */
 import { readFileSync } from "fs";
 import path from "path";
-import { getPayload, type Payload } from "payload";
+import { getPayload } from "payload";
 import sharp from "sharp";
 
 import config from "../src/payload.config";
 import { toGregorian } from "../src/lib/ethiopian-calendar";
 import { stockholmInstant } from "../src/lib/stockholm-time";
+import { developmentApprover } from "./lib/dev-approver";
 import { htmlToLexical, type LexicalDoc, lexicalText } from "./lib/html-to-lexical";
 
 type Snapshot = {
@@ -45,7 +46,7 @@ const PAGES = [
   { wpId: 215, section: "worship", slug: "monthly-feast-days", title: "ወርኃዊ በዓላት", skip: ["ቅዳሴ", "መርሃ ግብር"] },
   { wpId: 213, section: "worship", slug: "annual-feast-days", title: "ዓመታዊ ዐበይት ክብረ በዓላት" },
   { wpId: 116, section: "sunday-school", slug: "index", title: "ሰንበት ት/ቤት", skip: ["ከፎቶ ማህደር"], gallery: [123] },
-  { wpId: 211, section: "support", slug: "index", title: "መባዕ" },
+  // መባዕ (wpId 211) is now the church's own teaching (category "offerings", D-045); /support lists it.
 ] as const;
 
 /** Old-site sacrament pages → teachings (they feed /sacraments/<category>). */
@@ -128,7 +129,12 @@ const content = (wpId: number, title: string, skip: readonly string[] = []): Lex
 
 async function upsert<T extends "pages" | "teachings">(collection: T, where: Record<string, unknown>, data: Record<string, unknown>) {
   const found = await payload.find({ collection, ...ctx, where: where as never, limit: 1, depth: 0, draft: true });
-  const existing = found.docs[0] as { id: number; layout?: { id?: string }[] } | undefined;
+  const existing = found.docs[0] as { id: number; contentKey?: string | null } | undefined;
+  // The church's own written text (D-045) replaces the old site's: never overwrite it.
+  if (existing?.contentKey) {
+    log("kept", `${collection} ${existing.id}: church content (${existing.contentKey})`);
+    return { id: existing.id, created: false };
+  }
   if (existing) {
     await payload.update({ collection, id: existing.id, ...ctx, draft: true, data: data as never });
     return { id: existing.id, created: false };
@@ -207,19 +213,6 @@ async function importAll() {
     await payload.create({ collection: "videos", ...ctx, data: { title: VIDEO.title, kind: "video", category: "liturgy", url: VIDEO.url, date: at({ year: y, month: m, day: d }), date_tz: "Europe/Stockholm" } as never });
   }
   log("video", VIDEO.title);
-}
-
-/** The placeholder approver for the development review (never in production). */
-async function developmentApprover(p: Payload) {
-  const email = "not-approved-dev-review@example.invalid";
-  const found = await p.find({ collection: "users", overrideAccess: true, where: { email: { equals: email } }, limit: 1, depth: 0 });
-  if (found.docs[0]) return found.docs[0].id;
-  const user = await p.create({
-    collection: "users",
-    overrideAccess: true,
-    data: { email, name: "NOT APPROVED – development review", password: crypto.randomUUID() + "Aa1!", roles: ["clergy_approver"], active: true },
-  });
-  return user.id;
 }
 
 async function publishAll() {

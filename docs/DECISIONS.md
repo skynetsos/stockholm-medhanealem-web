@@ -8,6 +8,40 @@
 
 ## Resolved decisions
 
+### D-045 — The church's written content imported (2026-11-14; requested by Biruk)
+- **Source:** the church's Word document "ለዌቭሳይት 2.docx" (saved 2026-11-14 08:10; dated 13 November in the request), kept as `docs/content/church-content-2026-11-13.docx`. It **supersedes** the text scraped from dev.medhanealem.se (D-040) wherever both cover the same subject. The request mentioned a Markdown version with a mapping table; neither existed, so `pnpm content:convert` makes the Markdown (`docs/content/church-content-2026-11-13.md`) from the document, with the mapping table at the top, and the mapping follows the request.
+- **Mapping** (`scripts/lib/church-content.ts`, one entry per content key):
+  - `about`: opening blessing, church name, introduction + `about-closing` (clergy, growth, closing blessing) → `/our-church`. Title "ስለ ቤተ ክርስቲያናችን" (the old About page's title; the document has none).
+  - `our-faith`: "ቤተ ክርስቲያን ማለት ምን ማለት ነው?" → `/our-faith` landing (new).
+  - `history` → `/our-church/history`.
+  - `sacraments`: the rites list ሀ–መ → `/sacraments` landing (new; title "ምሥጢራት", the site's existing name for the section).
+  - `worship`: item ሠ (the feast days, Sundays and weekdays with services) → `/worship` landing (title kept from the old services page).
+  - `christening`, `marriage`, `fitihat` → the three sacrament teachings.
+  - `offerings`: መባዕ → a teaching in the **new category "offerings"** → `/our-faith/offerings`, listed on `/our-faith` (heading "መባዕ") and on `/support`.
+  - `annual-feasts`, `monthly-feasts`, `weekly-service` → the three worship pages. Their numbers (፩ኛ፦/፪ኛ/፫ኛ) are dropped from the page titles.
+- **Verbatim:** every sentence is the church's, unchanged. Only spacing is normalised: runs of spaces and non-breaking spaces, which a web page collapses anyway. Bold lead-ins (e.g. "መባዕ ማለት፦", the three marriage purposes) stay bold. The three numbered marriage purposes and all scripture references stay as written. A unit test checks that all 89 paragraphs of the document appear in order, and that the committed Markdown matches a fresh conversion.
+- **Headings:**
+  - Short heading paragraphs (the church name, "የጋብቻ ዓላማዎች") become H2; "ስቶክሆልም" under the church name becomes H3.
+  - The annual feasts' ሀ᎖ … ቸ᎖ labels with the feast name become H2s; the paragraph continues below.
+  - The weekly-service items ሀ᎖ … ረ᎖ have no separate titles, so their opening words (e.g. "ለ᎖ በየሣምንቱ ዐርብና ረቡዕ") become the H2 and the sentence continues below. This is a judgement call: the split points are listed in the mapping and easy to change.
+- **Repeatable import:**
+  - `pnpm content:convert <file.docx> [date]` → `docs/content/` (copies the .docx, writes the .md, reports missing paragraphs or headings).
+  - `pnpm content:import` → drafts.
+  - `pnpm content:publish` → published, development review only.
+  - Items carry a **content key** (new read-only field `contentKey` on Pages, Teachings, Events: "church:history" …). A re-import updates the item with that key even if an editor changed its title or address; the first import adopted the existing items at the mapped addresses.
+  - The old-site importer now leaves anything with a content key alone and no longer manages `/support`.
+  - The converter runs on plain Node (type stripping), hence `allowImportingTsExtensions` in tsconfig; no new dependency (a .docx is read with Node's zlib).
+- **`/sacraments` and `/support` are site-built landings now** (like `/our-faith`):
+  - `/sacraments`: an optional CMS introduction (new page section "Sacraments", slug `index`), then the sacrament cards.
+  - `/support`: an optional introduction, the offerings teaching(s) and the volunteer form.
+  - The old site's መባዕ page at `support/index` was unpublished, since the teaching supersedes it.
+- **Events from the text:**
+  - **Wednesday and Friday** "ጸሎተ ምህላ እና ትምህርተ ወንጌል" weekly from 18:00 (the existing events renamed and keyed; no end time given).
+  - **Saturday** "የዲቁና እና የአማርኛ ትምህርት (ቅዳሜ)" weekly, all day (no time given).
+  - **Monday–Friday** "የምክር አገልግሎት" 08:00–12:00 as written ("ከጠዋት 8–12"; whether this is European or Ethiopian clock time is to be confirmed). Five weekly "notice" events, shown in the calendar only.
+  - The event titles for the school and the counselling hours are short labels made from the text's words, so they need the church's review. Everything is flagged "time to confirm" in CONTENT-CHECKLIST.md.
+- **Publishing for review:** as in D-040, pages are published and teachings get the placeholder approver "NOT APPROVED – development review" (four teachings now, including መባዕ); refused with `SITE_ENV=production`. **Clergy must approve each teaching before production.**
+
 ### D-044 — Phase 3 polish: error pages, Amharic MFA, fallback language, print, app icons, analytics (2026-11-13, Phase 3 task 8 + deferred items)
 - **404 with the site's header and footer** (deferred, requested 2026-10-18): the root not-found renders inside `PublicDocument` (CMS header, menu, language switcher, footer) in the visitor's language. If the CMS can't be read, the plain localized 404 is shown instead of an error.
 - **500 pages:** `[locale]/error.tsx` shows a short message in the visitor's language inside the normal layout (header and footer stay) with "Try again" and a home link; `global-error.tsx` is the last resort when even the layout fails (database down), without CMS parts, language from the address. Their strings live in `src/messages/errors.json` (am/en/sv; merged into next-intl's messages and type-checked), so the last-resort page, which is part of every page's JavaScript, loads only those few lines rather than whole message files.

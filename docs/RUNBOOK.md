@@ -79,6 +79,8 @@ Keep these in the church's password manager. Back them up together, and hand the
 | `pnpm build && pnpm test:e2e:prepare && pnpm test:e2e` | Production build, fresh migrated `<db>_e2e` database, Playwright smoke tests (stop `pnpm dev` first: same port) |
 | `pnpm services:up` / `services:down` / `services:logs` | Local Docker services |
 | `pnpm seed:base` | Fill Site settings, Navigation and Footer if empty, and create any missing Sunday School departments. `SEED_FORCE=1` overwrites |
+| `pnpm content:convert <file.docx> [date]` | The church's written content: Word document → `docs/content/church-content-<date>.md` (+ a copy of the .docx); reports missing paragraphs or headings (D-045) |
+| `pnpm content:import` / `content:publish` | That content → CMS as drafts (matched on content keys, safe to re-run) / published for development review (placeholder clergy approval; refused in production) |
 | `pnpm import:wordpress` | Import the old site's content (snapshot in `src/seed/wordpress/`) as drafts: pages, teachings, photos (no permission, unpublished galleries), worship events, video. Safe to re-run (D-040) |
 | `pnpm import:wordpress:publish` | Development review only: publishes the imported pages and teachings with a placeholder clergy approval; refuses `SITE_ENV=production`. In production a clergy approver publishes teachings in /admin |
 | `pnpm user:create-super-admin` | Create a super_admin (or re-issue a set-password link). Needs `ADMIN_EMAIL`, `ADMIN_NAME` |

@@ -95,7 +95,8 @@
       "sacraments": "De sju sakramenten",
       "fasting": "Fasta",
       "prayers": "Böner",
-      "faq": "Frågor och svar"
+      "faq": "Frågor och svar",
+      "offerings": "Offergåvor"
     }
   },
   "sacraments": {
@@ -330,5 +331,8 @@
       "post": "Nyhet",
       "event": "Kalender"
     }
+  },
+  "support": {
+    "title": "Stöd oss"
   }
 }

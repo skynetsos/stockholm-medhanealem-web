@@ -1,4 +1,5 @@
 import { APIError, type CollectionBeforeChangeHook, type CollectionConfig, type FieldHook } from "payload";
+import { contentKeyField } from "../fields/contentKey";
 
 import { staffContentAccess } from "../access/content";
 import { stockholmDateTime, stockholmDay } from "../fields/stockholmDate";
@@ -99,6 +100,7 @@ export const Events: CollectionConfig = {
   },
   fields: [
     { name: "title", type: "text", required: true, localized: true },
+    contentKeyField,
     {
       type: "row",
       fields: [

@@ -272,7 +272,11 @@ export interface Audio {
 export interface Page {
   id: number;
   title: string;
-  section: 'our-church' | 'our-faith' | 'sunday-school' | 'worship' | 'support' | 'visit' | 'other';
+  /**
+   * Imported from the church's written content (docs/content). Re-importing a corrected text updates this item.
+   */
+  contentKey?: string | null;
+  section: 'our-church' | 'our-faith' | 'sunday-school' | 'worship' | 'sacraments' | 'support' | 'visit' | 'other';
   /**
    * Address within the section, e.g. "history" → /our-church/history. Use "index" for the section's main page.
    */
@@ -482,7 +486,12 @@ export interface Page {
 export interface Teaching {
   id: number;
   title: string;
-  category: 'christening' | 'marriage' | 'fitihat' | 'mysteries' | 'sacraments' | 'fasting' | 'prayers' | 'faq';
+  /**
+   * Imported from the church's written content (docs/content). Re-importing a corrected text updates this item.
+   */
+  contentKey?: string | null;
+  category:
+    'christening' | 'marriage' | 'fitihat' | 'mysteries' | 'sacraments' | 'fasting' | 'prayers' | 'faq' | 'offerings';
   /**
    * Address, e.g. "seven-sacraments" → /our-faith/seven-sacraments.
    */
@@ -520,6 +529,10 @@ export interface Teaching {
 export interface Event {
   id: number;
   title: string;
+  /**
+   * Imported from the church's written content (docs/content). Re-importing a corrected text updates this item.
+   */
+  contentKey?: string | null;
   type: 'weekly_service' | 'monthly_feast' | 'annual_feast' | 'fast' | 'special' | 'notice';
   allDay?: boolean | null;
   start: string;
@@ -1206,6 +1219,7 @@ export interface AudioSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  contentKey?: T;
   section?: T;
   slug?: T;
   hero?:
@@ -1340,6 +1354,7 @@ export interface PagesSelect<T extends boolean = true> {
  */
 export interface TeachingsSelect<T extends boolean = true> {
   title?: T;
+  contentKey?: T;
   category?: T;
   slug?: T;
   body?: T;
@@ -1355,6 +1370,7 @@ export interface TeachingsSelect<T extends boolean = true> {
  */
 export interface EventsSelect<T extends boolean = true> {
   title?: T;
+  contentKey?: T;
   type?: T;
   allDay?: T;
   start?: T;

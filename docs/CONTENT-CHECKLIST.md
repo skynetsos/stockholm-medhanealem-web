@@ -9,8 +9,14 @@ fact, a text, an approval or a permission. Details are in the sections further d
 1. **Office Coordinator** and **Clergy Approver**: they get admin accounts, enrol two-factor sign-in, do the 30-minute walkthrough (RUNBOOK → Baptism requests) and sign off (Phase 2 exit item 7).
 2. **Swedish reviewer** (Phase 3 exit item 1) and a **native Amharic reviewer** for the interface text.
 
+**The church's written text (2026-11-14, D-045)** — imported word for word from the Word document; it replaces the old site's text. Corrections: edit `docs/content/church-content-2026-11-13.docx` (or a newer copy), then `pnpm content:convert <file>` and `pnpm content:import`.
+- **Check the page split** (mapping table at the top of `docs/content/church-content-2026-11-13.md`): About = opening + closing paragraphs; "ቤተ ክርስቲያን ማለት ምን ማለት ነው?" = Our Faith landing; rites ሀ–መ = Sacraments landing; item ሠ = Worship landing.
+- **Check the headings** on the weekly-service page: each item's opening words (ሀ᎖ … ረ᎖) are shown as a heading, with the sentence continuing below.
+- **Time to confirm:** Wednesday/Friday ጸሎተ ምህላ እና ትምህርተ ወንጌል from 18:00 (end time?); Saturday deacon and Amharic school (imported as all-day: what time?); Monday–Friday counselling "ከጠዋት 8–12" (imported as 08:00–12:00 European time: is that right?). Also the Saturday afternoon home and hospital visits and confession by appointment (not added as events).
+- **Event titles to review:** "የዲቁና እና የአማርኛ ትምህርት (ቅዳሜ)" and "የምክር አገልግሎት (ሰኞ … ዐርብ)" are short labels made from the text's words.
+
 **Approvals**
-3. **Clergy approval of the three imported teachings** (ክርስትና, ጋብቻ, ፍትሐት). On the development site they are published with a placeholder approver ("NOT APPROVED – development review"); in production a clergy approver must read and publish each one (D-040).
+3. **Clergy approval of the four teachings** (ክርስትና, ጋብቻ, ፍትሐት and the new መባዕ, now the church's own text). On the development site they are published with a placeholder approver ("NOT APPROVED – development review"); in production a clergy approver must read and publish each one (D-040).
 4. **Committee review of every imported page:** `/our-church`, `/our-church/history`, `/worship`, `/worship/weekly-service`, `/worship/monthly-feast-days`, `/worship/annual-feast-days`, `/sunday-school`, `/support`. Check facts that may be out of date: the building-fund appeal in the history, the Amharic class at Rågsved, pastoral hours Mon–Fri 8–12, the Saturday diaconate class.
 5. **Privacy notice for baptism requests** (page `privacy-baptism`) and the **privacy policy** (`/privacy`), am/en, approved by the committee; **legal review** closed or explicitly deferred (Phase 2 exit item 5).
 6. **Retention periods:** baptism requests 24 months, inquiries 12 months are defaults; legal review to confirm (Site settings → Requests & privacy).
