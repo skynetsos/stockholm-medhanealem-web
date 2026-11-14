@@ -69,3 +69,17 @@ describe("church content conversion", () => {
     ]);
   });
 });
+
+describe("English translation (D-046)", () => {
+  it("mirrors the Amharic: same sections, same block types in the same order, no Ethiopic left", () => {
+    const am = parseMarkdown(readFileSync(MD, "utf8"));
+    const en = parseMarkdown(readFileSync(MD.replace(/\.md$/, ".en.md"), "utf8"));
+    expect(en.map((s) => s.key)).toEqual(am.map((s) => s.key));
+    for (const section of am) {
+      const translated = en.find((s) => s.key === section.key)!;
+      expect(translated.blocks.map((b) => b.type), section.key).toEqual(section.blocks.map((b) => b.type));
+      expect(translated.title.length, section.key).toBeGreaterThan(0);
+      expect(/[ሀ-፿]/.test([translated.title, ...translated.blocks.map((b) => b.text)].join(" ")), section.key).toBe(false);
+    }
+  });
+});

@@ -49,6 +49,32 @@ const PAGES = [
   // መባዕ (wpId 211) is now the church's own teaching (category "offerings", D-045); /support lists it.
 ] as const;
 
+/**
+ * English for the old-site pages still imported from here (draft translation for the church's
+ * review, D-046); the church's own texts carry theirs in docs/content.
+ */
+const EN_PAGES: Record<number, { title: string; html: string }> = {
+  116: {
+    title: "Sunday School",
+    html: `<ul>
+<li>Teaching the children and young people of the parish the true doctrine of the Ethiopian Orthodox Tewahedo Church and the traditional church education, so that they know the Church's dogma, order, tradition, history and present situation;</li>
+<li>Helping young people learn the law and order of the Church and grow into citizens who are useful to their country and people, good and of upright character</li>
+<li>Raising new, committed Sunday School members who understand the law and order of the Holy Church</li>
+<li>Contributing our part so that spiritual education reaches the faithful, especially young people, in the foreign country where we live</li>
+<li>Increasing our participation, as needed, in the new church building that is to be built</li>
+</ul>`,
+  },
+};
+
+/** Writes a page's English title and text, keeping the Amharic page's blocks (ids). */
+async function setEnglishPage(id: number, wpId: number, status: "draft" | "published") {
+  const en = EN_PAGES[wpId];
+  if (!en) return;
+  const doc = await payload.findByID({ collection: "pages", id, overrideAccess: true, draft: true, depth: 0, locale: "am", fallbackLocale: false });
+  const layout = (doc.layout ?? []).map((block) => (block.blockType === "richText" ? { ...block, content: htmlToLexical(en.html) } : block));
+  await payload.update({ collection: "pages", id, overrideAccess: true, locale: "en", draft: status === "draft", data: { title: en.title, layout, _status: status } as never });
+}
+
 /** Old-site sacrament pages → teachings (they feed /sacraments/<category>). */
 const TEACHINGS = [
   { wpId: 27, category: "christening", slug: "christening", title: "ክርስትና" },
@@ -76,43 +102,44 @@ const sunday = { year: 2026, month: 1, day: 4 };
  * 08:00–11:30, Wednesday and Friday prayer from 18:00); feasts are all-day until the office adds times.
  */
 const EVENTS = [
-  { title: "የሰንበት ቅዳሴ", type: "weekly_service", start: at(sunday, 8), end: at(sunday, 11, 30), recurrence: { frequency: "weekly" } },
-  { title: "ጸሎተ ምህላና ትምህርተ ወንጌል (ረቡዕ)", type: "weekly_service", start: at({ year: 2026, month: 1, day: 7 }, 18), recurrence: { frequency: "weekly" } },
-  { title: "ጸሎተ ምህላና ትምህርተ ወንጌል (ዐርብ)", type: "weekly_service", start: at({ year: 2026, month: 1, day: 9 }, 18), recurrence: { frequency: "weekly" } },
+  { title: "የሰንበት ቅዳሴ", en: "Sunday Kidase (Divine Liturgy)", type: "weekly_service", start: at(sunday, 8), end: at(sunday, 11, 30), recurrence: { frequency: "weekly" } },
+  // Wednesday and Friday prayer: now from the church's own text (scripts/import-church-content.ts, D-045).
   ...(
     [
-      ["ወርኃዊ በዓለ ቅዱስ ሚካኤል", 12],
-      ["ወርኃዊ በዓለ እመቤታችን", 21],
-      ["ወርኃዊ በዓለ መድኃኔ ዓለም", 27],
+      ["ወርኃዊ በዓለ ቅዱስ ሚካኤል", 12, "Monthly feast of St Michael"],
+      ["ወርኃዊ በዓለ እመቤታችን", 21, "Monthly feast of St Mary"],
+      ["ወርኃዊ በዓለ መድኃኔ ዓለም", 27, "Monthly feast of Medhane Alem"],
     ] as const
-  ).map(([title, day]) => ({ title, type: "monthly_feast", allDay: true, start: at(fromEthiopian(5, day, 2018)), recurrence: { frequency: "monthly", ethiopianDay: day } })),
+  ).map(([title, day, en]) => ({ title, en, type: "monthly_feast", allDay: true, start: at(fromEthiopian(5, day, 2018)), recurrence: { frequency: "monthly", ethiopianDay: day } })),
   ...(
     [
-      ["ርዕሰ ዐውደ ዓመት ቅዱስ ዮሐንስ (ዘመን መለወጫ)", 1, 1],
-      ["ደመራ", 1, 16],
-      ["በዓለ መስቀል", 1, 17],
-      ["ጥቅምት መድኃኔ ዓለም", 2, 27],
-      ["በዓለ ጥምቀት", 5, 11],
-      ["ቃና ዘገሊላ", 5, 12],
-      ["መጋቢት መድኃኔ ዓለም", 7, 27],
-      ["መጋቢት በዓለ እግዚአብሔር (በዓለ ትስብእት)", 7, 29],
-      ["ግንቦት ልደታ ለማርያም", 9, 1],
-      ["ሰኔ ቅዱስ ሚካኤል", 10, 12],
+      ["ርዕሰ ዐውደ ዓመት ቅዱስ ዮሐንስ (ዘመን መለወጫ)", 1, 1, "St John, New Year (Enkutatash)"],
+      ["ደመራ", 1, 16, "Demera"],
+      ["በዓለ መስቀል", 1, 17, "Meskel (Finding of the True Cross)"],
+      ["ጥቅምት መድኃኔ ዓለም", 2, 27, "Tikimt Medhane Alem"],
+      ["በዓለ ጥምቀት", 5, 11, "Timket (Epiphany)"],
+      ["ቃና ዘገሊላ", 5, 12, "Kana Zegelila (Wedding at Cana)"],
+      ["መጋቢት መድኃኔ ዓለም", 7, 27, "Megabit Medhane Alem"],
+      ["መጋቢት በዓለ እግዚአብሔር (በዓለ ትስብእት)", 7, 29, "Feast of the Incarnation (Annunciation)"],
+      ["ግንቦት ልደታ ለማርያም", 9, 1, "Ginbot Lideta (Nativity of St Mary)"],
+      ["ሰኔ ቅዱስ ሚካኤል", 10, 12, "Sene St Michael"],
     ] as const
-  ).map(([title, month, day]) => ({
+  ).map(([title, month, day, en]) => ({
     title,
+    en,
     type: "annual_feast",
     allDay: true,
     start: at(fromEthiopian(month, day, month >= 5 ? 2018 : 2019)),
     recurrence: { frequency: "yearly", ethiopianMonth: month, ethiopianDay: day },
   })),
-  { title: "ጾመ ፍልሰታ (ነሐሴ 1–16)", type: "fast", allDay: true, start: at(fromEthiopian(12, 1, 2018)), recurrence: { frequency: "yearly", ethiopianMonth: 12, ethiopianDay: 1 } },
+  { title: "ጾመ ፍልሰታ (ነሐሴ 1–16)", en: "Fast of Filseta (Nehase 1–16)", type: "fast", allDay: true, start: at(fromEthiopian(12, 1, 2018)), recurrence: { frequency: "yearly", ethiopianMonth: 12, ethiopianDay: 1 } },
 ];
 
 const VIDEO = {
   title: "ሥርዓተ ቅዳሴ ዘጥቅምት 29/2019 ዓ.ም ከስቶክሆልም ደብረ ሰላም መድኃኔ ዓለም ቤተ ክርስቲያን",
   url: "https://www.youtube.com/watch?v=CF-hxD-tDds",
   date: "2026-11-08",
+  en: "Divine Liturgy of Tikimt 29, 2019 E.C., from Debre Selam Medhanealem Church, Stockholm",
 };
 
 const payload = await getPayload({ config });
@@ -133,14 +160,14 @@ async function upsert<T extends "pages" | "teachings">(collection: T, where: Rec
   // The church's own written text (D-045) replaces the old site's: never overwrite it.
   if (existing?.contentKey) {
     log("kept", `${collection} ${existing.id}: church content (${existing.contentKey})`);
-    return { id: existing.id, created: false };
+    return { id: existing.id, created: false, kept: true };
   }
   if (existing) {
     await payload.update({ collection, id: existing.id, ...ctx, draft: true, data: data as never });
-    return { id: existing.id, created: false };
+    return { id: existing.id, created: false, kept: false };
   }
   const doc = await payload.create({ collection, ...ctx, draft: true, data: { ...data, _status: "draft" } as never });
-  return { id: doc.id, created: true };
+  return { id: doc.id, created: true, kept: false };
 }
 
 /** Downloads an old-site photo, strips metadata, stores it without permission to publish. */
@@ -192,26 +219,34 @@ async function importAll() {
     const images = ("gallery" in p ? p.gallery : []).map((id) => pageImages.get(id)).filter(Boolean);
     if (images.length) layout.push({ blockType: "imageGallery", images });
     const result = await upsert("pages", { and: [{ section: { equals: p.section } }, { slug: { equals: p.slug } }] }, { title: p.title, section: p.section, slug: p.slug, layout });
+    if (result.kept) continue;
+    await setEnglishPage(result.id, p.wpId, "draft");
     log(result.created ? "page" : "updated", `${p.section}/${p.slug} ← ${page(p.wpId).path}`);
   }
   for (const t of TEACHINGS) {
     const result = await upsert("teachings", { and: [{ category: { equals: t.category } }, { slug: { equals: t.slug } }] }, { title: t.title, category: t.category, slug: t.slug, body: content(t.wpId, t.title) });
+    if (result.kept) continue;
     log(result.created ? "teaching" : "updated", `${t.category}/${t.slug} ← ${page(t.wpId).path}`);
   }
 
-  for (const e of EVENTS) {
+  for (const { en, ...e } of EVENTS) {
     const data = { ...e, start_tz: "Europe/Stockholm", ...("end" in e ? { end_tz: "Europe/Stockholm" } : {}) };
     const found = await payload.find({ collection: "events", ...ctx, where: { title: { equals: e.title } }, limit: 1, depth: 0 });
-    if (found.docs[0]) await payload.update({ collection: "events", id: found.docs[0].id, ...ctx, data: data as never });
-    else await payload.create({ collection: "events", ...ctx, data: data as never });
-    log("event", e.title);
+    const id = found.docs[0]
+      ? (await payload.update({ collection: "events", id: found.docs[0].id, ...ctx, data: data as never })).id
+      : (await payload.create({ collection: "events", ...ctx, data: data as never })).id;
+    // English title (draft translation for the church's review, D-046).
+    await payload.update({ collection: "events", id, ...ctx, locale: "en", data: { title: en } });
+    log("event", `${e.title} / ${en}`);
   }
 
   const video = await payload.find({ collection: "videos", overrideAccess: true, where: { url: { equals: VIDEO.url } }, limit: 1, depth: 0 });
-  if (!video.docs[0]) {
+  let videoId = video.docs[0]?.id;
+  if (!videoId) {
     const [y, m, d] = VIDEO.date.split("-").map(Number);
-    await payload.create({ collection: "videos", ...ctx, data: { title: VIDEO.title, kind: "video", category: "liturgy", url: VIDEO.url, date: at({ year: y, month: m, day: d }), date_tz: "Europe/Stockholm" } as never });
+    videoId = (await payload.create({ collection: "videos", ...ctx, data: { title: VIDEO.title, kind: "video", category: "liturgy", url: VIDEO.url, date: at({ year: y, month: m, day: d }), date_tz: "Europe/Stockholm" } as never })).id;
   }
+  await payload.update({ collection: "videos", id: videoId, ...ctx, locale: "en", data: { title: VIDEO.en } });
   log("video", VIDEO.title);
 }
 
@@ -220,13 +255,16 @@ async function publishAll() {
   for (const p of PAGES) {
     const { docs } = await payload.find({ collection: "pages", ...ctx, draft: true, where: { and: [{ section: { equals: p.section } }, { slug: { equals: p.slug } }] }, limit: 1, depth: 0 });
     if (!docs[0]) throw new Error(`Run the import first: ${p.section}/${p.slug} is missing`);
+    if ((docs[0] as { contentKey?: string | null }).contentKey) continue; // the church's text: published by content:publish
     await payload.update({ collection: "pages", id: docs[0].id, ...ctx, data: { _status: "published" } });
+    await setEnglishPage(docs[0].id, p.wpId, "published");
     log("published", `page ${p.section}/${p.slug}`);
   }
   const approver = await developmentApprover(payload);
   for (const t of TEACHINGS) {
     const { docs } = await payload.find({ collection: "teachings", ...ctx, draft: true, where: { and: [{ category: { equals: t.category } }, { slug: { equals: t.slug } }] }, limit: 1, depth: 0 });
     if (!docs[0]) throw new Error(`Run the import first: teaching ${t.slug} is missing`);
+    if ((docs[0] as { contentKey?: string | null }).contentKey) continue; // the church's text: published by content:publish
     await payload.update({ collection: "teachings", id: docs[0].id, ...ctx, data: { _status: "published", approvedBy: approver } as never });
     log("published", `teaching ${t.category}/${t.slug} (placeholder approval – clergy must approve)`);
   }

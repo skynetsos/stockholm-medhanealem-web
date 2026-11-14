@@ -8,6 +8,27 @@
 
 ## Resolved decisions
 
+### D-046 — English versions of all content (2026-11-14; requested by Biruk: "when you change language from Amharic to English everything should change")
+- **Before:** the interface, menu, header and footer already switched to English, but every piece of content was Amharic only, so English pages showed the Amharic text (fallback, marked `lang="am"`, D-044).
+- **Now every public page has English** (checked: no Ethiopic text in the main content of the 21 English pages):
+  - The church's 12 texts.
+  - All event titles: the Sunday Kidase, feasts, fast, prayer, school and counselling.
+  - The Sunday School introduction.
+  - The video title.
+- **The English is a draft translation for the church's review**, made with AI assistance, not by the church.
+  - **Church's own texts:** `docs/content/church-content-2026-11-13.en.md`, block for block from the Amharic: same sections, order and headings, enforced by a unit test. `pnpm content:import` and `content:publish` load it into the English version of each page and teaching. To correct it, edit the file and re-import.
+  - **Old-site items and events:** the English is in the importers themselves (`scripts/import-wordpress.ts`: event titles, video title, Sunday School text; `scripts/import-church-content.ts`: the church's events).
+  - The Amharic stays the original; where the two differ, the Amharic is right.
+  - **The teachings' English needs clergy approval like the Amharic** (the placeholder approver still applies on the development site).
+- **Translation choices:**
+  - Scripture references in English form, e.g. (Genesis 2:18).
+  - Feast and term names transliterated with an English gloss, e.g. "Meskel (Finding of the True Cross)", "Teklil (crowning)".
+  - Swedish place names in Swedish (Aspudden, Klara kyrka, Norrköping, Rågsved).
+  - Years and times exactly as the Amharic gives them, including "(European calendar)" where it says so and "8 to 12 in the morning".
+- **Weekly-service headings:** the English items have short self-contained headings ("b) Every Wednesday and Friday") followed by the complete sentence, instead of the Amharic's split sentence.
+- **Not translated:** image alt texts and the unpublished gallery titles (not shown publicly until the photos have permission); Swedish (not public until 80 % is translated, D-041).
+- The old-site importer no longer manages the Wednesday/Friday events (the church's text does) and skips anything with a content key, also when publishing.
+
 ### D-045 — The church's written content imported (2026-11-14; requested by Biruk)
 - **Source:** the church's Word document "ለዌቭሳይት 2.docx" (saved 2026-11-14 08:10; dated 13 November in the request), kept as `docs/content/church-content-2026-11-13.docx`. It **supersedes** the text scraped from dev.medhanealem.se (D-040) wherever both cover the same subject. The request mentioned a Markdown version with a mapping table; neither existed, so `pnpm content:convert` makes the Markdown (`docs/content/church-content-2026-11-13.md`) from the document, with the mapping table at the top, and the mapping follows the request.
 - **Mapping** (`scripts/lib/church-content.ts`, one entry per content key):

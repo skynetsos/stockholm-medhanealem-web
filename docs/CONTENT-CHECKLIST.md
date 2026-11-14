@@ -15,6 +15,10 @@ fact, a text, an approval or a permission. Details are in the sections further d
 - **Time to confirm:** Wednesday/Friday ጸሎተ ምህላ እና ትምህርተ ወንጌል from 18:00 (end time?); Saturday deacon and Amharic school (imported as all-day: what time?); Monday–Friday counselling "ከጠዋት 8–12" (imported as 08:00–12:00 European time: is that right?). Also the Saturday afternoon home and hospital visits and confession by appointment (not added as events).
 - **Event titles to review:** "የዲቁና እና የአማርኛ ትምህርት (ቅዳሜ)" and "የምክር አገልግሎት (ሰኞ … ዐርብ)" are short labels made from the text's words.
 
+**English versions (2026-11-14, D-046)** — every public page now has English, as a **draft translation for review**:
+- Review the English of the church's texts in `docs/content/church-content-2026-11-13.en.md` (edit there, then `pnpm content:import`), especially names, titles, terms and scripture wording. Clergy approve the teachings' English together with the Amharic.
+- Review the English event titles (Sunday Kidase, the feasts, Filseta, prayer, school, counselling), the Sunday School introduction and the video title.
+
 **Approvals**
 3. **Clergy approval of the four teachings** (ክርስትና, ጋብቻ, ፍትሐት and the new መባዕ, now the church's own text). On the development site they are published with a placeholder approver ("NOT APPROVED – development review"); in production a clergy approver must read and publish each one (D-040).
 4. **Committee review of every imported page:** `/our-church`, `/our-church/history`, `/worship`, `/worship/weekly-service`, `/worship/monthly-feast-days`, `/worship/annual-feast-days`, `/sunday-school`, `/support`. Check facts that may be out of date: the building-fund appeal in the history, the Amharic class at Rågsved, pastoral hours Mon–Fri 8–12, the Saturday diaconate class.
