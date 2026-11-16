@@ -85,6 +85,11 @@ describe("per language", () => {
     expect(hit.snippet).toContain(`${MARK_START}ፍልሰታ${MARK_END}`);
   });
 
+  it("an Amharic word on an English page finds the Amharic text of translated items too (review F-22)", async () => {
+    const results = await searchSite(payload, "en", "ቅዳሴ");
+    expect(results.find((r) => r.path === "/worship/search-kidase")).toMatchObject({ title: "የሰንበት ቅዳሴ መርሐ ግብር", lang: "am" });
+  });
+
   it("handles operators, quotes and odd input without errors", async () => {
     for (const q of ['"Sunday services"', "Kidase OR fasting", "-Kidase Sunday", "'; drop table pages; --", "%_\\", "((("]) {
       await expect(searchSite(payload, "en", q), q).resolves.toBeInstanceOf(Array);

@@ -50,7 +50,8 @@ export function decodeEntities(text: string): string {
   });
 }
 
-const DROPPED = /<(script|style|noscript|svg|iframe|form|select|button|template)\b[^>]*>[\s\S]*?<\/\1>/gi;
+// <button> is kept: Elementor accordions use it for their section titles (made H2 below; review F-06).
+const DROPPED = /<(script|style|noscript|svg|iframe|form|select|template)\b[^>]*>[\s\S]*?<\/\1>/gi;
 const BLOCK_CONTAINERS = new Set(["div", "section", "article", "header", "footer", "aside", "figure", "figcaption", "table", "tr", "td", "th", "tbody", "thead", "main", "nav"]);
 
 /** Converts HTML to Lexical. `skip` drops blocks whose whole text equals one of these strings. */
@@ -121,6 +122,10 @@ export function htmlToLexical(html: string, skip: readonly string[] = []): Lexic
     } else if (name === "p") {
       if (closing) flush();
       else start("p");
+    } else if (name === "button") {
+      // An accordion title (Elementor): a heading for the list that follows.
+      if (closing) flush();
+      else start("h2");
     } else if (name === "blockquote") {
       if (closing) flush();
       else start("quote");
@@ -132,7 +137,10 @@ export function htmlToLexical(html: string, skip: readonly string[] = []): Lexic
       if (closing) lists.pop();
       else openList(name);
     } else if (name === "br") {
-      open()?.children.push({ type: "linebreak", version: 1 });
+      // In list items the old site's breaks only wrap long lines (often mid-sentence): a space.
+      const block = open();
+      if (block?.kind === "li") block.children.push({ type: "text", text: " ", format: format(), detail: 0, mode: "normal", style: "", version: 1 });
+      else block?.children.push({ type: "linebreak", version: 1 });
     } else if (name === "strong" || name === "b" || name === "em" || name === "i") {
       if (closing) formats.pop();
       else formats.push(name === "strong" || name === "b" ? BOLD : ITALIC);

@@ -44,6 +44,8 @@ export default buildConfig({
     // Payload's own avatar, not Gravatar: no staff email hash sent to gravatar.com, and the admin's
     // CSP allows no outside images (D-037).
     avatar: "default",
+    // Browser tab titles of the admin (review F-25).
+    meta: { titleSuffix: " – Medhanealem admin" },
     // Everything is entered and shown in Stockholm time (stored as UTC).
     timezones: { supportedTimezones: [STOCKHOLM_TIMEZONE], defaultTimezone: STOCKHOLM_TIMEZONE.value },
     importMap: {
@@ -66,6 +68,8 @@ export default buildConfig({
       },
     },
   },
+  // The schema of the public GraphQL API isn't listed for anonymous visitors in production (review F-25).
+  graphQL: { disableIntrospectionInProduction: true },
   i18n: {
     translations: adminTranslations,
   },

@@ -43,8 +43,11 @@ const lexicalText = (column: string) => `coalesce((select string_agg(t #>> '{}',
 
 type Row = { kind: SearchKind; id: number; title: string; section: string | null; slug: string | null; category: string | null; lang: Locale; snippet: string; rank: number };
 
-export async function searchSite(payload: Payload, locale: Locale, query: string): Promise<SearchResult[]> {
+export async function searchSite(payload: Payload, pageLocale: Locale, query: string): Promise<SearchResult[]> {
   const q = cleanQuery(query);
+  // A query in Ethiopic letters looks for Amharic text, whatever the page's language (review F-22):
+  // English pages have their own English text, so the Amharic word would otherwise find nothing.
+  const locale: Locale = pageLocale !== "am" && /[ሀ-፿]/.test(q) ? "am" : pageLocale;
   // The language goes into the SQL text below: only the three known codes.
   if (!q || !Object.hasOwn(CONFIG, locale)) return [];
   const config = CONFIG[locale];

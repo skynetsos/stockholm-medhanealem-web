@@ -22,7 +22,7 @@ import { getPayload } from "payload";
 import config from "../src/payload.config";
 import { stockholmInstant } from "../src/lib/stockholm-time";
 import { CONTENT_SECTIONS, parseMarkdown, type ParsedSection, toLexical } from "./lib/church-content";
-import { developmentApprover } from "./lib/dev-approver";
+import { developmentApprover, withDevelopmentApprover } from "./lib/dev-approver";
 
 const PUBLISH = process.env.IMPORT_PUBLISH === "1";
 const dir = path.resolve("docs/content");
@@ -173,7 +173,7 @@ async function publishAll() {
   }
 }
 
-if (PUBLISH) await publishAll();
-else await importAll();
+// The placeholder approver is active only during this run (development; review F-24).
+await withDevelopmentApprover(payload, () => (PUBLISH ? publishAll() : importAll()));
 console.log(`\nSource: ${path.relative(process.cwd(), file)}`);
 process.exit(0);

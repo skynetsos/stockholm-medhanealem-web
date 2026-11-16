@@ -65,7 +65,7 @@ d) Fitihat (prayers for the departed); and
 <!-- content: worship -->
 # Services in Our Church
 
-e) In addition, there are the great annual feasts, the monthly feasts, the weekly Sabbaths and the weekly days on which spiritual services are held in our Church: that is, on which the Mahlet of Saint Yared is sung, the Kidase (Divine Liturgy) is celebrated, the hymns of Yared are sung, evening prayer and supplication (mihlela) are offered, and the teaching of the Gospel is given. Their explanations follow.
+e) In addition, there are the great annual feasts, the monthly feasts, the Sundays of every week and the weekdays on which spiritual services are held in our Church: that is, on which the Mahlet of Saint Yared is sung, the Kidase (Divine Liturgy) is celebrated, the hymns of Yared are sung, evening prayer and supplication (mihlela) are offered, and the teaching of the Gospel is given. Their explanations follow.
 
 <!-- content: christening -->
 # Christening (Baptism)
@@ -192,13 +192,13 @@ In our parish, the Divine Liturgy is celebrated every month for Medhane Alem, Ou
 <!-- content: weekly-service -->
 # Weekly Services
 
-## a) Every Sunday (the Sabbath)
+## a) Every Sunday (the Lord's day)
 
-Every Sunday, on the Sabbath, as is done in the great churches, the Mezmure Yared (the hymns of St Yared) is sung through the night at our church; after we have recited the night's Teamire Maryam and Teamire Iyesus (the Miracles of Mary and of Jesus), we perform baptisms and proceed to the Kidan (the Covenant prayer) and the Kidase (Divine Liturgy), after which the teaching of the Gospel is given in full.
+Every Sunday, the Lord's day, as is done in the great churches, the Mezmure Yared (the hymns of St Yared) is sung through the night at our church; after we have recited the night's Teamire Maryam and Teamire Iyesus (the Miracles of Mary and of Jesus), we perform baptisms and proceed to the Kidan (the Covenant prayer) and the Kidase (Divine Liturgy), after which the teaching of the Gospel is given in full.
 
 Since we have mentioned the word mezmur (hymn), one thing everyone ought to know is that nowadays the name is seen to have changed, and it is widely used for the songs of singers who release and sell hymn cassettes and for the singing performed together by Sunday school choirs.
 
-But what is truly called mezmur is the composition of St Yared, sung every week through the night of the Sabbath, which is the foundation of the index (gitsawe) for the readings read in the midst of the Kidase, for the Gospel that is read and for the Kidase that is celebrated; it is unrivalled in its mystery and in the sweetness of its melody, and the scholars have laboured over it.
+But what is truly called mezmur is the composition of St Yared, sung every week through Saturday night into Sunday, which is the foundation of the index (gitsawe) for the readings read in the midst of the Kidase, for the Gospel that is read and for the Kidase that is celebrated; it is unrivalled in its mystery and in the sweetness of its melody, and the scholars have laboured over it.
 
 A priest is able to lead the mezmur only after labouring long in study. This means that he must thoroughly know at least the studies called Tsome Digua and Me'eraf, Zimare and Mewase'it, Qine and Aquaquam. Only after this is it said of someone that he is a merigeta (master of hymnody) who can lead the mezmur on his own, that is, that he needs no assistant because he is complete in his knowledge. It should therefore be considered that to hear the mezmur, sung after such labour, called "so-and-so's mezmur" by people who have not even counted the letters of the alphabet ("ha ge'ez, hu ka'ib"), let alone learned to read the Weddase Maryam, robs the labour of the scholars of its worth.
 
@@ -210,7 +210,7 @@ Every Wednesday and Friday, the prayer of supplication and the teaching of the G
 
 Every Saturday, with the consent and at the wish of their parents, we teach children studying for the diaconate the alphabet and reading, the oral lessons and the service of the diaconate. Through the results of this Saturday diaconate programme, ordination to the diaconate has twice been conferred at our church, and we are now teaching a third group.
 
-On the other hand, it is known that children born in a foreign land lose their identity when they grow up without knowing their parents' language and without learning the alphabet of their homeland. To spare itself this reproach of history, our church has set up a committee and, having requested a hall from the municipality at the place called Rågsved, teaches Amharic there.
+On the other hand, it is known that children born in a foreign land lose their identity when they grow up without knowing their parents' language and without learning the alphabet of their homeland. To spare itself this reproach of history, our church has set up a committee and, having requested a hall from the municipality at Rågsved centrum, teaches Amharic there.
 
 ## d) Saturday afternoons
 

@@ -46,6 +46,13 @@ describe("htmlToLexical (WordPress HTML import, D-040)", () => {
     expect(lexicalText({ root: { ...htmlToLexical("").root, children: out } })).toBe("ጽሑፍ");
   });
 
+  it("keeps accordion titles (<button>) as H2 and turns breaks inside list items into spaces (review F-06)", () => {
+    const html = "<div><button><span><span>ዓላማ</span></span></button></div><ol><li>ትምህርተ ሃይማኖት እና<br>የአብነት ትምህርት</li></ol>";
+    const out = blocks(html);
+    expect(out.map((b) => (b.type === "heading" ? b.tag : b.type))).toEqual(["h2", "list"]);
+    expect(lexicalText({ root: { ...htmlToLexical("").root, children: out } })).toBe("ዓላማ\nትምህርተ ሃይማኖት እና የአብነት ትምህርት");
+  });
+
   it("decodes numeric and named entities, leaves unknown ones", () => {
     expect(decodeEntities("&laquo;a&raquo; &#039;b&#039; &bogus;")).toBe("«a» 'b' &bogus;");
   });

@@ -23,7 +23,7 @@ import sharp from "sharp";
 import config from "../src/payload.config";
 import { toGregorian } from "../src/lib/ethiopian-calendar";
 import { stockholmInstant } from "../src/lib/stockholm-time";
-import { developmentApprover } from "./lib/dev-approver";
+import { developmentApprover, withDevelopmentApprover } from "./lib/dev-approver";
 import { htmlToLexical, type LexicalDoc, lexicalText } from "./lib/html-to-lexical";
 
 type Snapshot = {
@@ -56,13 +56,18 @@ const PAGES = [
 const EN_PAGES: Record<number, { title: string; html: string }> = {
   116: {
     title: "Sunday School",
-    html: `<ul>
+    // Same structure as the Amharic: two headed lists (review F-06).
+    html: `<button>Aims of the Sunday School of Debre Selam Medhanealem Church</button>
+<ol>
 <li>Teaching the children and young people of the parish the true doctrine of the Ethiopian Orthodox Tewahedo Church and the traditional church education, so that they know the Church's dogma, order, tradition, history and present situation;</li>
 <li>Helping young people learn the law and order of the Church and grow into citizens who are useful to their country and people, good and of upright character</li>
+</ol>
+<button>Two-year strategic plan</button>
+<ol>
 <li>Raising new, committed Sunday School members who understand the law and order of the Holy Church</li>
 <li>Contributing our part so that spiritual education reaches the faithful, especially young people, in the foreign country where we live</li>
 <li>Increasing our participation, as needed, in the new church building that is to be built</li>
-</ul>`,
+</ol>`,
   },
 };
 
@@ -132,7 +137,8 @@ const EVENTS = [
     start: at(fromEthiopian(month, day, month >= 5 ? 2018 : 2019)),
     recurrence: { frequency: "yearly", ethiopianMonth: month, ethiopianDay: day },
   })),
-  { title: "ጾመ ፍልሰታ (ነሐሴ 1–16)", en: "Fast of Filseta (Nehase 1–16)", type: "fast", allDay: true, start: at(fromEthiopian(12, 1, 2018)), recurrence: { frequency: "yearly", ethiopianMonth: 12, ethiopianDay: 1 } },
+  // Sixteen days, Nehase 1–16 (review F-19).
+  { title: "ጾመ ፍልሰታ (ነሐሴ 1–16)", en: "Fast of Filseta (Nehase 1–16)", type: "fast", allDay: true, start: at(fromEthiopian(12, 1, 2018)), end: at(fromEthiopian(12, 16, 2018)), recurrence: { frequency: "yearly", ethiopianMonth: 12, ethiopianDay: 1 } },
 ];
 
 const VIDEO = {
@@ -270,7 +276,7 @@ async function publishAll() {
   }
 }
 
-if (PUBLISH) await publishAll();
-else await importAll();
+// The placeholder approver is active only during this run (development; review F-24).
+await withDevelopmentApprover(payload, () => (PUBLISH ? publishAll() : importAll()));
 console.log(`\nSource: ${snapshot.source}`);
 process.exit(0);

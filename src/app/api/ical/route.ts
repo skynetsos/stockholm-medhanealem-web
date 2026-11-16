@@ -22,7 +22,9 @@ const calendarFor = (locale: Locale) =>
     async () => {
       const [events, { settings }] = await Promise.all([getActiveEvents(locale), getLayoutData(locale)]);
       const today = gregorianToJdn(stockholmDate(new Date()));
-      const occurrences = expandEvents(events, { from: jdnToGregorian(today - PAST_DAYS), to: jdnToGregorian(today + FUTURE_DAYS) });
+      // Notices (e.g. the weekday counselling hours) stay in the site calendar but not in subscribers'
+      // calendars, where they would fill every weekday (review F-19).
+      const occurrences = expandEvents(events.filter((e) => e.type !== "notice"), { from: jdnToGregorian(today - PAST_DAYS), to: jdnToGregorian(today + FUTURE_DAYS) });
       const site = new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000");
       return buildCalendar({
         name: settings.shortName || settings.churchName || site.hostname,

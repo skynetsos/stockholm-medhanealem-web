@@ -48,7 +48,8 @@ export function Turnstile({ siteKey, locale, active, resetKey }: { siteKey: stri
         if (cancelled || !container.current || !window.turnstile) return;
         widget.current = window.turnstile.render(container.current, {
           sitekey: siteKey,
-          language: locale,
+          // Turnstile has no Amharic: let it pick from the browser instead of warning (review F-18).
+          language: locale === "am" ? "auto" : locale,
           appearance: "interaction-only",
           "refresh-expired": "auto",
         });
@@ -62,6 +63,15 @@ export function Turnstile({ siteKey, locale, active, resetKey }: { siteKey: stri
   useEffect(() => {
     if (widget.current && window.turnstile) window.turnstile.reset(widget.current);
   }, [resetKey]);
+
+  // Remove the widget when the form goes away (client navigation), so none is left behind (review F-18).
+  useEffect(
+    () => () => {
+      if (widget.current && window.turnstile) window.turnstile.remove(widget.current);
+      widget.current = null;
+    },
+    [],
+  );
 
   return <div ref={container} className="min-h-0" />;
 }

@@ -20,6 +20,7 @@
     "content:convert": "node --experimental-strip-types --no-warnings scripts/content-convert.ts",
     "content:import": "payload run scripts/import-church-content.ts",
     "content:publish": "payload run scripts/import-church-content-publish.ts",
+    "events:church-year": "payload run scripts/seed-church-year.ts",
     "import:wordpress": "payload run scripts/import-wordpress.ts",
     "import:wordpress:publish": "payload run scripts/import-wordpress-publish.ts",
     "user:create-super-admin": "payload run scripts/create-super-admin.ts",
