@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: page.seo?.title || page.title,
     description: page.seo?.description || undefined,
-    alternates: localeAlternates(locale, path),
+    alternates: await localeAlternates(locale, path),
     openGraph: og ? { images: [{ url: og.url, width: og.width, height: og.height, alt: image!.alt }] } : undefined,
   };
 }

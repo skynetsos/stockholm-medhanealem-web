@@ -17,7 +17,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "worship" });
-  return { title: t("livestream"), alternates: localeAlternates(locale, "/worship/livestream") };
+  return { title: t("livestream"), alternates: await localeAlternates(locale, "/worship/livestream") };
 }
 
 /**

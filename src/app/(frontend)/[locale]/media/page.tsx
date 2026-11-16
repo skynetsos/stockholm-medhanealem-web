@@ -17,7 +17,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "media" });
-  return { title: t("title"), alternates: localeAlternates(locale, "/media") };
+  return { title: t("title"), alternates: await localeAlternates(locale, "/media") };
 }
 
 /** /media (spec §4): photo galleries with images that may be shown, and a link to the videos. */

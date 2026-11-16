@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: found.gallery.title,
     description: found.gallery.description || undefined,
-    alternates: localeAlternates(locale, `/media/galleries/${slug}`),
+    alternates: await localeAlternates(locale, `/media/galleries/${slug}`),
     openGraph: { images: [{ url: first.full.url, alt: first.alt }] },
   };
 }

@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 
 import type { LayoutData } from "@/lib/cms/layout";
-import { isRenderableLink } from "@/lib/links";
+import { getAvailablePaths } from "@/lib/cms/pages";
+import { isAvailableLink, isRenderableLink } from "@/lib/links";
 
 import { CmsLink } from "./CmsLink";
 
@@ -12,13 +13,14 @@ function currentYear(): string {
 }
 
 export async function SiteFooter({ data }: { data: LayoutData }) {
-  const t = await getTranslations("footer");
+  const [t, available] = await Promise.all([getTranslations("footer"), getAvailablePaths()]);
   const { settings, footer } = data;
 
   const columns = (footer.columns ?? [])
-    .map((column) => ({ ...column, links: (column.links ?? []).filter(isRenderableLink) }))
+    .map((column) => ({ ...column, links: (column.links ?? []).filter((l) => isAvailableLink(l, available)) }))
     .filter((column) => column.heading?.trim() && column.links.length > 0);
-  const legal = (footer.legalLinks ?? []).filter(isRenderableLink);
+  // Not linked until published (e.g. /privacy, /cookies; review F-02).
+  const legal = (footer.legalLinks ?? []).filter((l) => isAvailableLink(l, available));
   const diocese = footer.diocese && isRenderableLink(footer.diocese) ? footer.diocese : null;
   const churchName = settings.churchName || settings.shortName;
   const hasLinkRow = Boolean(diocese || legal.length);

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: teaching.title,
     description: excerpt(teaching.body, 160) || undefined,
-    alternates: localeAlternates(locale, `/our-faith/${slug}`),
+    alternates: await localeAlternates(locale, `/our-faith/${slug}`),
   };
 }
 

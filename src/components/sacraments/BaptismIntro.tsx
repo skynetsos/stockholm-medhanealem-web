@@ -42,6 +42,13 @@ export async function BaptismIntro({ page }: { page: BaptismPage }) {
         </h2>
         <p className="mt-2">{t("baptismNotice")}</p>
       </aside>
+      {/* Closed: say so, and where to turn instead (review F-01). */}
+      {!page.requestsOpen && (
+        <p className="mt-6">
+          {t("requestsClosed")}{" "}
+          <Link href="/visit">{t("contactOffice")}</Link>
+        </p>
+      )}
       {page.requestsOpen && (
         <p className="mt-8">
           <Link

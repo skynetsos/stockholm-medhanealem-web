@@ -26,7 +26,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const { homepage } = await getHomeData(locale as Locale);
-  return { description: homepage.hero?.subheading || undefined, alternates: localeAlternates(locale) };
+  return { description: homepage.hero?.subheading || undefined, alternates: await localeAlternates(locale) };
 }
 
 /**
@@ -58,7 +58,8 @@ export default async function HomePage({ params }: Props) {
   const showHero = order.includes("hero") && hasHero(homepage.hero);
 
   const sections: Record<HomeSection, () => ReactNode> = {
-    hero: () => showHero && <Hero hero={homepage.hero!} fallbackHeading={t("welcome")} />,
+    // Without a hero heading the h1 is the church's name, not a generic "Welcome" (review F-16).
+    hero: () => showHero && <Hero hero={homepage.hero!} fallbackHeading={settings.churchName || settings.shortName || t("welcome")} />,
     nextService: () =>
       service && (
         <NextService occurrence={service} settings={settings} labels={labels} more={linkIf("/worship/weekly", t("allServices"))} />

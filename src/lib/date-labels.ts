@@ -7,7 +7,9 @@ import { stockholmInstant } from "./stockholm-time";
 type MonthKey = `ethiopianMonths.m${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13}`;
 
 const DAY = { weekday: "long", day: "numeric", month: "long", year: "numeric" } as const;
-const TIME = { hour: "2-digit", minute: "2-digit" } as const;
+// 24-hour clock in every language: "18:00", not "06:00 PM" / "06:00 ከሰዓት", which Amharic readers could
+// take for Ethiopian time (the church writes "18:00, Swedish time"; review F-04).
+const TIME = { hour: "2-digit", minute: "2-digit", hourCycle: "h23" } as const;
 
 /**
  * Localized date labels for the public site, always in Stockholm time (next-intl's timeZone).

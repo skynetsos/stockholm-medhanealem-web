@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: intro?.seo?.title || intro?.title || t("title"),
     description: intro?.seo?.description || undefined,
-    alternates: localeAlternates(locale, "/support"),
+    alternates: await localeAlternates(locale, "/support"),
   };
 }
 

@@ -9,7 +9,7 @@ import { TeachingCard } from "@/components/teachings/TeachingCard";
 import { localeAlternates } from "@/i18n/alternates";
 import { getPage } from "@/lib/cms/pages";
 import { getPublishedTeachings } from "@/lib/cms/teachings";
-import { SACRAMENT_PAGES } from "@/lib/teachings";
+import { SACRAMENT_PAGES, teachingPath } from "@/lib/teachings";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: intro?.seo?.title || intro?.title || t("title"),
     description: intro?.seo?.description || undefined,
-    alternates: localeAlternates(locale, "/sacraments"),
+    alternates: await localeAlternates(locale, "/sacraments"),
   };
 }
 
@@ -38,6 +38,8 @@ export default async function SacramentsPage({ params }: Props) {
   const pages = SACRAMENT_PAGES.map((s) => ({ ...s, first: teachings.find((teaching) => teaching.category === s.category) })).filter(
     (s) => s.first,
   );
+  // The church's list of rites also names መባዕ (offerings), a teaching under Our Faith (review F-08).
+  const offerings = teachings.filter((teaching) => teaching.category === "offerings");
   if (!pages.length) return <NotFoundContent />;
 
   return (
@@ -47,7 +49,12 @@ export default async function SacramentsPage({ params }: Props) {
       <ul className="mx-auto grid max-w-site gap-4 px-gutter py-10 sm:grid-cols-2 lg:grid-cols-3">
         {pages.map(({ page, first }) => (
           <li key={page}>
-            <TeachingCard title={t(page)} href={`/sacraments/${page}`} body={first!.body} />
+            <TeachingCard title={t(page)} href={`/sacraments/${page}`} body={first!.body} heading="h2" />
+          </li>
+        ))}
+        {offerings.map((teaching) => (
+          <li key={teaching.id}>
+            <TeachingCard title={teaching.title} href={teachingPath(teaching.category, teaching.slug)!} body={teaching.body} heading="h2" />
           </li>
         ))}
       </ul>

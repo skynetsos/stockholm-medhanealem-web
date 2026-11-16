@@ -26,7 +26,7 @@ export function getAvailablePaths(): Promise<string[]> {
       const payload = await getPayload({ config });
       // The public sees published pages and teachings only.
       const read = { overrideAccess: false, depth: 0, pagination: false } as const;
-      const [pages, teachings, events, settings, departments, posts, galleries, videos, baptismPage] = await Promise.all([
+      const [pages, teachings, events, settings, departments, posts, galleries, videos, baptismPage, clergy] = await Promise.all([
         payload.find({ collection: "pages", ...read, select: { section: true, slug: true } }),
         payload.find({ collection: "teachings", ...read, select: { category: true, slug: true } }),
         // Event types aren't translated, so any language's list will do.
@@ -39,6 +39,8 @@ export function getAvailablePaths(): Promise<string[]> {
         payload.find({ collection: "galleries", overrideAccess: false, depth: 1, pagination: false, select: { slug: true, images: true } }),
         payload.count({ collection: "videos", overrideAccess: false }),
         payload.findGlobal({ slug: "baptism-page", overrideAccess: false, depth: 0, select: { requestsOpen: true } }),
+        // Public read: published profiles only.
+        payload.count({ collection: "clergy", overrideAccess: false }),
       ]);
       const pagePaths = pages.docs.map((p) => pagePath(p.section, p.slug)).filter((p): p is string => Boolean(p));
       const faithPaths = teachingPaths(teachings.docs, pagePaths.includes("/our-faith"));
@@ -48,6 +50,8 @@ export function getAvailablePaths(): Promise<string[]> {
           ...faithPaths,
           ...baptismRequestPaths(faithPaths, baptismPage.requestsOpen),
           ...worshipPaths(events, settings.livestreamUrl),
+          // The clergy page, once a profile is published (review F-15).
+          ...(clergy.totalDocs > 0 ? ["/our-church/clergy"] : []),
           ...sectionPaths({
             hasSundaySchoolIntro: pagePaths.includes("/sunday-school"),
             departments: departments.docs.map((d) => ({ slug: d.slug, hasContent: hasDepartmentContent(d) })),

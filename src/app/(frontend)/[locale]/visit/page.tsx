@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: intro?.seo?.title || intro?.title || t("title"),
     description: intro?.seo?.description || undefined,
-    alternates: localeAlternates(locale, "/visit"),
+    alternates: await localeAlternates(locale, "/visit"),
   };
 }
 

@@ -10,7 +10,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "inquiryForms" });
-  return { title: t("volunteer.title"), alternates: localeAlternates(locale, "/support/volunteer") };
+  return { title: t("volunteer.title"), alternates: await localeAlternates(locale, "/support/volunteer") };
 }
 
 /** /support/volunteer (spec §4, Phase 2 task 7): offer to volunteer. Reserved for this page (D-018). */

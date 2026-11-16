@@ -23,7 +23,7 @@ export async function sacramentMetadata(locale: string, page: SacramentPageName)
   return {
     title: t(page),
     description: excerpt(items[0].body, 160) || undefined,
-    alternates: localeAlternates(locale, `/sacraments/${page}`),
+    alternates: await localeAlternates(locale, `/sacraments/${page}`),
   };
 }
 

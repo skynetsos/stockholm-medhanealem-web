@@ -15,16 +15,18 @@ export function excerpt(body: unknown, length = EXCERPT_LENGTH): string {
 }
 
 /** Title (the link) and the first lines of a teaching (spec §5 TeachingCard). */
-export function TeachingCard({ title, href, body }: { title: string; href: string; body?: unknown }) {
+/** `heading`: h3 under a section heading (default), h2 when the cards follow the page title directly. */
+export function TeachingCard({ title, href, body, heading = "h3" }: { title: string; href: string; body?: unknown; heading?: "h2" | "h3" }) {
+  const Heading = heading;
   const text = excerpt(body);
   const locale = useLocale();
   return (
     <article className="h-full rounded border-t-4 border-gold bg-white p-4 shadow-sm">
-      <h3 className="text-h4" lang={fallbackLang(title, locale)}>
+      <Heading className="text-h4" lang={fallbackLang(title, locale)}>
         <Link href={href} className="no-underline hover:underline">
           {title}
         </Link>
-      </h3>
+      </Heading>
       {text && (
         <p className="mt-2 text-muted" lang={fallbackLang(text, locale)}>
           {text}

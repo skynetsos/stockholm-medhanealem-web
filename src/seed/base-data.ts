@@ -47,7 +47,8 @@ export const baseSeed = {
         label: { am: "የአገልግሎት ሰዓታት", en: "Service Times", sv: "Gudstjänsttider" },
       },
       {
-        path: "/sacraments/baptism",
+        // The request form: the button is hidden while requests are closed (review F-01).
+        path: "/sacraments/baptism/request",
         style: "primary" as const,
         label: { am: "የክርስትና ጥያቄ", en: "Request Baptism", sv: "Ansök om dop" },
       },

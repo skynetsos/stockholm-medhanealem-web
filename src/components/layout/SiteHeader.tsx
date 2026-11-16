@@ -3,7 +3,8 @@ import Image from "next/image";
 
 import { Link } from "@/i18n/navigation";
 import { type LayoutData, publicLocales } from "@/lib/cms/layout";
-import { isRenderableLink } from "@/lib/links";
+import { getAvailablePaths } from "@/lib/cms/pages";
+import { isAvailableLink } from "@/lib/links";
 import { mediaSource, publicMedia } from "@/lib/media";
 import type { Navigation } from "@/payload-types";
 
@@ -40,18 +41,21 @@ function CtaButtons({ ctas, className }: { ctas: Cta[]; className: string }) {
 }
 
 export async function SiteHeader({ data }: { data: LayoutData }) {
-  const t = await getTranslations("common");
+  const [t, available] = await Promise.all([getTranslations("common"), getAvailablePaths()]);
   const { settings, navigation } = data;
   const brand = settings.churchName || settings.shortName;
   const logo = publicMedia(settings.logo);
   const logoSrc = logo ? mediaSource(logo, 192) : null;
 
   // Hide items whose label or link is missing; never render empty menus.
-  const items = (navigation.headerItems ?? []).filter(isRenderableLink).map((item) => ({
+  // Links to pages without content (e.g. /news before the first post, the baptism request while
+  // requests are closed) are hidden, not shown as dead ends (review F-01, F-02).
+  const shown = <T extends Parameters<typeof isAvailableLink>[0]>(item: T) => isAvailableLink(item, available);
+  const items = (navigation.headerItems ?? []).filter(shown).map((item) => ({
     ...item,
-    children: (item.children ?? []).filter(isRenderableLink),
+    children: (item.children ?? []).filter(shown),
   }));
-  const ctas = (navigation.headerCTAs ?? []).filter(isRenderableLink);
+  const ctas = (navigation.headerCTAs ?? []).filter(shown);
   const hasMenu = items.length > 0 || ctas.length > 0;
 
   return (

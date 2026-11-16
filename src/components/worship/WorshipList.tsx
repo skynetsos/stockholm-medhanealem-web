@@ -17,7 +17,7 @@ const TITLE_KEYS = { weekly: "weekly", "monthly-feasts": "monthlyFeasts", "annua
 
 export async function worshipListMetadata(locale: string, list: ListName): Promise<Metadata> {
   const t = await getTranslations({ locale: locale as Locale, namespace: "worship" });
-  return { title: t(TITLE_KEYS[list]), alternates: localeAlternates(locale, `/worship/${list}`) };
+  return { title: t(TITLE_KEYS[list]), alternates: await localeAlternates(locale, `/worship/${list}`) };
 }
 
 /**

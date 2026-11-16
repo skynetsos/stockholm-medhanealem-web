@@ -34,6 +34,22 @@ export function rewriteTarget(pathname: string, available: ReadonlySet<string> |
   return cmsRoutePath(locale, page.section, page.slug);
 }
 
+/**
+ * Whether an internal address leads to a page (review F-02): content-gated addresses and CMS-page
+ * addresses need content (they are in the available list); the site's own routes always exist.
+ * Used to hide menu and footer links that would end in "page not found".
+ */
+export function pathExists(path: string, available: ReadonlySet<string> | readonly string[]): boolean {
+  const clean = path.split(/[?#]/)[0].replace(/\/+$/, "") || "/";
+  if (clean === "/") return true;
+  const has = (p: string) => ("has" in available ? available.has(p) : available.includes(p));
+  if (isContentGatedPath(clean)) return has(clean);
+  const page = pageForPath(clean);
+  if (!page || isAppOwned(page.section, page.slug)) return true;
+  if (page.slug === SECTION_INDEX_SLUG && APP_LANDING_SECTIONS.includes(page.section)) return true;
+  return has(pagePath(page.section, page.slug) ?? clean);
+}
+
 /** How long the middleware keeps the address list (newly published content appears within this). */
 export const PATHS_TTL_MS = 30_000;
 export const PATHS_ENDPOINT = "/api/site/paths";

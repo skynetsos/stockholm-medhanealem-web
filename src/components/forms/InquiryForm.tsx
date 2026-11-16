@@ -189,7 +189,8 @@ export function InquiryForm({
       <Checkbox
         id={id("privacyAccepted")}
         name="privacyAccepted"
-        label={t("privacy")}
+        // Sunday School registration also stores the child's name and age (review F-03).
+        label={form === "sunday_school" ? tf("privacySundaySchool") : t("privacy")}
         required
         defaultChecked={value("privacyAccepted") === "on"}
         error={error("privacyAccepted")}

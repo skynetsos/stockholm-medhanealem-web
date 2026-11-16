@@ -31,10 +31,9 @@ for (const path of ["/en/our-church/e2e-draft", "/en/our-church/does-not-exist",
   });
 }
 
-test("built-in pages win over CMS addresses: /our-church/clergy", async ({ page }) => {
-  const response = await page.goto("/en/our-church/clergy");
-  expect(response?.status()).toBe(200);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(en.clergy.title);
+// The clergy page exists only once a profile is published (review F-15); the fixtures have none.
+test("/our-church/clergy without published clergy gets the server-rendered 404", async ({ request }) => {
+  expect((await request.get("/en/our-church/clergy")).status()).toBe(404);
 });
 
 // Teachings and sacrament pages exist only with published content (D-018).
@@ -76,7 +75,8 @@ test("weekly services list, calendar and iCal feed", async ({ page, request }) =
   await page.goto("/en/worship/weekly");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(en.worship.weekly);
   await expect(page.getByRole("heading", { level: 2, name: "E2E Kidase" })).toBeVisible();
-  await expect(page.getByText(/Every Sunday · 8:00\s*–\s*11:30\s*AM/)).toBeVisible();
+  // 24-hour clock (review F-04).
+  await expect(page.getByText(/Every Sunday · 08:00\s*–\s*11:30/)).toBeVisible();
 
   await page.goto("/en/worship/calendar");
   const today = page.locator('button[aria-pressed="true"]');
@@ -239,13 +239,13 @@ test("a child is registered for Sunday School from the Sunday School page", asyn
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(f.title);
   await page.getByLabel(f.name).fill("E2E Parent");
   await page.getByLabel(en.contact.email, { exact: true }).fill("e2e-parent@example.org");
-  await page.getByLabel(f.childName).fill("E2E Child");
-  await page.getByLabel(f.childAge).fill("2");
-  await page.getByLabel(en.contact.privacy).check();
+  await page.getByLabel(f.childName, { exact: true }).fill("E2E Child");
+  await page.getByLabel(f.childAge, { exact: true }).fill("2");
+  await page.getByLabel(en.inquiryForms.privacySundaySchool).check();
   await page.getByRole("button", { name: f.submit }).click();
   await expect(page.locator("#inquiry-sunday-school-errors")).toContainText(en.contact.errors.childAge);
-  await page.getByLabel(f.childAge).fill("8");
-  await page.getByLabel(en.contact.privacy).check();
+  await page.getByLabel(f.childAge, { exact: true }).fill("8");
+  await page.getByLabel(en.inquiryForms.privacySundaySchool).check();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
   await page.getByRole("button", { name: f.submit }).click();
   await expect(page.getByRole("status")).toContainText(/INQ-\d{4}-\d+/, { timeout: 20_000 });

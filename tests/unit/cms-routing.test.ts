@@ -37,7 +37,9 @@ describe("rewriteTarget", () => {
   it("leaves unknown, unpublished and built-in addresses alone (normal routing / 404)", () => {
     expect(rewriteTarget("/en/our-church/draft-only", published)).toBeNull();
     expect(rewriteTarget("/en/nope", published)).toBeNull();
-    expect(rewriteTarget("/en/our-church/clergy", published)).toBeNull();
+    // The clergy page exists only with published profiles (review F-15): 404 while there are none.
+    expect(rewriteTarget("/en/our-church/clergy", published)).toBe("/en/cms/not/a/page");
+    expect(rewriteTarget("/en/our-church/clergy", new Set([...published, "/our-church/clergy"]))).toBeNull();
     expect(rewriteTarget("/en/news", published)).toBe("/en/cms/not/a/page"); // no posts (D-020)
     expect(rewriteTarget("/en", published)).toBeNull();
     expect(rewriteTarget("/de/privacy", published)).toBeNull();

@@ -22,7 +22,7 @@ const MONTHS_AHEAD = 12;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "worship" });
-  return { title: t("calendar"), alternates: localeAlternates(locale, "/worship/calendar") };
+  return { title: t("calendar"), alternates: await localeAlternates(locale, "/worship/calendar") };
 }
 
 /**

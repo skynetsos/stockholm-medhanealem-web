@@ -11,7 +11,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "inquiryForms" });
-  return { title: t("sunday_school.title"), alternates: localeAlternates(locale, "/sunday-school/join") };
+  return { title: t("sunday_school.title"), alternates: await localeAlternates(locale, "/sunday-school/join") };
 }
 
 /**

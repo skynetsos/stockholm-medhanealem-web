@@ -18,7 +18,7 @@ const PRIVACY_NOTICE_SLUG = "privacy-baptism";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "baptismForm" });
-  return { title: t("title"), alternates: localeAlternates(locale, BAPTISM_REQUEST_PATH) };
+  return { title: t("title"), alternates: await localeAlternates(locale, BAPTISM_REQUEST_PATH) };
 }
 
 /**

@@ -34,6 +34,9 @@ export function isContentGatedPath(path: string): boolean {
     return first === "media" && second === "galleries"; // /media/galleries/<slug>
   }
   switch (first) {
+    case "our-church":
+      // The clergy page exists once a profile is published (review F-15); the rest are CMS pages.
+      return second === "clergy";
     case "our-faith":
     case "sunday-school":
     case "news":

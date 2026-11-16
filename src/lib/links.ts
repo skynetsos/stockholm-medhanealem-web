@@ -1,4 +1,5 @@
 import { type LinkValue, validateExternalUrl, validateInternalPath } from "../fields/link";
+import { pathExists } from "./cms-routing";
 import { pagePath } from "./pages";
 
 export type ResolvedLink = { kind: "internal" | "external"; href: string; newTab: boolean };
@@ -6,6 +7,16 @@ export type ResolvedLink = { kind: "internal" | "external"; href: string; newTab
 /** A menu item is shown only if it has a label (in this locale or the fallback) and a valid link. */
 export function isRenderableLink<T extends { label?: string | null; link?: LinkValue | null }>(item: T): boolean {
   return Boolean(item.label?.trim()) && resolveLink(item.link) !== null;
+}
+
+/**
+ * Like isRenderableLink, and an internal link must also lead to a page that exists, given the list of
+ * available addresses (review F-02: no menu or footer link to "page not found").
+ */
+export function isAvailableLink<T extends { label?: string | null; link?: LinkValue | null }>(item: T, available: readonly string[]): boolean {
+  if (!isRenderableLink(item)) return false;
+  const resolved = resolveLink(item.link)!;
+  return resolved.kind !== "internal" || pathExists(resolved.href, available);
 }
 
 /**

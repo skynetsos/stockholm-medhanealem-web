@@ -9,7 +9,8 @@ import { indexedLocales, siteOrigin } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 /** Built-in pages that always exist. */
-const ALWAYS = ["", "/worship/calendar", "/visit"];
+// The site's own pages that always exist (review F-17: /support and its volunteer form were missing).
+const ALWAYS = ["", "/worship/calendar", "/visit", "/support", "/support/volunteer"];
 
 /**
  * sitemap.xml (spec Phase 1 task 8): every page that exists, in each indexed language (Swedish

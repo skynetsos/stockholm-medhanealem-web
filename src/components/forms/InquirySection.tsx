@@ -13,6 +13,10 @@ import { InquiryForm } from "./InquiryForm";
 export async function InquirySection({ form, heading }: { form: Exclude<FormType, "contact">; heading: "h1" | "h2" }) {
   const [t, available] = await Promise.all([getTranslations("inquiryForms"), getAvailablePaths()]);
   const Heading = heading;
+  const privacyHref = available.includes("/privacy") ? "/privacy" : null;
+  // A form that collects personal data needs the privacy notice: in production it is shown only once
+  // /privacy is published (review F-03). Development keeps it, so the committee can try it.
+  if (!privacyHref && process.env.SITE_ENV === "production") return null;
   const titleId = `inquiry-${form.replace("_", "-")}-title`;
   return (
     <section aria-labelledby={titleId} className={heading === "h2" ? "mt-12 border-t border-muted/30 pt-10" : undefined}>
@@ -22,7 +26,7 @@ export async function InquirySection({ form, heading }: { form: Exclude<FormType
         form={form}
         titleId={titleId}
         turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
-        privacyHref={available.includes("/privacy") ? "/privacy" : null}
+        privacyHref={privacyHref}
       />
     </section>
   );

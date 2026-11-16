@@ -2,7 +2,7 @@ import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { getAvailablePaths, getSectionPages } from "@/lib/cms/pages";
+import { getAvailablePaths, getPage, getSectionPages } from "@/lib/cms/pages";
 import { fallbackLang } from "@/lib/lang";
 import { pagePath } from "@/lib/pages";
 
@@ -21,11 +21,13 @@ const WORSHIP_ROUTES = [
  * Hidden when there is nothing to link to.
  */
 export async function SectionLinks({ locale, section }: { locale: Locale; section: string }) {
-  const [t, tw, pages, available] = await Promise.all([
+  const [t, tw, tf, pages, available, faithIntro] = await Promise.all([
     getTranslations({ locale, namespace: "pages" }),
     getTranslations({ locale, namespace: "worship" }),
+    getTranslations({ locale, namespace: "faith" }),
     getSectionPages(locale, section),
-    section === "worship" ? getAvailablePaths() : Promise.resolve([] as string[]),
+    getAvailablePaths(),
+    section === "our-church" ? getPage(locale, "our-faith", "index") : Promise.resolve(null),
   ]);
   const links = [
     ...(section === "worship"
@@ -35,6 +37,8 @@ export async function SectionLinks({ locale, section }: { locale: Locale; sectio
       const href = pagePath(section, p.slug);
       return href ? [{ href, title: p.title }] : [];
     }),
+    // The About text introduces "what a church is", which the church's text explains on /our-faith (review F-08).
+    ...(section === "our-church" && available.includes("/our-faith") ? [{ href: "/our-faith", title: faithIntro?.title || tf("title") }] : []),
   ];
   if (!links.length) return null;
 

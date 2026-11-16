@@ -14,7 +14,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "news" });
-  return { title: t("title"), alternates: localeAlternates(locale, "/news") };
+  return { title: t("title"), alternates: await localeAlternates(locale, "/news") };
 }
 
 /** /news (spec §2.11): published posts, newest first. Exists only when there are posts (D-020). */

@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt || excerpt(post.body, 160) || undefined,
-    alternates: localeAlternates(locale, `/news/${slug}`),
+    alternates: await localeAlternates(locale, `/news/${slug}`),
     openGraph: { type: "article", publishedTime: post.publishedAt ?? undefined, images: og ? [{ url: og.url, alt: cover!.alt }] : undefined },
   };
 }

@@ -108,12 +108,14 @@
     "requirementsTitle": "What to prepare",
     "noticeTitle": "Please note",
     "baptismNotice": "Sending a request does not confirm a date. The office will contact you, and a date is set only after the clergy have reviewed the request.",
-    "requestCta": "Request a baptism"
+    "requestCta": "Request a baptism",
+    "requestsClosed": "Baptism requests through the website are not open yet. Please contact the office.",
+    "contactOffice": "Contact the office"
   },
   "worship": {
-    "weekly": "Weekly services",
-    "monthlyFeasts": "Monthly feasts",
-    "annualFeasts": "Annual feasts and fasts",
+    "weekly": "Weekly service times",
+    "monthlyFeasts": "Monthly feast dates",
+    "annualFeasts": "Annual feast and fast dates",
     "feasts": "Feasts",
     "fasts": "Fasts",
     "calendar": "Calendar",
@@ -313,7 +315,8 @@
       "availability": "When are you available? (optional)",
       "message": "Anything else we should know? (optional)",
       "submit": "Send"
-    }
+    },
+    "privacySundaySchool": "I agree that the church stores my message, my contact details and my child's name and age to answer me."
   },
   "pages": {
     "inThisSection": "In this section"

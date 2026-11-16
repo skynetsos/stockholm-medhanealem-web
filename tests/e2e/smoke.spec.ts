@@ -24,10 +24,11 @@ for (const locale of locales) {
     const name = baseSeed.settings.churchName[locale] ?? baseSeed.settings.churchName.am;
     await expect(page.locator("header").getByRole("link", { name, exact: true })).toBeVisible();
 
-    // hreflang alternates for every locale + x-default.
-    for (const code of [...locales, "x-default"]) {
+    // hreflang alternates for the public languages + x-default; Swedish only once it is public (review F-17).
+    for (const code of ["am", "en", "x-default"]) {
       await expect(page.locator(`link[rel="alternate"][hreflang="${code}"]`)).toHaveCount(1);
     }
+    await expect(page.locator('link[rel="alternate"][hreflang="sv"]')).toHaveCount(0);
   });
 }
 

@@ -108,12 +108,14 @@
     "requirementsTitle": "የሚያስፈልጉ ነገሮች",
     "noticeTitle": "ማሳሰቢያ",
     "baptismNotice": "ጥያቄ መላክ ቀን አያረጋግጥም። ቢሮው ያገኝዎታል፤ ቀኑ የሚወሰነው ካህናት ጥያቄውን ከመረመሩ በኋላ ብቻ ነው።",
-    "requestCta": "የክርስትና ጥያቄ ያቅርቡ"
+    "requestCta": "የክርስትና ጥያቄ ያቅርቡ",
+    "requestsClosed": "የክርስትና ጥያቄ በድረ ገጹ ገና አልተከፈተም። እባክዎ ቢሮውን ያነጋግሩ።",
+    "contactOffice": "ቢሮውን ያግኙ"
   },
   "worship": {
-    "weekly": "ሳምንታዊ አገልግሎቶች",
-    "monthlyFeasts": "ወርኃዊ በዓላት",
-    "annualFeasts": "ዓመታዊ በዓላትና አጽዋማት",
+    "weekly": "የሳምንታዊ አገልግሎት ሰዓታት",
+    "monthlyFeasts": "የወርኃዊ በዓላት ቀኖች",
+    "annualFeasts": "የዓመታዊ በዓላትና አጽዋማት ቀኖች",
     "feasts": "በዓላት",
     "fasts": "አጽዋማት",
     "calendar": "የቀን መቁጠሪያ",
@@ -313,7 +315,8 @@
       "availability": "መቼ ይመችዎታል? (አማራጭ)",
       "message": "ልናውቀው የሚገባ ሌላ ነገር? (አማራጭ)",
       "submit": "ላክ"
-    }
+    },
+    "privacySundaySchool": "ቤተ ክርስቲያኗ መልእክቴን፣ የመገናኛ መረጃዬን እና የልጄን ስምና ዕድሜ እንድትይዝ እስማማለሁ።"
   },
   "pages": {
     "inThisSection": "በዚህ ክፍል"

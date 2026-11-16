@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, department } = await params;
   const d = await findDepartment(locale, department);
   if (!d) return { robots: { index: false } };
-  return { title: d.name, description: d.summary || undefined, alternates: localeAlternates(locale, `/sunday-school/${department}`) };
+  return { title: d.name, description: d.summary || undefined, alternates: await localeAlternates(locale, `/sunday-school/${department}`) };
 }
 
 /** /sunday-school/[department] (spec §2.7): name, image, summary, text and leader. */

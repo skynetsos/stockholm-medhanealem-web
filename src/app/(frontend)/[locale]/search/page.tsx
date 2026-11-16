@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "search" });
   // Result pages are never indexed (endless query variations).
-  return { title: t("title"), alternates: localeAlternates(locale, "/search"), robots: { index: false, follow: true } };
+  return { title: t("title"), alternates: await localeAlternates(locale, "/search"), robots: { index: false, follow: true } };
 }
 
 /** Snippet text with the matched words in <mark>, built from markers (no HTML from the database). */
