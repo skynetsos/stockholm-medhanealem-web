@@ -43,6 +43,9 @@ export function isContentGatedPath(path: string): boolean {
       return true;
     case "sacraments":
       return !second || SACRAMENT_PAGES.some((s) => s.page === second);
+    case "support":
+      // The volunteer form exists only while forms are open (review V-01).
+      return second === "volunteer";
     case "worship":
       return second === "livestream" || Object.hasOwn(WORSHIP_LISTS, second ?? "");
     case "media":
@@ -75,8 +78,11 @@ export function sectionPaths({
   posts,
   galleries,
   hasVideos,
+  formsOpen = true,
 }: {
   hasSundaySchoolIntro: boolean;
+  /** False in production while the privacy notice is missing: the form-only pages don't exist (V-01). */
+  formsOpen?: boolean;
   departments: { slug: string; hasContent: boolean }[];
   posts: { slug: string }[];
   galleries: { slug: string; hasPublicImage: boolean }[];
@@ -85,7 +91,9 @@ export function sectionPaths({
   const paths: string[] = [];
   const shownDepartments = departments.filter((d) => d.hasContent);
   // The registration form (Phase 2 task 7) belongs to the Sunday School section.
-  if (hasSundaySchoolIntro || shownDepartments.length) paths.push("/sunday-school", SUNDAY_SCHOOL_JOIN_PATH);
+  if (hasSundaySchoolIntro || shownDepartments.length) paths.push("/sunday-school", ...(formsOpen ? [SUNDAY_SCHOOL_JOIN_PATH] : []));
+  // The volunteer form (/support/volunteer) is a page of its own too (V-01).
+  if (formsOpen) paths.push("/support/volunteer");
   paths.push(...shownDepartments.map((d) => `/sunday-school/${d.slug}`));
   if (posts.length) paths.push("/news", ...posts.map((p) => `/news/${p.slug}`));
   const shownGalleries = galleries.filter((g) => g.hasPublicImage);

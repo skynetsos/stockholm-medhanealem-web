@@ -3,6 +3,8 @@
 import config from "@payload-config";
 import { headers } from "next/headers";
 import { getPayload } from "payload";
+import { getAvailablePaths } from "@/lib/cms/pages";
+import { formsOpen } from "@/lib/forms/open";
 
 import { defaultLocale, type Locale, locales } from "@/i18n/locales";
 import { type InquiryResult, submitInquiry } from "@/lib/forms/inquiry";
@@ -24,6 +26,8 @@ export async function sendInquiry(_previous: InquiryState, form: FormData): Prom
   const locale: Locale = (locales as readonly string[]).includes(lang) ? (lang as Locale) : defaultLocale;
   const token = form.get("cf-turnstile-response");
 
+  // In production, no personal data without the privacy notice (review F-03, V-04).
+  if (!formsOpen(await getAvailablePaths())) return { status: "error", formError: "server" };
   const payload = await getPayload({ config });
   const result = await submitInquiry(payload, type as InquiryForm, raw, {
     ipHash: hashIp(clientIp(await headers())),

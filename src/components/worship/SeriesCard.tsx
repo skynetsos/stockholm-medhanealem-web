@@ -35,7 +35,8 @@ export async function SeriesCard({
         : frequency === "yearly"
           ? t("repeatYearly", { date: labels.ethiopianDayMonth(anchor.day, anchor.month) })
           : null;
-  const location = event.location || defaultLocation;
+  // A fast is a period, not a gathering: no place (review V-07).
+  const location = event.type === "fast" ? null : event.location || defaultLocation;
   const livestream = event.livestreamUrl || livestreamUrl;
 
   return (

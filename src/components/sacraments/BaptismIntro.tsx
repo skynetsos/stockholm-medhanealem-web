@@ -36,12 +36,15 @@ export async function BaptismIntro({ page }: { page: BaptismPage }) {
           </ul>
         </section>
       )}
+      {/* About sending a request: only while requests can be sent (review V-05). */}
+      {page.requestsOpen && (
       <aside aria-labelledby="baptism-notice" className="mt-8 rounded border-l-4 border-primary bg-white p-5 shadow-sm">
         <h2 id="baptism-notice" className="text-h4">
           {t("noticeTitle")}
         </h2>
         <p className="mt-2">{t("baptismNotice")}</p>
       </aside>
+      )}
       {/* Closed: say so, and where to turn instead (review F-01). */}
       {!page.requestsOpen && (
         <p className="mt-6">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { formsOpen } from "@/lib/forms/open";
 
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
 import { InquiryForm } from "@/components/forms/InquiryForm";
@@ -52,6 +53,8 @@ export default async function VisitPage({ params }: Props) {
       <div className="mx-auto max-w-site px-gutter py-10">
         <VisitDetails settings={settings} heading="h2" full />
       </div>
+      {/* The contact form only with the privacy notice in production (review V-04); the address stays. */}
+      {formsOpen(available) && (
       <section aria-labelledby="contact-title" className="mx-auto max-w-3xl px-gutter py-10">
         <h2 id="contact-title" className="mb-4">
           {tc("title")}
@@ -63,6 +66,7 @@ export default async function VisitPage({ params }: Props) {
           privacyHref={available.includes("/privacy") ? "/privacy" : null}
         />
       </section>
+      )}
     </main>
   );
 }

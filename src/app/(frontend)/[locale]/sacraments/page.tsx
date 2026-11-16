@@ -47,14 +47,14 @@ export default async function SacramentsPage({ params }: Props) {
       <PageHeader title={intro?.title || t("title")} hero={intro?.hero} />
       {intro && <RenderBlocks blocks={intro.layout} locale={locale as Locale} />}
       <ul className="mx-auto grid max-w-site gap-4 px-gutter py-10 sm:grid-cols-2 lg:grid-cols-3">
-        {pages.map(({ page, first }) => (
-          <li key={page}>
-            <TeachingCard title={t(page)} href={`/sacraments/${page}`} body={first!.body} heading="h2" />
-          </li>
-        ))}
-        {offerings.map((teaching) => (
-          <li key={teaching.id}>
-            <TeachingCard title={teaching.title} href={teachingPath(teaching.category, teaching.slug)!} body={teaching.body} heading="h2" />
+        {/* In the order of the church's list of rites: christening, marriage, offerings, fitihat (review V-07). */}
+        {[
+          ...pages.filter((p) => p.page !== "fitihat").map(({ page, first }) => ({ key: page, title: t(page), href: `/sacraments/${page}`, body: first!.body })),
+          ...offerings.map((teaching) => ({ key: `offerings-${teaching.id}`, title: teaching.title, href: teachingPath(teaching.category, teaching.slug)!, body: teaching.body })),
+          ...pages.filter((p) => p.page === "fitihat").map(({ page, first }) => ({ key: page, title: t(page), href: `/sacraments/${page}`, body: first!.body })),
+        ].map((card) => (
+          <li key={card.key}>
+            <TeachingCard title={card.title} href={card.href} body={card.body} heading="h2" />
           </li>
         ))}
       </ul>

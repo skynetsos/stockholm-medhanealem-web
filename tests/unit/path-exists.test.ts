@@ -19,8 +19,9 @@ describe("pathExists (review F-02)", () => {
 
   it("the site's own pages always exist", () => {
     for (const path of ["/", "/visit", "/support", "/support/volunteer", "/worship/calendar", "/search", "/our-faith", "/sunday-school"]) {
-      // /our-faith and /sunday-school are content-gated: not in this list, so they don't exist here.
-      const gated = path === "/our-faith" || path === "/sunday-school";
+      // Content-gated (not in this list, so they don't exist here): /our-faith, /sunday-school, and the
+      // volunteer form, which exists only while forms are open (review V-01).
+      const gated = path === "/our-faith" || path === "/sunday-school" || path === "/support/volunteer";
       expect(pathExists(path, available), path).toBe(!gated);
     }
   });

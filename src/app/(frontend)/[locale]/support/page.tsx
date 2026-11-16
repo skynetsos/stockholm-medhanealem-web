@@ -7,7 +7,7 @@ import { LinkCard } from "@/components/pages/LinkCard";
 import { PageHeader } from "@/components/pages/PageHeader";
 import { TeachingCard } from "@/components/teachings/TeachingCard";
 import { localeAlternates } from "@/i18n/alternates";
-import { getPage } from "@/lib/cms/pages";
+import { getAvailablePaths, getPage } from "@/lib/cms/pages";
 import { getPublishedTeachings } from "@/lib/cms/teachings";
 import { teachingPath } from "@/lib/teachings";
 
@@ -31,12 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SupportPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
-  const [t, tf, ti, intro, teachings] = await Promise.all([
+  const [t, tf, ti, intro, teachings, available] = await Promise.all([
     getTranslations("support"),
     getTranslations("faith"),
     getTranslations("inquiryForms"),
     getPage(locale as Locale, "support", "index"),
     getPublishedTeachings(locale as Locale),
+    getAvailablePaths(),
   ]);
   const offerings = teachings.filter((teaching) => teaching.category === "offerings");
 
@@ -60,11 +61,13 @@ export default async function SupportPage({ params }: Props) {
           </section>
         )}
         {/* The card's own heading (h2) names the volunteer form. */}
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <li>
-            <LinkCard href="/support/volunteer" title={ti("volunteer.title")} text={ti("volunteer.intro")} />
-          </li>
-        </ul>
+        {available.includes("/support/volunteer") && (
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <li>
+              <LinkCard href="/support/volunteer" title={ti("volunteer.title")} text={ti("volunteer.intro")} />
+            </li>
+          </ul>
+        )}
       </div>
     </main>
   );

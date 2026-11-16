@@ -19,7 +19,8 @@ export async function EventCard({
 }) {
   const [te, locale] = await Promise.all([getTranslations("events"), getLocale()]);
   const { event } = occurrence;
-  const location = event.location || defaultLocation;
+  // A fast is a period, not a gathering: no place (review V-07).
+  const location = event.type === "fast" ? null : event.location || defaultLocation;
 
   return (
     <article className="h-full rounded border-t-4 border-gold bg-white p-4 shadow-sm">

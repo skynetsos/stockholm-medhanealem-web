@@ -62,6 +62,8 @@ export function getAvailablePaths(): Promise<string[]> {
               hasPublicImage: (g.images ?? []).some((i) => typeof i === "object" && Boolean(i.url && i.permissionObtained)),
             })),
             hasVideos: videos.totalDocs > 0,
+            // In production, forms only once the privacy notice is published (review F-03, V-01).
+            formsOpen: process.env.SITE_ENV !== "production" || pagePaths.includes("/privacy"),
           }),
         ]),
       ];

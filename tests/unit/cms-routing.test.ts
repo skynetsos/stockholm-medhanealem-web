@@ -116,11 +116,15 @@ describe("Sunday School, News and Media (D-020)", () => {
       ],
       hasVideos: false,
     });
-    expect(paths.sort()).toEqual(["/media", "/media/galleries/timket", "/news", "/news/first", "/sunday-school", "/sunday-school/join", "/sunday-school/mezmur"].sort());
+    expect(paths.sort()).toEqual(["/media", "/media/galleries/timket", "/news", "/news/first", "/sunday-school", "/sunday-school/join", "/sunday-school/mezmur", "/support/volunteer"].sort());
     expect(sectionPaths({ hasSundaySchoolIntro: false, departments: [], posts: [], galleries: [], hasVideos: true })).toEqual([
+      "/support/volunteer",
       "/media/videos",
       "/media",
     ]);
+    // Production without a privacy notice: the form-only pages don't exist (review V-01).
+    const closed = sectionPaths({ hasSundaySchoolIntro: true, departments: [], posts: [], galleries: [], hasVideos: false, formsOpen: false });
+    expect(closed).toEqual(["/sunday-school"]);
   });
 });
 

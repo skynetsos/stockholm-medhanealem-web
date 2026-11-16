@@ -45,7 +45,7 @@ export default buildConfig({
     // CSP allows no outside images (D-037).
     avatar: "default",
     // Browser tab titles of the admin (review F-25).
-    meta: { titleSuffix: " – Medhanealem admin" },
+    meta: { titleSuffix: "– Medhanealem admin" },
     // Everything is entered and shown in Stockholm time (stored as UTC).
     timezones: { supportedTimezones: [STOCKHOLM_TIMEZONE], defaultTimezone: STOCKHOLM_TIMEZONE.value },
     importMap: {

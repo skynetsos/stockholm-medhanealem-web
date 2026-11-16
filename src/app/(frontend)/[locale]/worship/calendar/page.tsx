@@ -59,6 +59,8 @@ export default async function CalendarPage({ params }: Props) {
       ...(o.status !== "scheduled" && { status: o.status }),
       ...(o.note && { note: o.note }),
       ...(location && { location }),
+      // A fast is a period, not a gathering: no place shown (review V-07).
+      ...(o.event.type === "fast" && { noPlace: true }),
     };
   });
 

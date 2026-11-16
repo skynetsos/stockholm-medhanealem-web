@@ -63,7 +63,7 @@ The site is code-complete for Phases 0–3. Everything below needs a person at t
     - Saturday deacon and Amharic school: what time? It is imported as all-day.
     - Monday–Friday counselling "ከጠዋት 8–12": shown as 08:00–12:00 Swedish time; is that right?
     - Kidase times for the monthly (12th, 21st, 27th) and annual feasts, which are now all-day.
-11. **Feasts and fasts of the coming church year** (review F-05):
+11. **Feasts and fasts of the coming church year** (review F-05). Also: is Siklet (Good Friday) right under "Feasts"? (review V-07)
     - Tsome Nebiyat, Genna, Abiy Tsom, Hosanna, Siklet, Fasika and Erget were entered as all-day events, computed from the Ethiopian calendar.
     - **Please confirm the dates and add times**, then enter them each year: Genna and the movable feasts change yearly.
 12. **Office email and phone**: the old site listed a phone number and a Gmail address; which are the office's?
@@ -188,12 +188,12 @@ Menu, header and footer links to a page without content are hidden automatically
 
 | Item | Am | En | Owner | Notes |
 |---|---|---|---|---|
-| Landing page `/worship` | Imported (old "services" page) | Not started | Committee | Lists the worship pages below it automatically |
-| Explanations: weekly service, monthly feasts, annual feasts | Imported (`/worship/weekly-service`, `/monthly-feast-days`, `/annual-feast-days`) | Not started | Committee | Mentions an Amharic class at "Rågsved" and pastoral hours (Mon–Fri 8–12): still current? |
-| Weekly services (e.g. Sunday Kidase 08:00–11:30) | Imported: Sunday Kidase 08:00–11:30; Wednesday and Friday prayer from 18:00 (end time unknown) | Not started | Office | **Confirm times; add the Saturday diaconate class if it should be listed** |
-| Monthly feasts (e.g. Medhanealem on the 27th) | Imported: Michael (12th), Mary (21st), Medhanealem (27th), all-day | Not started | Office | **Add Kidase times**; the old site says a sermon follows only morning Kidase outside fasts |
-| Annual feasts (Timket, Meskel, Genna …) | Imported: 10 fixed-date feasts from the old page, all-day | Not started | Office | **Add times. Genna not imported** (Tahsas 29 or 28 depending on the year: enter it per year). Movable feasts (Hosanna, Siklet, Fasika, Erget) are one event per year |
-| Fasts (Tsome Nebiyat, Abiy Tsom …) | Imported: Filseta (Nehase 1–16, start day only) | Not started | Office | All-day, start and end date |
+| Landing page `/worship` | Church text (item ሠ; D-045) | EN draft (D-046) | Committee | Lists the worship pages below it automatically |
+| Explanations: weekly service, monthly feasts, annual feasts | Church text (`/worship/weekly-service`, `/monthly-feast-days`, `/annual-feast-days`) | EN draft | Committee | Mentions the Amharic class at Rågsved centrum and counselling Mon–Fri 8–12: still current? (item 5) |
+| Weekly services | Sunday Kidase 08:00–11:30; Wednesday and Friday prayer from 18:00 (end time unknown); Saturday deacon and Amharic school (all-day); counselling Mon–Fri 08:00–12:00 (calendar only) | EN titles (draft) | Office | **Confirm times and the Wed/Fri end time** (item 10) |
+| Monthly feasts (Michael 12th, Mary 21st, Medhanealem 27th) | Imported, all-day | EN titles (draft) | Office | **Add Kidase times**; the church's text says a sermon follows only a morning Kidase outside fasts |
+| Annual feasts | 10 fixed-date feasts (yearly, all-day) + the coming year's Genna, Hosanna, Siklet, Fasika, Erget (computed by `pnpm events:church-year`, D-047) | EN titles (draft) | Office | **Confirm the computed dates, add times, and re-run each year.** Is Siklet (Good Friday) right under "Feasts"? It is typed as a feast for now (review V-07) |
+| Fasts | Filseta (Nehase 1–16, yearly) + the coming year's Tsome Nebiyat and Abiy Tsom (computed) | EN titles (draft) | Office | All-day, start and end date; no place shown |
 | Single-date changes (cancelled / moved Sundays) | As needed | As needed | Office | "Changes to single dates" on the event |
 
 ## Sunday School (Content → Departments; Pages, section "Sunday School")

@@ -14,6 +14,7 @@ export type CalendarEntry = {
   date: string; // first day, YYYY-MM-DD (Stockholm)
   endDate?: string; // last day, only for multi-day events
   time?: string; // "08:00–11:30"; absent for all-day
+  noPlace?: true; // a fast: no location line
   status?: "cancelled" | "moved"; // absent when scheduled
   note?: string;
   location?: string; // absent when it is the default location
@@ -259,7 +260,7 @@ export function CalendarMonth({
                     {te(entry.status)}
                   </span>
                 )}
-                {(entry.location || defaultLocation) && (
+                {!entry.noPlace && (entry.location || defaultLocation) && (
                   <p>
                     <span className="font-semibold">{te("location")}:</span> {entry.location || defaultLocation}
                   </p>
