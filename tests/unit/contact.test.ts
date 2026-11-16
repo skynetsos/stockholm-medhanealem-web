@@ -31,7 +31,9 @@ describe("spam protection", () => {
   });
 
   it("reads the visitor IP from Cloudflare, then the proxy headers", () => {
-    expect(clientIp(new Headers({ "cf-connecting-ip": "9.9.9.9", "x-forwarded-for": "1.1.1.1" }))).toBe("9.9.9.9");
+    // Only the proxy's X-Real-IP is trusted; a CF-Connecting-IP sent by the client is ignored (review F-10).
+    expect(clientIp(new Headers({ "cf-connecting-ip": "9.9.9.9", "x-real-ip": "2.2.2.2", "x-forwarded-for": "1.1.1.1" }))).toBe("2.2.2.2");
+    expect(clientIp(new Headers({ "cf-connecting-ip": "9.9.9.9", "x-forwarded-for": "1.1.1.1" }))).toBe("1.1.1.1");
     expect(clientIp(new Headers({ "x-forwarded-for": "1.1.1.1, 10.0.0.1" }))).toBe("1.1.1.1");
     expect(clientIp(new Headers())).toBe("unknown");
   });

@@ -49,6 +49,8 @@ export const adminTranslations = {
     },
     cases: {
       dashboardTitle: "Requests",
+      noOfficeEmail: "No one is emailed about new requests and messages: add an office notification email.",
+      openSiteSettings: "Open Site settings",
       baptismRequests: "Baptism requests",
       inquiries: "Inquiries",
       open: "Open",

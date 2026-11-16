@@ -3,6 +3,7 @@ import { type Access, APIError, type CollectionConfig } from "payload";
 import { hasRole, isStaff, isSuperAdmin, isSuperAdminField, isSuperAdminOrSelf, isSuperAdminRequest, PRIVILEGED_ROLES, ROLES, systemOnly } from "../access";
 import { localeNames, locales } from "../i18n/locales";
 import { mfaEndpoints } from "../lib/mfa/endpoints";
+import { loginAlert } from "../lib/security/login-alert";
 import { limitAdminLogins } from "../lib/security/login-limit";
 import { MFA_SESSION_SECONDS } from "../lib/mfa/session";
 
@@ -63,6 +64,8 @@ export const Users: CollectionConfig = {
   endpoints: mfaEndpoints,
   hooks: {
     beforeOperation: [limitAdminLogins],
+    // Emails privileged users on each sign-in (spec §8, review F-12).
+    afterLogin: [loginAlert],
     beforeLogin: [
       ({ user }) => {
         if ((user as { active?: boolean | null }).active === false) {

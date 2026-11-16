@@ -53,7 +53,8 @@ export default buildConfig({
     },
     components: {
       // Open requests by status, for staff who may read them (Phase 2 task 6).
-      beforeDashboard: ["/components/admin/cases/CaseDashboard#CaseDashboard"],
+      // A warning while nobody is emailed about new messages (review F-09), then open requests by status.
+      beforeDashboard: ["/components/admin/cases/OfficeEmailWarning#OfficeEmailWarning", "/components/admin/cases/CaseDashboard#CaseDashboard"],
       // "Missing translations" for translators and editors (Phase 3 task 1, D-041).
       afterNavLinks: ["/components/admin/translations/TranslationsNavLink#TranslationsNavLink"],
       views: {

@@ -30,6 +30,7 @@ import { CaseTimeline as CaseTimeline_453b9a83704f8b0bbbc865f60ba52185 } from '.
 import { CaseAgeCell as CaseAgeCell_4e9889028e897045d0ce453d0371462c } from '../../../components/admin/cases/CaseAgeCell'
 import { CaseStatusFilters as CaseStatusFilters_31750d5301c38d81ec2d5f01de1796ef } from '../../../components/admin/cases/CaseStatusFilters'
 import { TranslationsNavLink as TranslationsNavLink_b17e8db64d966c0deea1fc55c7f58f22 } from '../../../components/admin/translations/TranslationsNavLink'
+import { OfficeEmailWarning as OfficeEmailWarning_f13cc041bb38c71cbd9c69226c41181e } from '../../../components/admin/cases/OfficeEmailWarning'
 import { CaseDashboard as CaseDashboard_10ed1925b7fec65d16a4996a9a786be4 } from '../../../components/admin/cases/CaseDashboard'
 import { MfaView as MfaView_9e37f88aaa65fec8779a9587d2567d8f } from '../../../components/admin/mfa/MfaView'
 import { TranslationsView as TranslationsView_f5343e3766872bfcf76094daee594262 } from '../../../components/admin/translations/TranslationsView'
@@ -70,6 +71,7 @@ export const importMap = {
   "/components/admin/cases/CaseAgeCell#CaseAgeCell": CaseAgeCell_4e9889028e897045d0ce453d0371462c,
   "/components/admin/cases/CaseStatusFilters#CaseStatusFilters": CaseStatusFilters_31750d5301c38d81ec2d5f01de1796ef,
   "/components/admin/translations/TranslationsNavLink#TranslationsNavLink": TranslationsNavLink_b17e8db64d966c0deea1fc55c7f58f22,
+  "/components/admin/cases/OfficeEmailWarning#OfficeEmailWarning": OfficeEmailWarning_f13cc041bb38c71cbd9c69226c41181e,
   "/components/admin/cases/CaseDashboard#CaseDashboard": CaseDashboard_10ed1925b7fec65d16a4996a9a786be4,
   "/components/admin/mfa/MfaView#MfaView": MfaView_9e37f88aaa65fec8779a9587d2567d8f,
   "/components/admin/translations/TranslationsView#TranslationsView": TranslationsView_f5343e3766872bfcf76094daee594262,

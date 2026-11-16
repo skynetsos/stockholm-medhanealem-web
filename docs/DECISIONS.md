@@ -8,6 +8,35 @@
 
 ## Resolved decisions
 
+### D-047 — Completeness review: fixes from the adversarial review (2026-11-16; requested by Biruk)
+- **Process:** a planner mapped every route against the spec (`docs/REVIEW-PLAN.md`); an adversarial reviewer with fresh context checked the running site, the imported text and the code (`docs/REVIEW-FINDINGS.md`, 26 findings); the verdicts per finding are in `docs/REVIEW-DECISIONS.md`. Church decisions went to CONTENT-CHECKLIST.md, not into code. Confirmed OK by the review: the church's text is verbatim on every page (both languages), no private data or drafts are reachable anonymously, and the Ethiopian dates and summer/winter time are correct.
+- **Behaviour changes:**
+  - **24-hour times** everywhere (18:00, 08:00–11:30), so "06:00 ከሰዓት" can't be read as Ethiopian time.
+  - **Menu, header and footer links to pages without content are hidden** (the same "available addresses" list the 404s use); news, privacy and cookies reappear once published.
+  - **The baptism header button** now points at the request form and is hidden while requests are closed; the baptism page then says so and links to the office contact.
+  - **Inquiry forms appear in production only once `/privacy` is published**; the Sunday School consent covers the child's name and age.
+  - **The clergy page exists only with a published profile.**
+  - **hreflang lists only public languages** (no Swedish until it is switched on); `/support` is in the sitemap.
+  - **`/sacraments`** shows the offerings card too, with h2 card titles; `/our-church` links to `/our-faith`.
+  - **Distinct titles for the worship list pages** ("Weekly service times" …); the homepage heading falls back to the church's name.
+- **Calendar:**
+  - `pnpm events:church-year` enters the coming year's Genna, Tsome Nebiyat, Abiy Tsom, Hosanna, Siklet, Fasika and Erget (all-day, computed; the office confirms them and adds times).
+  - Filseta is a 16-day fast.
+  - Notice events (counselling hours) are left out of the iCal feed.
+- **Import:**
+  - Accordion titles (`<button>`) are kept as H2, and wrapped lines in list items are joined (Sunday School page); the English mirrors the structure.
+  - English draft: "Sunday", not "Sabbath"; "Rågsved centrum".
+  - The placeholder approver is active only while an importer runs (then deactivated; saving a teaching needs an active approver).
+- **Search:** a query in Ethiopic letters searches the Amharic text on any page.
+- **Security:**
+  - Sign-in alert emails for privileged roles (spec §8).
+  - Visitor addresses come only from `X-Real-IP`, set by Caddy, which trusts CF-Connecting-IP only from Cloudflare's ranges (Caddyfile `trusted_proxies`), so per-address limits can't be dodged with forged headers.
+  - GraphQL introspection is off in production; the admin has a title suffix.
+  - Turnstile uses its automatic language on Amharic pages and is removed on unmount.
+  - The admin dashboard warns while no office notification email is set.
+- **Repository hygiene:** the Word document's author metadata is replaced with "Stockholm Medhanealem" (text unchanged), and the old site's Google Maps key is removed from the snapshot. The previous values remain in git history. **Making the public repository private until launch is Biruk's decision.** `pnpm content:convert` copies a new .docx as given, so check its author fields before committing.
+- **Deferred:** the 301 redirect map from the old WordPress addresses and Sentry, both before cut-over (RUNBOOK → "Before cut-over").
+
 ### D-046 — English versions of all content (2026-11-14; requested by Biruk: "when you change language from Amharic to English everything should change")
 - **Before:** the interface, menu, header and footer already switched to English, but every piece of content was Amharic only, so English pages showed the Amharic text (fallback, marked `lang="am"`, D-044).
 - **Now every public page has English** (checked: no Ethiopic text in the main content of the 21 English pages):

@@ -9,13 +9,15 @@ import { createHash } from "crypto";
  * The visitor's IP address. In production every request passes Cloudflare and Caddy (the app port
  * isn't published), so the proxy headers can be trusted: Cloudflare's own header first.
  */
+/**
+ * The visitor's address, for per-address limits. Only `X-Real-IP` is trusted: in production Caddy
+ * sets it itself from the real connection, taking Cloudflare's CF-Connecting-IP only from
+ * Cloudflare's own addresses (Caddyfile `trusted_proxies`), so a client can't choose its own
+ * address by sending headers (review F-10). Without a proxy (development, tests) Next.js's
+ * X-Forwarded-For is used.
+ */
 export function clientIp(headers: Headers): string {
-  return (
-    headers.get("cf-connecting-ip") ??
-    headers.get("x-real-ip") ??
-    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown"
-  );
+  return headers.get("x-real-ip")?.trim() || headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 }
 
 export function hashIp(ip: string, salt = process.env.IP_HASH_SALT ?? ""): string {

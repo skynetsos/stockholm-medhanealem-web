@@ -186,6 +186,11 @@ On a fresh Ubuntu 24.04 server in the EU (e.g. Hetzner Falkenstein/Helsinki, 2 v
 6. **DNS (Cloudflare):** point `medhanealem.se` (A/AAAA) to the server. For the first certificate set the
    record to "DNS only" (grey cloud); after Caddy has issued the certificate, switch to "Proxied" and set
    Cloudflare SSL/TLS to **Full (strict)**.
+   **Visitor addresses** (per-address limits on forms and admin sign-in): the Caddyfile trusts
+   Cloudflare's `CF-Connecting-IP` only from Cloudflare's network (`trusted_proxies`) and passes the
+   result to the app as `X-Real-IP`, the only header the app reads (review F-10). Check the ranges against
+   https://www.cloudflare.com/ips/ when deploying and once a year. Optionally, allow ports 80/443 only from
+   those ranges in the firewall (but Caddy then needs DNS-01 for certificates).
 7. **Start:**
    ```bash
    docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
@@ -434,3 +439,11 @@ photos* above); they arrive unticked in the gallery "ፎቶዎች / Photos" for 
 | `pnpm test` fails with connection errors | Local Postgres isn't running: `pnpm services:up`. |
 | Dev server shows stale header data after a script changed globals | Restart `pnpm dev` (the 5-minute cache only clears on admin saves). |
 | Backup script: `gpg: command not found` | Install GnuPG (`sudo apt install gnupg`). On Windows run the script from Git Bash. |
+
+## Before cut-over (spec §7)
+
+Not needed yet, but must not be forgotten when the domain moves from WordPress to this site:
+- **301 redirects** from the old WordPress addresses (Amharic slugs such as `/ታሪክ/`, `/ሰንበት-ት-ቤት/`, `/ክርስትና/`) to the new routes (`src/lib/redirects.ts`, tested), from the final list of old URLs (review F-26; the snapshot `src/seed/wordpress/dev-medhanealem.json` lists the pages).
+- **Sentry** and uptime monitoring (Phase 0 item, still open).
+- **Content:** in production, `pnpm content:import` and `pnpm import:wordpress` create drafts only; real clergy and editors publish. `content:publish` and `import:wordpress:publish` refuse `SITE_ENV=production`.
+- **The church year:** `CHURCH_YEAR=<Ethiopian year> pnpm events:church-year` enters Genna and the movable feasts and fasts; the office confirms them and adds times (CONTENT-CHECKLIST).
