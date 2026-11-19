@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { NextService } from "@/components/home/NextService";
 import { VideoEmbed } from "@/components/media/VideoEmbed";
@@ -41,8 +42,8 @@ export default async function LivestreamPage({ params }: Props) {
 
   return (
     <main id="main">
+      <PageHeader title={t("livestream")} />
       <div className="mx-auto max-w-3xl px-gutter pt-12">
-        <h1 className="mb-6">{t("livestream")}</h1>
         {video ? (
           <VideoEmbed video={video} title={t("livestream")} />
         ) : (

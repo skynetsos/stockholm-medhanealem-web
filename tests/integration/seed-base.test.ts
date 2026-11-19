@@ -49,8 +49,13 @@ describe("seedBase", () => {
     expect(navSv.headerItems?.map((i) => i.label)).toEqual(baseSeed.navigation.items.map((i) => i.label.sv));
     // Same rows (ids and links) in every locale, only labels differ.
     expect(navEn.headerItems?.map((i) => i.id)).toEqual(navAm.headerItems?.map((i) => i.id));
-    expect(navEn.headerItems?.map((i) => i.link?.path)).toEqual(baseSeed.navigation.items.map((i) => i.path));
-    expect(navEn.headerCTAs?.map((c) => c.label)).toEqual(["Service Times", "Request Baptism"]);
+    expect(navEn.headerItems?.map((i) => i.link?.path ?? null)).toEqual(baseSeed.navigation.items.map((i) => i.path ?? null));
+    // Dropdowns (D-049): sub-menu rows shared across locales, labels per locale.
+    const church = baseSeed.navigation.items[1];
+    expect(navEn.headerItems?.[1].children?.map((c) => c.label)).toEqual(church.children!.map((c) => c.label.en));
+    expect(navAm.headerItems?.[1].children?.map((c) => c.label)).toEqual(church.children!.map((c) => c.label.am));
+    expect(navEn.headerItems?.[1].children?.map((c) => c.id)).toEqual(navAm.headerItems?.[1].children?.map((c) => c.id));
+    expect(navEn.headerCTAs?.map((c) => c.label)).toEqual(["Give"]);
 
     const footerEn = await payload.findGlobal({ slug: "footer", locale: "en", overrideAccess: true });
     expect(footerEn.diocese).toMatchObject({
@@ -58,6 +63,8 @@ describe("seedBase", () => {
       link: { type: "external", url: "https://eotc-nordics.org/a/" },
     });
     expect(footerEn.legalLinks?.map((l) => l.link?.path)).toEqual(["/privacy", "/cookies"]);
+    expect(footerEn.columns?.map((c) => c.heading)).toEqual(["Church", "Services"]);
+    expect(footerEn.columns?.[1].links?.[0]).toMatchObject({ label: "Service Schedule", link: { path: "/worship" } });
 
     const seedSlugs = ["education", "children", "mezmur", "it", "property", "communications"];
     const depts = await payload.find({ collection: "departments", locale: "am", sort: "order", where: { slug: { in: seedSlugs } }, overrideAccess: true, limit: 20 });

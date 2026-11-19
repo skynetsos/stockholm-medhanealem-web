@@ -120,8 +120,7 @@ describe("Sunday School, News and Media (D-020)", () => {
     expect(sectionPaths({ hasSundaySchoolIntro: false, departments: [], posts: [], galleries: [], hasVideos: true })).toEqual([
       "/support/volunteer",
       "/media/videos",
-      "/media",
-    ]);
+    ]); // /media is the photo page: it exists only with a gallery (D-049)
     // Production without a privacy notice: the form-only pages don't exist (review V-01).
     const closed = sectionPaths({ hasSundaySchoolIntro: true, departments: [], posts: [], galleries: [], hasVideos: false, formsOpen: false });
     expect(closed).toEqual(["/sunday-school"]);

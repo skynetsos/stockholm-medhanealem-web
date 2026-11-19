@@ -9,7 +9,12 @@
   },
   "footer": {
     "footerNavigation": "Sidfotsnavigering",
-    "copyright": "© {year} {churchName}"
+    "copyright": "© {year} {churchName}",
+    "findUs": "Hitta hit",
+    "openMap": "Öppna i en karta",
+    "phone": "Telefon",
+    "email": "E-post",
+    "social": "Sociala medier"
   },
   "notFound": {
     "title": "Sidan hittades inte",

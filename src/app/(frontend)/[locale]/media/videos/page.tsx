@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { AudioPlayer } from "@/components/media/AudioPlayer";
 import { VideoEmbed } from "@/components/media/VideoEmbed";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
+import { getAvailablePaths } from "@/lib/cms/pages";
 import { getVideos } from "@/lib/cms/sections";
 import { getDateLabels } from "@/lib/date-labels";
 import { stockholmDate } from "@/lib/ethiopian-calendar";
@@ -29,7 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function VideosPage({ params, searchParams }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
-  const [t, videos, labels, query] = await Promise.all([getTranslations("media"), getVideos(locale as Locale), getDateLabels(), searchParams]);
+  const [t, videos, labels, query, available] = await Promise.all([
+    getTranslations("media"),
+    getVideos(locale as Locale),
+    getDateLabels(),
+    searchParams,
+    getAvailablePaths(),
+  ]);
   const all = playable(videos);
   if (!all.length) return <NotFoundContent />;
 
@@ -55,63 +63,66 @@ export default async function VideosPage({ params, searchParams }: Props) {
   );
 
   return (
-    <main id="main" className="mx-auto max-w-site px-gutter py-12">
-      <p className="mb-2 text-sm font-semibold">
-        <Link href="/media">{t("title")}</Link>
-      </p>
-      <h1>{t("videos")}</h1>
+    <main id="main">
+      <PageHeader
+        title={t("videos")}
+        // The photo page exists only with a gallery (D-049).
+        eyebrow={available.includes("/media") ? <Link href="/media">{t("title")}</Link> : null}
+      />
+      <div className="mx-auto max-w-site px-gutter py-12">
 
-      {(categories.length > 1 || years.length > 1) && (
-        <nav aria-label={t("filters")} className="mt-6 space-y-3 print:hidden">
-          {categories.length > 1 && (
-            <div>
-              <h2 className="text-base font-semibold">{t("filterCategory")}</h2>
-              <ul className="mt-1 flex flex-wrap gap-2">
-                {filterLink(t("all"), { ...filter, category: null }, !filter.category)}
-                {categories.map((c) => filterLink(t(`categories.${c.key}`), { ...filter, category: c.value }, filter.category === c.value))}
-              </ul>
-            </div>
-          )}
-          {years.length > 1 && (
-            <div>
-              <h2 className="text-base font-semibold">{t("filterYear")}</h2>
-              <ul className="mt-1 flex flex-wrap gap-2">
-                {filterLink(t("all"), { ...filter, year: null }, !filter.year)}
-                {years.map((y) => filterLink(String(y), { ...filter, year: y }, filter.year === y))}
-              </ul>
-            </div>
-          )}
-        </nav>
-      )}
+        {(categories.length > 1 || years.length > 1) && (
+          <nav aria-label={t("filters")} className="mt-6 space-y-3 print:hidden">
+            {categories.length > 1 && (
+              <div>
+                <h2 className="text-base font-semibold">{t("filterCategory")}</h2>
+                <ul className="mt-1 flex flex-wrap gap-2">
+                  {filterLink(t("all"), { ...filter, category: null }, !filter.category)}
+                  {categories.map((c) => filterLink(t(`categories.${c.key}`), { ...filter, category: c.value }, filter.category === c.value))}
+                </ul>
+              </div>
+            )}
+            {years.length > 1 && (
+              <div>
+                <h2 className="text-base font-semibold">{t("filterYear")}</h2>
+                <ul className="mt-1 flex flex-wrap gap-2">
+                  {filterLink(t("all"), { ...filter, year: null }, !filter.year)}
+                  {years.map((y) => filterLink(String(y), { ...filter, year: y }, filter.year === y))}
+                </ul>
+              </div>
+            )}
+          </nav>
+        )}
 
-      {!groups.length && (
-        <p className="mt-8">
-          {t("noResults")} <Link href="/media/videos">{t("clearFilters")}</Link>
-        </p>
-      )}
-      {groups.map((group) => (
-        <section key={group.value} aria-labelledby={`${group.value}-title`} className="mt-10">
-          <h2 id={`${group.value}-title`} className="mb-4">
-            {t(`categories.${group.key}`)}
-          </h2>
-          <ul className="grid gap-8 md:grid-cols-2">
-            {group.items.map(({ video, ref, audio }) => (
-              <li key={video.id}>
-                <h3 className="text-h4">{video.title}</h3>
-                <p className="mb-2 text-sm text-muted">
-                  <time dateTime={video.date}>{labels.day(stockholmDate(video.date))}</time>
-                  {video.kind === "audio" && ` · ${t("audio")}`}
-                </p>
-                {audio ? (
-                  <AudioPlayer src={audio.url} mimeType={audio.mimeType} title={video.title} caption={video.description} />
-                ) : (
-                  <VideoEmbed video={ref!} title={video.title} caption={video.description} loadImmediately={video.consentRequired === false} />
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+        {!groups.length && (
+          <p className="mt-8">
+            {t("noResults")} <Link href="/media/videos">{t("clearFilters")}</Link>
+          </p>
+        )}
+        {groups.map((group) => (
+          <section key={group.value} aria-labelledby={`${group.value}-title`} className="mt-10">
+            <h2 id={`${group.value}-title`} className="mb-4">
+              {t(`categories.${group.key}`)}
+            </h2>
+            <ul className="grid gap-8 md:grid-cols-2">
+              {group.items.map(({ video, ref, audio }) => (
+                <li key={video.id}>
+                  <h3 className="text-h4">{video.title}</h3>
+                  <p className="mb-2 text-sm text-muted">
+                    <time dateTime={video.date}>{labels.day(stockholmDate(video.date))}</time>
+                    {video.kind === "audio" && ` · ${t("audio")}`}
+                  </p>
+                  {audio ? (
+                    <AudioPlayer src={audio.url} mimeType={audio.mimeType} title={video.title} caption={video.description} />
+                  ) : (
+                    <VideoEmbed video={ref!} title={video.title} caption={video.description} loadImmediately={video.consentRequired === false} />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </main>
   );
 }

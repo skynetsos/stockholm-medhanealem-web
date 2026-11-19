@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { localeAlternates } from "@/i18n/alternates";
@@ -44,29 +45,31 @@ export async function WorshipList({ locale, list }: { locale: string; list: List
   if (!groups.length) return <NotFoundContent />;
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-gutter py-12">
-      <h1>{t(TITLE_KEYS[list])}</h1>
-      <p className="mt-2">
-        <Link href="/worship/calendar">{t("calendar")}</Link>
-      </p>
-      {groups.map((group) => (
-        <section key={group.title ?? list} aria-label={group.title ?? undefined} className="mt-8">
-          {group.title && <h2 className="mb-4">{group.title}</h2>}
-          <ul className="space-y-4">
-            {group.series.map((series) => (
-              <li key={series.event.id}>
-                <SeriesCard
-                  series={series}
-                  labels={labels}
-                  defaultLocation={settings.defaultLocation}
-                  livestreamUrl={list === "weekly" ? settings.livestreamUrl : null}
-                  heading={group.title ? "h3" : "h2"}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+    <main id="main">
+      <PageHeader title={t(TITLE_KEYS[list])} />
+      <div className="mx-auto max-w-3xl px-gutter py-12">
+        <p className="mt-2">
+          <Link href="/worship/calendar">{t("calendar")}</Link>
+        </p>
+        {groups.map((group) => (
+          <section key={group.title ?? list} aria-label={group.title ?? undefined} className="mt-8">
+            {group.title && <h2 className="mb-4">{group.title}</h2>}
+            <ul className="space-y-4">
+              {group.series.map((series) => (
+                <li key={series.event.id}>
+                  <SeriesCard
+                    series={series}
+                    labels={labels}
+                    defaultLocation={settings.defaultLocation}
+                    livestreamUrl={list === "weekly" ? settings.livestreamUrl : null}
+                    heading={group.title ? "h3" : "h2"}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </main>
   );
 }

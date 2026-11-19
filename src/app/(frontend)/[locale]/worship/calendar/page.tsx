@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { JsonLd } from "@/components/seo/JsonLd";
 import { type CalendarEntry, CalendarMonth } from "@/components/worship/CalendarMonth";
@@ -68,22 +69,24 @@ export default async function CalendarPage({ params }: Props) {
   const upcoming = upcomingOccurrences(events, new Date(), { days: 60, limit: 50 });
 
   return (
-    <main id="main" className="mx-auto max-w-site px-gutter py-12">
-      <JsonLd data={upcoming.map((o) => eventJsonLd(o, settings, siteOrigin(), locale))} />
-      <h1>{t("calendar")}</h1>
-      <p className="mb-6 mt-2">
-        {/* An API route, not a page: no language prefix; the language is a parameter. */}
-        <a href={`/api/ical?lang=${locale}`} className="inline-flex min-h-11 items-center">
-          {t("subscribe")}
-        </a>
-      </p>
-      <CalendarMonth
-        entries={entries}
-        defaultLocation={defaultLocation}
-        today={formatIsoDate(today)}
-        firstMonth={formatIsoDate(range.from).slice(0, 7)}
-        lastMonth={formatIsoDate(range.to).slice(0, 7)}
-      />
+    <main id="main">
+      <PageHeader title={t("calendar")} />
+      <div className="mx-auto max-w-site px-gutter py-12">
+        <JsonLd data={upcoming.map((o) => eventJsonLd(o, settings, siteOrigin(), locale))} />
+        <p className="mb-6 mt-2">
+          {/* An API route, not a page: no language prefix; the language is a parameter. */}
+          <a href={`/api/ical?lang=${locale}`} className="inline-flex min-h-11 items-center">
+            {t("subscribe")}
+          </a>
+        </p>
+        <CalendarMonth
+          entries={entries}
+          defaultLocation={defaultLocation}
+          today={formatIsoDate(today)}
+          firstMonth={formatIsoDate(range.from).slice(0, 7)}
+          lastMonth={formatIsoDate(range.to).slice(0, 7)}
+        />
+      </div>
     </main>
   );
 }

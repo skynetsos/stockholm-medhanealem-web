@@ -9,7 +9,12 @@
   },
   "footer": {
     "footerNavigation": "Footer navigation",
-    "copyright": "© {year} {churchName}"
+    "copyright": "© {year} {churchName}",
+    "findUs": "Find us",
+    "openMap": "Open in a map",
+    "phone": "Phone",
+    "email": "Email",
+    "social": "Social media"
   },
   "notFound": {
     "title": "Page not found",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { CmsRichText } from "@/components/richtext/CmsRichText";
@@ -45,28 +46,27 @@ export default async function PostPage({ params }: Props) {
   const source = cover ? mediaSource(cover, 1600) : null;
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-gutter py-12">
-      <p className="mb-2 text-sm font-semibold">
-        <Link href="/news">{t("title")}</Link>
-      </p>
-      <h1>{post.title}</h1>
-      <p className="mt-2 text-muted">
-        {post.publishedAt && <time dateTime={post.publishedAt}>{labels.instant(post.publishedAt)}</time>}
-        {post.publishedAt && post.byline && " · "}
-        {post.byline}
-      </p>
-      {cover && source && (
-        <Image
-          src={source.url}
-          width={source.width}
-          height={source.height}
-          alt={cover.alt}
-          sizes="(min-width: 768px) 48rem, 100vw"
-          priority
-          className="mt-6 h-auto w-full rounded"
-        />
-      )}
-      <CmsRichText data={post.body} className="mt-6" />
+    <main id="main">
+      <PageHeader title={post.title} eyebrow={<Link href="/news">{t("title")}</Link>} />
+      <div className="mx-auto max-w-3xl px-gutter py-12">
+        <p className="mt-2 text-muted">
+          {post.publishedAt && <time dateTime={post.publishedAt}>{labels.instant(post.publishedAt)}</time>}
+          {post.publishedAt && post.byline && " · "}
+          {post.byline}
+        </p>
+        {cover && source && (
+          <Image
+            src={source.url}
+            width={source.width}
+            height={source.height}
+            alt={cover.alt}
+            sizes="(min-width: 768px) 48rem, 100vw"
+            priority
+            className="mt-6 h-auto w-full rounded"
+          />
+        )}
+        <CmsRichText data={post.body} className="mt-6" />
+      </div>
     </main>
   );
 }

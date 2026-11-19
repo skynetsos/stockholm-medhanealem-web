@@ -9,6 +9,8 @@ import type { Locale } from "../i18n/locales";
 export type Localized = { am: string } & Partial<Record<Exclude<Locale, "am">, string>>;
 
 type SeedLink = { label: Localized; path: string };
+/** A header item: a link, or a dropdown heading (no path) with its sub-menu (D-049). */
+type SeedMenuItem = { label: Localized; path?: string; children?: SeedLink[] };
 
 /** Types a label set as Localized (so a missing locale reads as undefined, not a type error). */
 const l10n = (text: Localized): Localized => text;
@@ -27,32 +29,70 @@ export const baseSeed = {
     retentionMonthsBaptism: 24,
   },
 
-  /** Top-level sections from spec §4 / proposal §4. */
+  /**
+   * The header menu in the reference layout's structure and order (D-049, docs/reference/denver/GAP.md):
+   * dropdowns without a page of their own, children in the approved order. Items whose page has no
+   * content yet are hidden on the site until it does. New Amharic labels (marked in GAP.md) are drafts
+   * for Biruk's review; Swedish labels are drafts for the Swedish reviewer.
+   */
   navigation: {
     items: [
       { path: "/", label: { am: "መነሻ ገጽ", en: "Home", sv: "Hem" } },
-      { path: "/our-church", label: { am: "ቤተ ክርስቲያናችን", en: "Our Church", sv: "Vår kyrka" } },
-      { path: "/our-faith", label: { am: "ትምህርቶች", en: "Our Faith", sv: "Vår tro" } },
-      { path: "/worship", label: { am: "አገልግሎትና የቀን መቁጠሪያ", en: "Worship & Calendar", sv: "Gudstjänst & kalender" } },
-      { path: "/sunday-school", label: { am: "ሰንበት ት/ቤት", en: "Sunday School", sv: "Söndagsskola" } },
-      { path: "/sacraments", label: { am: "ምሥጢራትና ጥያቄዎች", en: "Sacraments & Requests", sv: "Sakrament & förfrågningar" } },
-      { path: "/news", label: { am: "ዜናና ሚዲያ", en: "News & Media", sv: "Nyheter & media" } },
-      { path: "/support", label: { am: "ድጋፍ", en: "Support", sv: "Stöd oss" } },
-      { path: "/visit", label: { am: "ያግኙን", en: "Visit & Contact", sv: "Besök & kontakt" } },
-    ] satisfies SeedLink[],
-    ctas: [
       {
-        path: "/worship/weekly",
-        style: "secondary" as const,
-        label: { am: "የአገልግሎት ሰዓታት", en: "Service Times", sv: "Gudstjänsttider" },
+        label: { am: "ቤተ ክርስቲያናችን", en: "Our Church", sv: "Vår kyrka" },
+        children: [
+          { path: "/our-church", label: { am: "ስለ እኛ", en: "About Us", sv: "Om oss" } },
+          { path: "/our-church/history", label: { am: "ታሪካችን", en: "Our Story", sv: "Vår historia" } },
+          { path: "/our-church/tewahedo-history", label: { am: "የተዋሕዶ ታሪክ", en: "Tewahedo History", sv: "Tewahedokyrkans historia" } },
+          { path: "/our-church/theology", label: { am: "ነገረ መለኮት", en: "Theology", sv: "Teologi" } },
+          { path: "/our-church/clergy", label: { am: "ካህናት", en: "Our Priests", sv: "Våra präster" } },
+          { path: "/our-church/building-project", label: { am: "የሕንፃ ፕሮጀክት", en: "Building Project", sv: "Byggprojektet" } },
+          { path: "/our-church/leadership", label: { am: "ሰበካ ጉባኤ", en: "Leadership", sv: "Ledning" } },
+        ],
       },
       {
-        // The request form: the button is hidden while requests are closed (review F-01).
-        path: "/sacraments/baptism/request",
-        style: "primary" as const,
-        label: { am: "የክርስትና ጥያቄ", en: "Request Baptism", sv: "Ansök om dop" },
+        label: { am: "ትምህርቶች", en: "Our Faith", sv: "Vår tro" },
+        children: [
+          { path: "/our-faith", label: { am: "እምነታችን", en: "Our Faith", sv: "Vår tro" } },
+          { path: "/our-faith/holy-scriptures", label: { am: "መጻሕፍት ቅዱሳት", en: "Holy Scriptures", sv: "Den heliga skrift" } },
+          { path: "/our-faith/mysteries", label: { am: "አዕማደ ምሥጢር", en: "The Mysteries", sv: "Mysterierna" } },
+          { path: "/our-faith/seven-sacraments", label: { am: "ሰባቱ ምሥጢራተ ቤተ ክርስቲያን", en: "The Seven Sacraments", sv: "De sju sakramenten" } },
+          { path: "/media/videos", label: { am: "ስብከቶች", en: "Sermons", sv: "Predikningar" } },
+        ],
       },
-    ],
+      {
+        label: { am: "አገልግሎት ክፍሎች", en: "Ministries", sv: "Verksamheter" },
+        children: [{ path: "/sunday-school", label: { am: "ሰንበት ት/ቤት", en: "Sunday School", sv: "Söndagsskola" } }],
+      },
+      {
+        label: { am: "አገልግሎቶች", en: "Services", sv: "Gudstjänster" },
+        children: [
+          { path: "/worship", label: { am: "የአገልግሎት ሰዓታት", en: "Service Schedule", sv: "Gudstjänsttider" } },
+          { path: "/sacraments/baptism", label: { am: "ክርስትና", en: "Baptism", sv: "Dop" } },
+          { path: "/sacraments/marriage", label: { am: "ጋብቻ", en: "Holy Matrimony", sv: "Vigsel" } },
+          { path: "/our-faith/offerings", label: { am: "መባዕ", en: "Offerings", sv: "Offergåvor" } },
+          { path: "/sacraments/fitihat", label: { am: "ፍትሐት", en: "Memorial (Fitihat)", sv: "Minnesbön (Fitihat)" } },
+        ],
+      },
+      {
+        label: { am: "ዝግጅቶች", en: "Events", sv: "Evenemang" },
+        children: [
+          { path: "/worship/calendar", label: { am: "የቀን መቁጠሪያ", en: "Calendar", sv: "Kalender" } },
+          { path: "/news", label: { am: "ማስታወቂያዎች", en: "Announcements", sv: "Meddelanden" } },
+          { path: "/worship/livestream", label: { am: "ቀጥታ ስርጭት", en: "Livestream", sv: "Direktsändning" } },
+          { path: "/media", label: { am: "ፎቶዎች", en: "Photos", sv: "Foton" } },
+        ],
+      },
+      {
+        label: { am: "ግንኙነት", en: "Connect", sv: "Kontakt" },
+        children: [
+          { path: "/visit", label: { am: "ያግኙን", en: "Contact Us", sv: "Kontakta oss" } },
+          { path: "/support/volunteer", label: { am: "በፈቃደኝነት ያገልግሉ", en: "Volunteer", sv: "Bli volontär" } },
+        ],
+      },
+    ] satisfies SeedMenuItem[],
+    /** The pill at the end of the menu (D-049, decision D3: the church may rename it). */
+    ctas: [{ path: "/support", style: "primary" as const, label: { am: "ስጦታ", en: "Give", sv: "Ge en gåva" } }],
   },
 
   /**
@@ -69,6 +109,32 @@ export const baseSeed = {
   ],
 
   footer: {
+    /** Link columns, as on the reference layout (D-049); links to pages without content are hidden. */
+    columns: [
+      {
+        heading: { am: "ቤተ ክርስቲያን", en: "Church", sv: "Kyrkan" },
+        links: [
+          { path: "/our-church", label: { am: "ስለ እኛ", en: "About Us", sv: "Om oss" } },
+          { path: "/our-church/history", label: { am: "ታሪካችን", en: "Our Story", sv: "Vår historia" } },
+          { path: "/our-faith", label: { am: "እምነታችን", en: "Our Faith", sv: "Vår tro" } },
+          { path: "/our-church/clergy", label: { am: "ካህናት", en: "Our Priests", sv: "Våra präster" } },
+          { path: "/our-church/leadership", label: { am: "ሰበካ ጉባኤ", en: "Leadership", sv: "Ledning" } },
+          { path: "/media/videos", label: { am: "ስብከቶች", en: "Sermons", sv: "Predikningar" } },
+        ],
+      },
+      {
+        heading: { am: "አገልግሎቶች", en: "Services", sv: "Gudstjänster" },
+        links: [
+          { path: "/worship", label: { am: "የአገልግሎት ሰዓታት", en: "Service Schedule", sv: "Gudstjänsttider" } },
+          { path: "/worship/calendar", label: { am: "የቀን መቁጠሪያ", en: "Calendar", sv: "Kalender" } },
+          { path: "/news", label: { am: "ማስታወቂያዎች", en: "Announcements", sv: "Meddelanden" } },
+          { path: "/sunday-school", label: { am: "ሰንበት ት/ቤት", en: "Sunday School", sv: "Söndagsskola" } },
+          { path: "/support", label: { am: "ስጦታ", en: "Give", sv: "Ge en gåva" } },
+          { path: "/visit", label: { am: "ያግኙን", en: "Contact Us", sv: "Kontakta oss" } },
+          { path: "/worship/livestream", label: { am: "ቀጥታ ስርጭት", en: "Livestream", sv: "Direktsändning" } },
+        ],
+      },
+    ] satisfies { heading: Localized; links: SeedLink[] }[],
     diocese: {
       url: "https://eotc-nordics.org/a/",
       label: { am: "የኖርዲክና የግሪክ ሀገረ ስብከት", en: "Nordic & Greece Diocese", sv: "Stiftet för Norden och Grekland" },

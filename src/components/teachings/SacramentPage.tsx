@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import type { ReactNode } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { CmsRichText } from "@/components/richtext/CmsRichText";
@@ -49,34 +50,36 @@ export async function SacramentPage({
   if (!items.length) return <NotFoundContent />;
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-gutter py-12">
-      <h1>{t(page)}</h1>
-      {children}
-      {items.length > 1 && (
-        <nav aria-labelledby="on-this-page" className="mt-6 rounded bg-white p-4 shadow-sm">
-          <h2 id="on-this-page" className="text-h4">
-            {t("onThisPage")}
-          </h2>
-          <ul className="mt-2">
-            {items.map((teaching) => (
-              <li key={teaching.id}>
-                <a href={`#${teaching.slug}`} className="inline-flex min-h-11 items-center" lang={fallbackLang(teaching.title, locale)}>
-                  {teaching.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-      {items.map((teaching) => (
-        <section key={teaching.id} id={teaching.slug} aria-labelledby={`${teaching.slug}-title`} className="mt-10">
-          <h2 id={`${teaching.slug}-title`} lang={fallbackLang(teaching.title, locale)}>
-            {teaching.title}
-          </h2>
-          <CmsRichText data={teaching.body} className="mt-4" />
-        </section>
-      ))}
-      {after}
+    <main id="main">
+      <PageHeader title={t(page)} />
+      <div className="mx-auto max-w-3xl px-gutter py-12">
+        {children}
+        {items.length > 1 && (
+          <nav aria-labelledby="on-this-page" className="mt-6 rounded bg-white p-4 shadow-sm">
+            <h2 id="on-this-page" className="text-h4">
+              {t("onThisPage")}
+            </h2>
+            <ul className="mt-2">
+              {items.map((teaching) => (
+                <li key={teaching.id}>
+                  <a href={`#${teaching.slug}`} className="inline-flex min-h-11 items-center" lang={fallbackLang(teaching.title, locale)}>
+                    {teaching.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        {items.map((teaching) => (
+          <section key={teaching.id} id={teaching.slug} aria-labelledby={`${teaching.slug}-title`} className="mt-10">
+            <h2 id={`${teaching.slug}-title`} lang={fallbackLang(teaching.title, locale)}>
+              {teaching.title}
+            </h2>
+            <CmsRichText data={teaching.body} className="mt-4" />
+          </section>
+        ))}
+        {after}
+      </div>
     </main>
   );
 }

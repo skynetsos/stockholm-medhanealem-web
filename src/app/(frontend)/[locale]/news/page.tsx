@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { LinkCard } from "@/components/pages/LinkCard";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
@@ -25,21 +26,23 @@ export default async function NewsPage({ params }: Props) {
   if (!posts.length) return <NotFoundContent />;
 
   return (
-    <main id="main" className="mx-auto max-w-site px-gutter py-12">
-      <h1 className="mb-8">{t("title")}</h1>
-      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
-          <li key={post.id}>
-            <LinkCard
-              href={`/news/${post.slug}`}
-              title={post.title}
-              image={post.coverImage}
-              meta={post.publishedAt && <time dateTime={post.publishedAt}>{labels.instant(post.publishedAt)}</time>}
-              text={post.excerpt || excerpt(post.body)}
-            />
-          </li>
-        ))}
-      </ul>
+    <main id="main">
+      <PageHeader title={t("title")} />
+      <div className="mx-auto max-w-site px-gutter py-12">
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <li key={post.id}>
+              <LinkCard
+                href={`/news/${post.slug}`}
+                title={post.title}
+                image={post.coverImage}
+                meta={post.publishedAt && <time dateTime={post.publishedAt}>{labels.instant(post.publishedAt)}</time>}
+                text={post.excerpt || excerpt(post.body)}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
     </main>
   );
 }

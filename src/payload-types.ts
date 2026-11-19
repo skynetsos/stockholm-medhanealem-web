@@ -1727,6 +1727,9 @@ export interface SiteSetting {
  */
 export interface Navigation {
   id: number;
+  /**
+   * An item with a sub-menu opens a dropdown (its own link is then not used, as on the reference layout, D-049). An item is hidden when its link leads to a page without content and none of its sub-menu items are shown.
+   */
   headerItems?:
     | {
         label: string;
@@ -1759,6 +1762,9 @@ export interface Navigation {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Shown as a pill at the end of the menu (e.g. Give).
+   */
   headerCTAs?:
     | {
         label: string;

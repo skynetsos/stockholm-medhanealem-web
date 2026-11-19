@@ -66,6 +66,9 @@
   --text-h1: clamp(2rem, 1.6rem + 1.75vw, 2.75rem);
   --text-h1--line-height: 1.2;
 
+  /* The full header menu (D-049) needs 1360px with the Amharic labels; below that, the drawer. */
+  --breakpoint-nav: 85rem;
+
   /* Layout: 1200px content width, 16px minimum side gutter. */
   --container-site: 75rem;
   --spacing-gutter: 1rem;

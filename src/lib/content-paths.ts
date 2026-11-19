@@ -70,7 +70,8 @@ export function worshipPaths(events: { type?: string | null }[], livestreamUrl: 
  * - /sunday-school (and its registration form) with an intro page or a department with text; each
  *   such department's page
  * - /news and each published post
- * - /media, each published gallery with at least one image that may be shown, /media/videos
+ * - /media (the photo galleries; "Photos" in the menu, D-049) and each published gallery with at least
+ *   one image that may be shown; /media/videos with a video
  */
 export function sectionPaths({
   hasSundaySchoolIntro,
@@ -99,6 +100,6 @@ export function sectionPaths({
   const shownGalleries = galleries.filter((g) => g.hasPublicImage);
   paths.push(...shownGalleries.map((g) => `/media/galleries/${g.slug}`));
   if (hasVideos) paths.push("/media/videos");
-  if (shownGalleries.length || hasVideos) paths.push("/media");
+  if (shownGalleries.length) paths.push("/media");
   return paths;
 }

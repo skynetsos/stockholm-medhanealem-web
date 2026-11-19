@@ -9,7 +9,12 @@
   },
   "footer": {
     "footerNavigation": "የግርጌ ማውጫ",
-    "copyright": "© {year} {churchName}"
+    "copyright": "© {year} {churchName}",
+    "findUs": "ያለንበት ቦታ",
+    "openMap": "በካርታ ይክፈቱ",
+    "phone": "ስልክ",
+    "email": "ኢሜይል",
+    "social": "ማኅበራዊ ሚዲያ"
   },
   "notFound": {
     "title": "ገጹ አልተገኘም",

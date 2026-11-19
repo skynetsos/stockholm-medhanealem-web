@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { CmsRichText } from "@/components/richtext/CmsRichText";
@@ -37,12 +38,15 @@ export default async function TeachingPage({ params }: Props) {
   if (!teaching || !isFaithCategory(teaching.category)) return <NotFoundContent />;
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-gutter py-12">
-      <p className="mb-2 text-sm font-semibold">
-        <Link href={`/our-faith#${teaching.category}`}>{t(`categories.${teaching.category}`)}</Link>
-      </p>
-      <h1 lang={fallbackLang(teaching.title, locale)}>{teaching.title}</h1>
-      <CmsRichText data={teaching.body} className="mt-6" />
+    <main id="main">
+      <PageHeader
+        title={teaching.title}
+        titleLang={fallbackLang(teaching.title, locale)}
+        eyebrow={<Link href={`/our-faith#${teaching.category}`}>{t(`categories.${teaching.category}`)}</Link>}
+      />
+      <div className="mx-auto max-w-3xl px-gutter py-12">
+        <CmsRichText data={teaching.body} className="mt-6" />
+      </div>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { LinkCard } from "@/components/pages/LinkCard";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("title"), alternates: await localeAlternates(locale, "/media") };
 }
 
-/** /media (spec §4): photo galleries with images that may be shown, and a link to the videos. */
+/** /media (spec §4): photo galleries with images that may be shown ("Photos" in the menu, D-049), and a link to the videos. */
 export default async function MediaPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
@@ -33,47 +34,49 @@ export default async function MediaPage({ params }: Props) {
   const shown = galleries
     .map((gallery) => ({ gallery, images: galleryItems(gallery.images) }))
     .filter(({ images }) => images.length > 0);
-  if (!shown.length && !videos.length) return <NotFoundContent />;
+  if (!shown.length) return <NotFoundContent />;
 
   return (
-    <main id="main" className="mx-auto max-w-site px-gutter py-12">
-      <h1>{t("title")}</h1>
-      {videos.length > 0 && (
-        <p className="mt-2">
-          <Link href="/media/videos">{t("videos")}</Link>
-        </p>
-      )}
-      {shown.length > 0 && (
-        <section aria-labelledby="galleries-title" className="mt-8">
-          <h2 id="galleries-title" className="mb-4">
-            {t("galleries")}
-          </h2>
-          {byYear(shown.map((s) => ({ ...s, date: s.gallery.date }))).map(({ year, items }) => (
-            <section key={year} aria-labelledby={`galleries-${year}`} className="mt-6">
-              <h3 id={`galleries-${year}`} className="mb-3">
-                {year}
-              </h3>
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map(({ gallery, images }) => (
-              <li key={gallery.id}>
-                <LinkCard
-                  href={`/media/galleries/${gallery.slug}`}
-                  title={gallery.title}
-                  image={gallery.images.find((i) => typeof i === "object" && i.id === images[0].id)}
-                  meta={
-                    <>
-                      <time dateTime={gallery.date}>{labels.day(stockholmDate(gallery.date))}</time> ·{" "}
-                      {t("photoCount", { count: images.length })}
-                    </>
-                  }
-                />
-              </li>
+    <main id="main">
+      <PageHeader title={t("title")} />
+      <div className="mx-auto max-w-site px-gutter py-12">
+        {videos.length > 0 && (
+          <p className="mt-2">
+            <Link href="/media/videos">{t("videos")}</Link>
+          </p>
+        )}
+        {shown.length > 0 && (
+          <section aria-labelledby="galleries-title" className="mt-8">
+            <h2 id="galleries-title" className="mb-4">
+              {t("galleries")}
+            </h2>
+            {byYear(shown.map((s) => ({ ...s, date: s.gallery.date }))).map(({ year, items }) => (
+              <section key={year} aria-labelledby={`galleries-${year}`} className="mt-6">
+                <h3 id={`galleries-${year}`} className="mb-3">
+                  {year}
+                </h3>
+            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map(({ gallery, images }) => (
+                <li key={gallery.id}>
+                  <LinkCard
+                    href={`/media/galleries/${gallery.slug}`}
+                    title={gallery.title}
+                    image={gallery.images.find((i) => typeof i === "object" && i.id === images[0].id)}
+                    meta={
+                      <>
+                        <time dateTime={gallery.date}>{labels.day(stockholmDate(gallery.date))}</time> ·{" "}
+                        {t("photoCount", { count: images.length })}
+                      </>
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+              </section>
             ))}
-          </ul>
-            </section>
-          ))}
-        </section>
-      )}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

@@ -22,7 +22,12 @@ const label = (text: Localized, locale: Locale) => text[locale] ?? text.am;
  * Array rows are shared across locales while their labels are localized, so each global is written
  * once in Amharic and then relabelled per locale on the same row ids.
  */
-export async function seedBase(payload: Payload, { force = false } = {}): Promise<SeedReport> {
+export async function seedBase(
+  payload: Payload,
+  { force = false, only }: { force?: boolean; only?: readonly (keyof SeedReport)[] } = {},
+): Promise<SeedReport> {
+  // `only` limits the run to some globals, e.g. re-seeding the menu and footer after D-049.
+  const wanted = (name: keyof SeedReport) => !only || only.includes(name);
   const read = { locale: defaultLocale, overrideAccess: true, depth: 0, fallbackLocale: false } as const;
   const [settings, navigation, footer] = await Promise.all([
     payload.findGlobal({ slug: "site-settings", ...read }),
@@ -33,7 +38,7 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
   const report: SeedReport = { "site-settings": skipped, navigation: skipped, footer: skipped, departments: skipped };
 
   // ── Site settings ─────────────────────────────────────────────────────
-  if (force || (!settings.churchName && !settings.shortName)) {
+  if (wanted("site-settings") && (force || (!settings.churchName && !settings.shortName))) {
     const s = baseSeed.settings;
     await payload.updateGlobal({
       slug: "site-settings",
@@ -62,15 +67,21 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
   }
 
   // ── Navigation ────────────────────────────────────────────────────────
-  if (force || (!navigation.headerItems?.length && !navigation.headerCTAs?.length)) {
+  if (wanted("navigation") && (force || (!navigation.headerItems?.length && !navigation.headerCTAs?.length))) {
     const { items, ctas } = baseSeed.navigation;
+    // A dropdown heading has no link of its own (D-049).
+    const itemLink = (path?: string) => (path ? internal(path) : { type: "internal" as const, path: null });
     const saved = await payload.updateGlobal({
       slug: "navigation",
       locale: defaultLocale,
       overrideAccess: true,
       context,
       data: {
-        headerItems: items.map((item) => ({ label: item.label.am, link: internal(item.path), children: [] })),
+        headerItems: items.map((item) => ({
+          label: item.label.am,
+          link: itemLink(item.path),
+          children: (item.children ?? []).map((child) => ({ label: child.label.am, link: internal(child.path) })),
+        })),
         headerCTAs: ctas.map((cta) => ({ label: cta.label.am, link: internal(cta.path), style: cta.style })),
       },
     });
@@ -81,7 +92,11 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
         overrideAccess: true,
         context,
         data: {
-          headerItems: (saved.headerItems ?? []).map((row, i) => ({ ...row, label: label(items[i].label, locale) })),
+          headerItems: (saved.headerItems ?? []).map((row, i) => ({
+            ...row,
+            label: label(items[i].label, locale),
+            children: (row.children ?? []).map((child, j) => ({ ...child, label: label(items[i].children![j].label, locale) })),
+          })),
           headerCTAs: (saved.headerCTAs ?? []).map((row, i) => ({ ...row, label: label(ctas[i].label, locale) })),
         },
       });
@@ -90,8 +105,8 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
   }
 
   // ── Footer ────────────────────────────────────────────────────────────
-  if (force || (!footer.columns?.length && !footer.legalLinks?.length && !footer.diocese?.label)) {
-    const { diocese, legal } = baseSeed.footer;
+  if (wanted("footer") && (force || (!footer.columns?.length && !footer.legalLinks?.length && !footer.diocese?.label))) {
+    const { columns, diocese, legal } = baseSeed.footer;
     const dioceseLink = { type: "external" as const, url: diocese.url, newTab: true };
     const saved = await payload.updateGlobal({
       slug: "footer",
@@ -99,7 +114,10 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
       overrideAccess: true,
       context,
       data: {
-        columns: [],
+        columns: columns.map((column) => ({
+          heading: column.heading.am,
+          links: column.links.map((item) => ({ label: item.label.am, link: internal(item.path) })),
+        })),
         diocese: { label: diocese.label.am, link: dioceseLink },
         legalLinks: legal.map((item) => ({ label: item.label.am, link: internal(item.path) })),
       },
@@ -111,6 +129,11 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
         overrideAccess: true,
         context,
         data: {
+          columns: (saved.columns ?? []).map((row, i) => ({
+            ...row,
+            heading: label(columns[i].heading, locale),
+            links: (row.links ?? []).map((item, j) => ({ ...item, label: label(columns[i].links[j].label, locale) })),
+          })),
           diocese: { label: label(diocese.label, locale), link: dioceseLink },
           legalLinks: (saved.legalLinks ?? []).map((row, i) => ({ ...row, label: label(legal[i].label, locale) })),
         },
@@ -121,7 +144,7 @@ export async function seedBase(payload: Payload, { force = false } = {}): Promis
 
 
   // ── Departments (spec §2.7): create any that are missing (by slug); names only ──
-  for (const dept of baseSeed.departments) {
+  for (const dept of wanted("departments") ? baseSeed.departments : []) {
     const existing = await payload.find({
       collection: "departments",
       where: { slug: { equals: dept.slug } },

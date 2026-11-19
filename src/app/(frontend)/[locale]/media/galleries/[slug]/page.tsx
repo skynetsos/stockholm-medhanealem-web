@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/pages/PageHeader";
 
 import { GalleryGrid } from "@/components/media/GalleryGrid";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
@@ -41,17 +42,16 @@ export default async function GalleryPage({ params }: Props) {
   const { gallery, images } = found;
 
   return (
-    <main id="main" className="mx-auto max-w-site px-gutter py-12">
-      <p className="mb-2 text-sm font-semibold">
-        <Link href="/media">{t("title")}</Link>
-      </p>
-      <h1>{gallery.title}</h1>
-      <p className="mt-2 text-muted">
-        <time dateTime={gallery.date}>{labels.day(stockholmDate(gallery.date))}</time> · {t("photoCount", { count: images.length })}
-      </p>
-      {gallery.description && <p className="mt-3 max-w-3xl whitespace-pre-line">{gallery.description}</p>}
-      <div className="mt-8">
-        <GalleryGrid images={images} />
+    <main id="main">
+      <PageHeader title={gallery.title} eyebrow={<Link href="/media">{t("title")}</Link>} />
+      <div className="mx-auto max-w-site px-gutter py-12">
+        <p className="mt-2 text-muted">
+          <time dateTime={gallery.date}>{labels.day(stockholmDate(gallery.date))}</time> · {t("photoCount", { count: images.length })}
+        </p>
+        {gallery.description && <p className="mt-3 max-w-3xl whitespace-pre-line">{gallery.description}</p>}
+        <div className="mt-8">
+          <GalleryGrid images={images} />
+        </div>
       </div>
     </main>
   );
