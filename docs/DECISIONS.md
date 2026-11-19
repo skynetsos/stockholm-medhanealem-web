@@ -8,6 +8,14 @@
 
 ## Resolved decisions
 
+### D-048 — Staging server for the committee review (2026-11-19; requested by Biruk)
+- **Why:** the LAN address works only on Biruk's Wi-Fi; the committee needs to review from home.
+- **Same stack as production**, `SITE_ENV=staging` (noindex, forms open without the privacy notice, review content may carry the placeholder approval). Own Compose project (`medhanealem-staging`), database, bucket and secrets: nothing is shared with or copied to production.
+- **Password on the whole site** (Caddy basic auth, one shared login; `/api/health` open), because the text is not approved and the forms collect data without a published privacy notice. Done with a server-only Caddy file (`deploy/caddy/site.d/*.caddy`, gitignored) that the main Caddyfile imports; the folder is empty in production. No new dependency.
+- **Content is loaded by the existing idempotent importers** (`scripts/staging/load-review-content.sh`), not by copying the dev database, so staging is reproducible and the church's source files stay the one place for corrections.
+- **Email off by default** on staging (log only), so test submissions mail nobody.
+- **Open (Biruk):** the server, the domain (`staging.medhanealem.se` needs the church's DNS) and the bucket; RUNBOOK → Staging.
+
 ### D-047 — Completeness review: fixes from the adversarial review (2026-11-16; requested by Biruk)
 - **Process:** a planner mapped every route against the spec (`docs/REVIEW-PLAN.md`); an adversarial reviewer with fresh context checked the running site, the imported text and the code (`docs/REVIEW-FINDINGS.md`, 26 findings); the verdicts per finding are in `docs/REVIEW-DECISIONS.md`. Church decisions went to CONTENT-CHECKLIST.md, not into code. Confirmed OK by the review: the church's text is verbatim on every page (both languages), no private data or drafts are reachable anonymously, and the Ethiopian dates and summer/winter time are correct.
 - **Behaviour changes:**

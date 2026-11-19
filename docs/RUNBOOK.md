@@ -242,6 +242,82 @@ docker compose -f docker-compose.prod.yml --env-file .env.production.localtest d
 
 Caddy uses its own local certificate for `localhost`, so browsers show a warning; that is expected.
 
+## Staging (committee review)
+
+A copy of the site for the church committee to review before launch (D-048). It runs the same
+production stack with `SITE_ENV=staging`:
+
+- **Never indexed:** robots.txt disallows everything and every page is `noindex`.
+- **Behind a password:** Caddy asks for one shared username and password on every page
+  (`deploy/caddy/staging-auth.caddy.example`), because the content is not approved yet and the test
+  forms are open without a privacy notice. Only `/api/health` (uptime checks) and `/api/cron/*` (own secret) are open.
+- **Review content published:** the importers may publish with the placeholder approval
+  "NOT APPROVED – development review" (refused in production).
+- **Its own everything:** own server (or at least own Compose project `medhanealem-staging`), own
+  database, own bucket, own secrets. Nothing is copied to production; production starts empty and is
+  filled with drafts that real clergy and editors approve (see [Before cut-over](#before-cut-over-spec-7)).
+- **Email optional:** with no `RESEND_API_KEY`, emails only go to the app log; nobody is mailed.
+
+### What you need first
+
+| What | Notes |
+|---|---|
+| A small EU server | e.g. Hetzner CX22 (2 vCPU / 4 GB, Ubuntu 24.04), about €5 a month. Later it can become production or be deleted. |
+| A domain name for it | `staging.medhanealem.se` needs access to the church's DNS. Any subdomain you control works too (change `SITE_DOMAIN` and `NEXT_PUBLIC_SERVER_URL`). |
+| An S3 bucket | e.g. Hetzner Object Storage `medhanealem-staging-media`, with an access key for that bucket only. |
+
+### Setting it up
+
+1. **Server, Docker, code:** steps 1–3 of [First deployment](#first-deployment).
+2. **Configure:**
+   ```bash
+   cp .env.staging.example .env.staging && chmod 600 .env.staging   # fill in every value
+   cp deploy/caddy/staging-auth.caddy.example deploy/caddy/site.d/staging-auth.caddy
+   docker compose -f docker-compose.prod.yml --env-file .env.staging run --rm caddy caddy hash-password
+   ```
+   Type the review password; put the printed hash in `STAGING_AUTH_HASH`, writing every `$` as `$$`.
+   Keep the password in the password manager; give it to the committee in person or by phone.
+3. **DNS:** an A record for the staging name → the server's address. With Cloudflare, "DNS only" until
+   Caddy has its certificate, then "Proxied" with SSL/TLS **Full (strict)**.
+4. **Start:**
+   ```bash
+   docker compose -f docker-compose.prod.yml --env-file .env.staging up -d --build
+   curl -fsS https://staging.medhanealem.se/api/health          # {"status":"ok"}, no password needed
+   ```
+5. **Content and first admin:**
+   ```bash
+   sh scripts/staging/load-review-content.sh .env.staging
+   docker compose -f docker-compose.prod.yml --env-file .env.staging up -d --force-recreate app
+   docker compose -f docker-compose.prod.yml --env-file .env.staging run --rm \
+     -e ADMIN_EMAIL=you@example.org -e ADMIN_NAME="Your Name" tools user:create-super-admin
+   ```
+   The set-password link it prints works once; open it, set the password, enrol MFA. The browser asks
+   for the review password first.
+6. **Office details:** in /admin → Site settings, enter the office email and phone (CONTENT-CHECKLIST).
+7. **Send the committee message** (`docs/COMMITTEE-MESSAGE-2026-11-16.md`) with the address; the
+   password goes separately.
+
+### Updating staging
+
+```bash
+cd /opt/medhanealem && git pull
+docker compose -f docker-compose.prod.yml --env-file .env.staging up -d --build
+sh scripts/staging/load-review-content.sh .env.staging     # only when the content changed
+docker compose -f docker-compose.prod.yml --env-file .env.staging up -d --force-recreate app
+```
+
+Recreating the app container clears its page cache, so content loaded by the scripts shows at once.
+Edits made in the admin show without this.
+
+**Note:** the importers overwrite what they own (the church's text, the old site's pages, the computed
+feasts). Corrections the committee asks for go into the source (`docs/content/…md`, then re-import),
+not into the admin, or the next import replaces them.
+
+### Removing the password at launch
+
+Staging stays behind the password. Production never gets `deploy/caddy/site.d/staging-auth.caddy`;
+the folder stays empty there.
+
 ## Accounts and MFA
 
 - **New staff account:** a super_admin creates the user in /admin → Users with the right roles and a

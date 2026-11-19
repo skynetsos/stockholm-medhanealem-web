@@ -57,12 +57,16 @@ services:
       - app
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN}
+      # Staging only (deploy/caddy/staging-auth.caddy.example): the review password.
+      STAGING_AUTH_USER: ${STAGING_AUTH_USER:-}
+      STAGING_AUTH_HASH: ${STAGING_AUTH_HASH:-}
     ports:
       - "${HTTP_PORT:-80}:80"
       - "${HTTPS_PORT:-443}:443"
       - "${HTTPS_PORT:-443}:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/caddy/site.d:/etc/caddy/site.d:ro
       - caddy-data:/data
       - caddy-config:/config
 

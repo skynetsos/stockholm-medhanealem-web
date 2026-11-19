@@ -1,0 +1,14 @@
+# Staging only: the whole review site behind one shared password, so unapproved content and the
+# open test forms are not public. Copy to deploy/caddy/site.d/staging-auth.caddy on the staging
+# server (that folder's *.caddy files are gitignored) and set STAGING_AUTH_USER and STAGING_AUTH_HASH
+# in .env.staging. Make the hash with:
+#   docker compose -f docker-compose.prod.yml --env-file .env.staging run --rm caddy caddy hash-password
+# Open without the password: /api/health (uptime checks) and /api/cron/* (the server's own cron,
+# which has its own secret).
+@review_gate not path /api/health /api/cron/*
+basic_auth @review_gate {
+	{$STAGING_AUTH_USER} {$STAGING_AUTH_HASH}
+}
+# The browser repeats the password on every request; the app doesn't need it (and would treat
+# every visitor as signed in for media caching).
+request_header @review_gate -Authorization

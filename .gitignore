@@ -15,6 +15,10 @@ next-env.d.ts
 .env.*
 !.env.example
 !.env.production.example
+!.env.staging.example
+
+# server-only Caddy rules (deploy/caddy/site.d/*.caddy, e.g. the staging password)
+deploy/caddy/site.d/*.caddy
 
 # testing
 coverage/
