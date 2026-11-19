@@ -52,3 +52,6 @@ Thumbs.db
 
 # Lighthouse output (pnpm lighthouse)
 lighthouse-reports/
+
+# Reference screenshots of other sites (their photos and text): local only
+docs/reference/**/*.png
