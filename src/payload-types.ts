@@ -1881,7 +1881,7 @@ export interface Homepage {
   sections?:
     | {
         section:
-          'hero' | 'nextService' | 'upcomingHolyDays' | 'latestNotice' | 'about' | 'sundaySchool' | 'gallery' | 'visit';
+          'hero' | 'about' | 'nextService' | 'upcomingHolyDays' | 'latestNotice' | 'sundaySchool' | 'gallery' | 'visit';
         id?: string | null;
       }[]
     | null;

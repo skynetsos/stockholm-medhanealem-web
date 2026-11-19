@@ -27,10 +27,13 @@ export async function VisitDetails({
   settings,
   heading: Heading = "h3",
   full = false,
+  stacked = false,
 }: {
   settings: SiteSetting;
   heading?: "h2" | "h3";
   full?: boolean;
+  /** One column (the left half of the contact page, D-049). */
+  stacked?: boolean;
 }) {
   const t = await getTranslations("home");
   const tv = await getTranslations("visit");
@@ -40,7 +43,7 @@ export async function VisitDetails({
   const social = full ? (settings.socialLinks ?? []).filter((s) => validateExternalUrl(s.url) === true) : [];
 
   return (
-    <div className={`grid gap-8 ${pin ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+    <div className={`grid gap-8 ${stacked ? "" : pin ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
       <div className="flex flex-col gap-8">
         {lines.length > 0 && (
           <div>

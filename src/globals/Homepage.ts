@@ -9,12 +9,13 @@ import { revalidateLayout } from "../hooks/revalidateLayout";
  * Home page sections (Phase 1 task 4). Each is hidden automatically when it has no content.
  * The urgent announcement bar is not listed: it sits at the top of every page (D-016).
  */
+/** In the reference layout's order (D-049); this is the order of a home page that was never saved. */
 export const HOME_SECTIONS = [
   { value: "hero", label: "Hero" },
-  { value: "nextService", label: "Next service" },
-  { value: "upcomingHolyDays", label: "Upcoming holy days" },
+  { value: "about", label: "Welcome (about the church)" },
+  { value: "nextService", label: "Service times" },
+  { value: "upcomingHolyDays", label: "Feasts and holy days" },
   { value: "latestNotice", label: "Latest announcement" },
-  { value: "about", label: "About the church" },
   { value: "sundaySchool", label: "Sunday School" },
   { value: "gallery", label: "Latest gallery" },
   { value: "visit", label: "Visit us" },

@@ -1,7 +1,7 @@
 import type { Event } from "../payload-types";
 import { gregorianToJdn, stockholmDate } from "./ethiopian-calendar";
 import type { Occurrence } from "./events/expand";
-import { upcomingOccurrences } from "./home";
+import { HOLY_DAY_TYPES, upcomingOccurrences } from "./home";
 
 export type Series = {
   event: Event;
@@ -31,4 +31,15 @@ export function upcomingSeries(events: Event[], types: readonly Event["type"][],
     if (isChange && gregorianToJdn(o.date) - today <= CHANGE_DAYS) series.changes.push(o);
   }
   return [...byEvent.values()];
+}
+
+/**
+ * The feasts and fasts of the coming year, each event once at its next date, in date order (the feast
+ * band on the home and service schedule pages, D-049).
+ */
+export function yearFeasts(events: Event[], now: Date, limit = 12): (Occurrence & { event: Event })[] {
+  const seen = new Set<number>();
+  return upcomingOccurrences(events, now, { types: HOLY_DAY_TYPES })
+    .filter((o) => !seen.has(o.event.id) && seen.add(o.event.id))
+    .slice(0, limit);
 }

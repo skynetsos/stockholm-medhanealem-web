@@ -6,6 +6,7 @@ import { RenderBlocks } from "@/components/blocks/RenderBlocks";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { PageHeader } from "@/components/pages/PageHeader";
 import { SectionLinks } from "@/components/pages/SectionLinks";
+import { ServiceSchedule } from "@/components/worship/ServiceSchedule";
 import { localeAlternates } from "@/i18n/alternates";
 import { getPage } from "@/lib/cms/pages";
 import { mediaSource, publicMedia } from "@/lib/media";
@@ -44,7 +45,14 @@ export default async function CmsPage({ params }: Props) {
   return (
     <main id="main">
       <PageHeader title={page.title} hero={page.hero} />
-      <RenderBlocks blocks={page.layout} locale={locale as Locale} />
+      {section === "worship" && slug === SECTION_INDEX_SLUG ? (
+        // The service schedule (D-049): service cards and location, the church's text, the feast band.
+        <ServiceSchedule locale={locale as Locale}>
+          <RenderBlocks blocks={page.layout} locale={locale as Locale} />
+        </ServiceSchedule>
+      ) : (
+        <RenderBlocks blocks={page.layout} locale={locale as Locale} />
+      )}
       {slug === SECTION_INDEX_SLUG && section !== "other" && <SectionLinks locale={locale as Locale} section={section} />}
     </main>
   );

@@ -5,21 +5,24 @@ import { Fragment, type ReactNode } from "react";
 
 import { GalleryTeaser, galleryImages } from "@/components/home/GalleryTeaser";
 import { Hero, hasHero } from "@/components/home/Hero";
-import { HolyDays } from "@/components/home/HolyDays";
 import { LatestNotice } from "@/components/home/LatestNotice";
-import { NextService } from "@/components/home/NextService";
+import { HomeSection } from "@/components/home/HomeSection";
 import { hasTeaser, Teaser } from "@/components/home/Teaser";
 import { hasVisitInfo, VisitUs } from "@/components/home/VisitUs";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { FeastBand } from "@/components/worship/FeastBand";
+import { ServiceTimes } from "@/components/worship/ServiceTimes";
 import { localeAlternates } from "@/i18n/alternates";
+import { Link } from "@/i18n/navigation";
 import { getActiveEvents } from "@/lib/cms/events";
 import { getHomeData } from "@/lib/cms/home";
 import { getAvailablePaths } from "@/lib/cms/pages";
 import { getLayoutData } from "@/lib/cms/layout";
 import { getDateLabels } from "@/lib/date-labels";
-import { type HomeSection, latestNotice, nextService, sectionOrder, upcomingHolyDays } from "@/lib/home";
+import { type HomeSection as Section, latestNotice, nextService, sectionOrder, upcomingHolyDays } from "@/lib/home";
 import { churchJsonLd, eventJsonLd } from "@/lib/jsonld";
 import { siteOrigin } from "@/lib/seo";
+import { upcomingSeries } from "@/lib/worship";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -52,20 +55,37 @@ export default async function HomePage({ params }: Props) {
 
   const featuredIds = (homepage.featuredEvents ?? []).map((e) => (typeof e === "object" ? e.id : e));
   const service = nextService(events, now);
-  const holyDays = upcomingHolyDays(events, featuredIds, now);
+  // The reference layout's full feast list (D-049): up to ten, still the editors' picks if set.
+  const holyDays = upcomingHolyDays(events, featuredIds, now, 10);
+  const weekly = upcomingSeries(events, ["weekly_service"], now);
   const notice = latestNotice(home.announcements, now);
   const gallery = galleryImages(home.gallery).length ? home.gallery : null;
   const showHero = order.includes("hero") && hasHero(homepage.hero);
 
-  const sections: Record<HomeSection, () => ReactNode> = {
+  const sections: Record<Section, () => ReactNode> = {
     // Without a hero heading the h1 is the church's name, not a generic "Welcome" (review F-16).
-    hero: () => showHero && <Hero hero={homepage.hero!} fallbackHeading={settings.churchName || settings.shortName || t("welcome")} />,
+    hero: () =>
+      showHero && <Hero hero={homepage.hero!} emblem={settings.logo} fallbackHeading={settings.churchName || settings.shortName || t("welcome")} />,
+    // Service-time cards and the feast band, as on the reference layout (D-049).
     nextService: () =>
-      service && (
-        <NextService occurrence={service} settings={settings} labels={labels} more={linkIf("/worship/weekly", t("allServices"))} />
+      weekly.length > 0 && (
+        <HomeSection id="service-times" title={t("serviceTimes")} more={linkIf("/worship", t("allServices"))} className="text-center">
+          <ServiceTimes series={weekly} labels={labels} />
+        </HomeSection>
       ),
-    upcomingHolyDays: () =>
-      holyDays.length > 0 && <HolyDays items={holyDays} labels={labels} more={linkIf("/worship/calendar", t("fullCalendar"))} />,
+    upcomingHolyDays: () => (
+      <FeastBand
+        id="holy-days"
+        title={t("feastDays")}
+        items={holyDays}
+        labels={labels}
+        footer={
+          <Link href="/worship/calendar" className="inline-flex min-h-11 items-center font-medium text-cream">
+            {t("fullCalendar")}
+          </Link>
+        }
+      />
+    ),
     latestNotice: () => notice && <LatestNotice announcement={notice} labels={labels} />,
     about: () => hasTeaser(homepage.about) && <Teaser id="about" teaser={homepage.about!} />,
     sundaySchool: () =>

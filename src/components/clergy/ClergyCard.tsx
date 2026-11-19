@@ -4,13 +4,13 @@ import { CmsRichText } from "@/components/richtext/CmsRichText";
 import { mediaSource, publicMedia } from "@/lib/media";
 import type { Clergy } from "@/payload-types";
 
-/** Photo, title and name; the full bio on the Clergy page (spec §5 ClergyCard). */
+/** Photo, name and title, centred (the reference layout's portrait cards, D-049); the full bio on the Clergy page (spec §5 ClergyCard). */
 export function ClergyCard({ person, withBio = false }: { person: Clergy; withBio?: boolean }) {
   const photo = publicMedia(person.photo);
   const source = photo ? mediaSource(photo, 400) : null;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded bg-white shadow-sm">
+    <article className="flex h-full flex-col overflow-hidden rounded-md border border-primary/15 bg-white shadow-sm">
       {photo && source && (
         <Image
           src={source.url}
@@ -22,8 +22,8 @@ export function ClergyCard({ person, withBio = false }: { person: Clergy; withBi
         />
       )}
       <div className="p-4">
-        {person.title && <p className="text-sm font-semibold text-muted">{person.title}</p>}
-        <h3 className="text-h4">{person.name}</h3>
+        <h3 className="text-center text-h4">{person.name}</h3>
+        {person.title && <p className="text-center text-muted">{person.title}</p>}
         {withBio && <CmsRichText data={person.bio} className="mt-3" />}
       </div>
     </article>

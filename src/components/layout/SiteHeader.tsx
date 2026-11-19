@@ -64,7 +64,13 @@ export async function SiteHeader({ data }: { data: LayoutData }) {
             <span className="flex min-w-0 flex-col leading-tight">
               <span className="truncate font-serif text-base font-semibold sm:text-lg">{shortName || fullName}</span>
               {/* The full name on a second line (cut to one line) where the menu is in the drawer; the full menu needs the room from 1360px. */}
-              {shortName && fullName && <span className="hidden max-w-80 truncate text-xs text-cream/85 sm:block nav:hidden">{fullName}</span>}
+              {shortName && fullName && (
+                // Always part of the link's name for screen readers; shown where there is room.
+                <span className="sr-only sm:not-sr-only sm:block sm:max-w-80 sm:truncate sm:text-xs sm:text-cream/85 nav:sr-only">
+                  <span className="sr-only">, </span>
+                  {fullName}
+                </span>
+              )}
             </span>
           </Link>
         )}

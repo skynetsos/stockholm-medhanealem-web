@@ -23,6 +23,9 @@
   },
   "home": {
     "welcome": "Välkommen",
+    "serviceTimes": "Gudstjänsttider",
+    "feastDays": "Högtider och fastor",
+    "serviceSchedule": "Gudstjänstschema",
     "nextService": "Nästa gudstjänst",
     "upcomingHolyDays": "Kommande högtider",
     "latestNotice": "Senaste meddelandet",
@@ -130,6 +133,9 @@
   },
   "sundaySchool": {
     "title": "Söndagsskola",
+    "departments": "Avdelningar",
+    "moreAbout": "Mer om {name}",
+    "registerTitle": "Anmäl ditt barn",
     "leader": "Ansvarig"
   },
   "news": {

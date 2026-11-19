@@ -50,23 +50,27 @@ export default async function VisitPage({ params }: Props) {
       <JsonLd data={churchJsonLd(settings, siteOrigin(), locale)} />
       <PageHeader title={intro?.title || t("title")} hero={intro?.hero} />
       {intro && <RenderBlocks blocks={intro.layout} locale={locale as Locale} />}
-      <div className="mx-auto max-w-site px-gutter py-10">
-        <VisitDetails settings={settings} heading="h2" full />
+      {/* Two columns on wide screens, as on the reference layout's contact page (D-049): how to find and
+          reach us on the left, the message form on the right. The form only with the privacy notice in
+          production (review V-04); the address stays. */}
+      <div className={`mx-auto grid max-w-site gap-10 px-gutter py-10 ${formsOpen(available) ? "lg:grid-cols-2" : ""}`}>
+        <div>
+          <VisitDetails settings={settings} heading="h2" full stacked={formsOpen(available)} />
+        </div>
+        {formsOpen(available) && (
+          <section aria-labelledby="contact-title" className="lg:rounded-md lg:border lg:border-primary/15 lg:bg-white lg:p-6 lg:shadow-sm">
+            <h2 id="contact-title" className="mb-4">
+              {tc("title")}
+            </h2>
+            <InquiryForm
+              form="contact"
+              titleId="contact-title"
+              turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
+              privacyHref={available.includes("/privacy") ? "/privacy" : null}
+            />
+          </section>
+        )}
       </div>
-      {/* The contact form only with the privacy notice in production (review V-04); the address stays. */}
-      {formsOpen(available) && (
-      <section aria-labelledby="contact-title" className="mx-auto max-w-3xl px-gutter py-10">
-        <h2 id="contact-title" className="mb-4">
-          {tc("title")}
-        </h2>
-        <InquiryForm
-          form="contact"
-          titleId="contact-title"
-          turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
-          privacyHref={available.includes("/privacy") ? "/privacy" : null}
-        />
-      </section>
-      )}
     </main>
   );
 }

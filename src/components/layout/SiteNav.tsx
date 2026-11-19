@@ -184,6 +184,10 @@ export function SiteNav({ items, ctas, locales }: Props) {
 
       {/* ── Below 1360px: search + menu button, drawer ─────────────────── */}
       <div className="ml-auto flex items-center gap-1 nav:hidden">
+        {/* The language switcher stays in the bar on tablets; on phones it is the drawer's first row. */}
+        <div className="hidden sm:block">
+          <LocaleSwitcher locales={locales} variant="pill" />
+        </div>
         <Link href="/search" aria-label={t("search")} className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-cream hover:bg-white/10 print:hidden">
           <SearchIcon />
         </Link>
@@ -206,8 +210,10 @@ export function SiteNav({ items, ctas, locales }: Props) {
         hidden={!drawer}
         className="absolute inset-x-0 top-full z-40 max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-cream/20 bg-primary px-gutter pt-4 pb-8 shadow-lg nav:hidden"
       >
-        <LocaleSwitcher locales={locales} variant="pill" />
-        <nav aria-label={t("mainNavigation")} className="mt-3">
+        <div className="mb-3 sm:hidden">
+          <LocaleSwitcher locales={locales} variant="pill" />
+        </div>
+        <nav aria-label={t("mainNavigation")}>
           <ul>
             {items.map((item) => {
               const row = "flex min-h-12 w-full items-center justify-between border-b border-cream/15 py-2 text-left text-base text-cream no-underline";

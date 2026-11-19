@@ -22,7 +22,8 @@ for (const locale of locales) {
 
     // CMS data reaches the page (seeded church name; Swedish falls back to Amharic).
     const name = baseSeed.settings.churchName[locale] ?? baseSeed.settings.churchName.am;
-    await expect(page.locator("header").getByRole("link", { name, exact: true })).toBeVisible();
+    // The header's home link carries the full name (shown or for screen readers; D-049).
+    await expect(page.locator("header").getByRole("link").filter({ hasText: name }).first()).toBeAttached();
 
     // hreflang alternates for the public languages + x-default; Swedish only once it is public (review F-17).
     for (const code of ["am", "en", "x-default"]) {

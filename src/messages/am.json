@@ -23,6 +23,9 @@
   },
   "home": {
     "welcome": "እንኳን ደህና መጡ",
+    "serviceTimes": "የአገልግሎት ሰዓታት",
+    "feastDays": "በዓላትና አጽዋማት",
+    "serviceSchedule": "የአገልግሎት መርሐ ግብር",
     "nextService": "የሚቀጥለው አገልግሎት",
     "upcomingHolyDays": "የሚመጡ በዓላት",
     "latestNotice": "የቅርብ ጊዜ ማስታወቂያ",
@@ -130,6 +133,9 @@
   },
   "sundaySchool": {
     "title": "ሰንበት ትምህርት ቤት",
+    "departments": "ክፍሎች",
+    "moreAbout": "ስለ {name} ተጨማሪ",
+    "registerTitle": "ልጅዎን ያስመዝግቡ",
     "leader": "ኃላፊ"
   },
   "news": {

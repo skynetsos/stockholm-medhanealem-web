@@ -3,7 +3,6 @@ import type { Locale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { RenderBlocks } from "@/components/blocks/RenderBlocks";
-import { LinkCard } from "@/components/pages/LinkCard";
 import { NotFoundContent } from "@/components/pages/NotFoundContent";
 import { PageHeader } from "@/components/pages/PageHeader";
 import { localeAlternates } from "@/i18n/alternates";
@@ -49,21 +48,47 @@ export default async function SundaySchoolPage({ params }: Props) {
     <main id="main">
       <PageHeader title={intro?.title || t("title")} hero={intro?.hero} />
       {intro && <RenderBlocks blocks={intro.layout} locale={locale as Locale} />}
-      {available.includes("/sunday-school/join") && (
-      <p className="mx-auto max-w-site px-gutter pt-10">
-        <Link href="/sunday-school/join" className="inline-flex min-h-11 items-center rounded bg-primary px-6 font-medium text-cream no-underline hover:bg-ink">
-          {tf("sunday_school.title")}
-        </Link>
-      </p>
-      )}
+      {/* Departments as an accordion (the reference layout's age-group list, D-049); each opens to its
+          summary and a link to its page. Native <details>, so it works without JavaScript. */}
       {shown.length > 0 && (
-        <ul className="mx-auto grid max-w-site gap-6 px-gutter py-10 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((d) => (
-            <li key={d.id}>
-              <LinkCard href={`/sunday-school/${d.slug}`} title={d.name} image={d.image} text={d.summary} />
-            </li>
-          ))}
-        </ul>
+        <section aria-labelledby="departments-title" className="mx-auto max-w-4xl px-gutter py-10">
+          <h2 id="departments-title" className="mb-4">
+            {t("departments")}
+          </h2>
+          <ul className="flex flex-col gap-3">
+            {shown.map((d) => (
+              <li key={d.id}>
+                <details className="group rounded-md border border-primary/15 bg-white shadow-sm">
+                  <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 font-serif text-h4 [&::-webkit-details-marker]:hidden">
+                    {d.name}
+                    <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 transition-transform group-open:rotate-180">
+                      <path d="m4 6 4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </summary>
+                  <div className="border-t border-primary/10 px-5 py-4">
+                    {d.summary && <p>{d.summary}</p>}
+                    <p className={d.summary ? "mt-2" : ""}>
+                      <Link href={`/sunday-school/${d.slug}`} className="inline-flex min-h-11 items-center font-medium">
+                        {t("moreAbout", { name: d.name })}
+                      </Link>
+                    </p>
+                  </div>
+                </details>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {/* The registration bar (reference layout), only while the form exists. */}
+      {available.includes("/sunday-school/join") && (
+        <div className="mx-auto max-w-4xl px-gutter pb-10">
+          <div className="on-dark flex flex-col items-start gap-4 rounded-md bg-primary p-6 text-cream sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-serif text-h4 text-cream">{t("registerTitle")}</p>
+            <Link href="/sunday-school/join" className="inline-flex min-h-11 items-center rounded bg-cream px-5 font-medium text-primary no-underline hover:bg-white">
+              {tf("sunday_school.title")}
+            </Link>
+          </div>
+        </div>
       )}
     </main>
   );

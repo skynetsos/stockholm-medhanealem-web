@@ -23,6 +23,9 @@
   },
   "home": {
     "welcome": "Welcome",
+    "serviceTimes": "Service times",
+    "feastDays": "Feasts and holy days",
+    "serviceSchedule": "Service schedule",
     "nextService": "Next service",
     "upcomingHolyDays": "Upcoming holy days",
     "latestNotice": "Latest announcement",
@@ -130,6 +133,9 @@
   },
   "sundaySchool": {
     "title": "Sunday School",
+    "departments": "Departments",
+    "moreAbout": "More about {name}",
+    "registerTitle": "Register your child",
     "leader": "Leader"
   },
   "news": {

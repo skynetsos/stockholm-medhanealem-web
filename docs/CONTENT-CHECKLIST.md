@@ -99,6 +99,8 @@ The site is code-complete for Phases 0–3. Everything below needs a person at t
 27. **Analytics:** switch on cookieless Plausible or not (off now; D-044). If yes, mention it in the privacy policy.
 28. **Hosting and staging:** needed for every open "staging" item and for launch.
 29. **Repository visibility:** the code repository on GitHub is public. Should it be private until launch (review F-23)? Biruk decides.
+30. **New menu (D-049, after the reference layout):** check the Amharic menu and footer labels (ስለ እኛ, ታሪካችን, የተዋሕዶ ታሪክ, ነገረ መለኮት, የሕንፃ ፕሮጀክት, ሰበካ ጉባኤ, እምነታችን, መጻሕፍት ቅዱሳት, አዕማደ ምሥጢር, አገልግሎት ክፍሎች, አገልግሎቶች, ዝግጅቶች, ግንኙነት, ፎቶዎች, ስጦታ, ያለንበት ቦታ). Name the pill (now "ስጦታ / Give"; e.g. "መባዕ"?). Pages the menu is ready for, once written: Tewahedo history, theology, building project (text and drawings), leadership, holy scriptures, the mysteries, the seven sacraments.
+31. **Lists for the new cards (D-049):** the papers to bring for a baptism and the requirements before a wedding, if they should be shown; current figures (members, clergy, children) if a figures strip is wanted on "Our Story".
 
 > **Open items carried from Phase 1:** the WordPress import is done (D-040), and the church's own text has replaced most of it (D-045). The committee content review is item 4 above (sign-off table at the end).
 

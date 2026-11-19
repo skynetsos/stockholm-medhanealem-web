@@ -30,7 +30,7 @@ export default async function ClergyPage({ params }: Props) {
       <PageHeader title={t("title")} />
       <div className="mx-auto max-w-site px-gutter py-12">
         {clergy.length > 0 && (
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {clergy.map((person) => (
               <li key={person.id}>
                 <ClergyCard person={person} withBio />

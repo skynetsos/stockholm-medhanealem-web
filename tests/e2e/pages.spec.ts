@@ -10,7 +10,7 @@ test("a published page is server-rendered in the visitor's language", async ({ r
   expect(response.status()).toBe(200);
   const html = await response.text();
   expect(html).toMatch(/<html[^>]*lang="en"/);
-  expect(html).toContain("<h1>Test page</h1>");
+  expect(html).toMatch(/<h1[^>]*>Test page<\/h1>/);
 });
 
 test("a section landing page lives at the section address", async ({ page }) => {
@@ -102,6 +102,8 @@ for (const path of ["/en/worship/monthly-feasts", "/en/worship/livestream"]) {
 // Sunday School, News and Media (D-020).
 test("Sunday School, News and Media pages with content", async ({ page }) => {
   await page.goto("/en/sunday-school");
+  // Departments are an accordion (D-049): open the row, then follow its link.
+  await page.locator("summary", { hasText: /Mezmur|መዝሙር/ }).click();
   await page.getByRole("link", { name: /Mezmur|መዝሙር/ }).click();
   await expect(page.getByText("Choir practice every week.")).toBeVisible();
 
@@ -159,8 +161,9 @@ test("/visit shows the address and loads nothing from map services", async ({ pa
   page.on("request", (r) => requests.push(r.url()));
   await page.goto("/en/visit");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(en.visit.title);
-  await expect(page.locator("address")).toContainText("Bandhagen");
-  await expect(page.getByRole("link", { name: en.home.openMap })).toHaveAttribute("href", /openstreetmap\.org|^https:/);
+  // Scoped to the page content: the footer repeats the address and map link (D-049).
+  await expect(page.locator("main address")).toContainText("Bandhagen");
+  await expect(page.getByRole("main").getByRole("link", { name: en.home.openMap })).toHaveAttribute("href", /openstreetmap\.org|^https:/);
   expect(requests.filter((url) => !url.startsWith("http://localhost"))).toEqual([]);
 });
 
