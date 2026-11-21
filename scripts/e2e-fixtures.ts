@@ -75,8 +75,10 @@ const teaching = async (category: string, slug: string, title: string) => {
 };
 await teaching("fasting", "e2e-fasting", "Fasting test teaching");
 await teaching("christening", "e2e-baptism-guidance", "Baptism guidance test");
-// Fitihat guidance, so /sacraments/fitihat and its inquiry form exist (marriage stays without: 404 test).
+// Fitihat and marriage guidance, so their pages and request forms exist (D-050). A sacrament page without
+// guidance is a 404: tests/unit/cms-routing.test.ts.
 await teaching("fitihat", "e2e-fitihat-guidance", "Fitihat guidance test");
+await teaching("marriage", "e2e-marriage-guidance", "Marriage guidance test");
 
 // A weekly service (Sunday 08:00–11:30 Stockholm) for the worship pages, calendar and iCal feed.
 await payload.create({

@@ -72,6 +72,7 @@ export const baseSeed = {
           { path: "/sacraments/marriage", label: { am: "ጋብቻ", en: "Holy Matrimony", sv: "Vigsel" } },
           { path: "/our-faith/offerings", label: { am: "መባዕ", en: "Offerings", sv: "Offergåvor" } },
           { path: "/sacraments/fitihat", label: { am: "ፍትሐት", en: "Memorial (Fitihat)", sv: "Minnesbön (Fitihat)" } },
+          { path: "/sacraments/prayer-request", label: { am: "የጸሎት ጥያቄ", en: "Prayer Request", sv: "Böneförfrågan" } },
         ],
       },
       {

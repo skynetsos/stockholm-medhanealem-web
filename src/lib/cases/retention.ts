@@ -34,7 +34,9 @@ export const RETENTION_POLICIES: Record<CaseCollection, Policy> = {
     defaultMonths: 24,
     cleared: {
       applicant: { name: null, email: null, phone: null, parishRelationship: null },
-      candidate: { fullName: null, dateOfBirth: null },
+      candidate: { fullName: null, dateOfBirth: null, baptismalName: null, gender: null, placeOfBirth: null },
+      family: { fatherName: null, motherName: null, godparentName: null },
+      priestName: null,
       guardian: { name: null, relationship: null, consentConfirmed: null },
       preferredPeriod: null,
       notes: null,
@@ -48,7 +50,24 @@ export const RETENTION_POLICIES: Record<CaseCollection, Policy> = {
     setting: "retentionMonthsInquiries",
     defaultMonths: 12,
     // `interests` is a list stored in its own table: only an empty list clears it (null leaves it as it was).
-    cleared: { name: null, email: null, phone: null, message: null, childName: null, childAge: null, interests: [], availability: null },
+    cleared: {
+      name: null,
+      email: null,
+      phone: null,
+      message: null,
+      childName: null,
+      childAge: null,
+      interests: [],
+      availability: null,
+      // D-050: wedding, memorial and prayer request details (a prayer request's subject is sensitive).
+      partnerName: null,
+      partnerPhone: null,
+      deceasedName: null,
+      dateOfPassing: null,
+      preferredDate: null,
+      requestType: null,
+      priest: null,
+    },
   },
 };
 

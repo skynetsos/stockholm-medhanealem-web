@@ -8,19 +8,23 @@ import { createRateLimiter } from "../../src/lib/forms/security";
 
 let payload: Payload;
 
+// The reference layout's two groups (D-050): the person to be baptised and the sacrament, the contact person.
 const form = {
-  applicantName: "Form Applicant",
-  applicantEmail: "form@example.org",
-  applicantPhone: "070 123 45 67",
-  parishRelationship: "regular",
   candidateName: "Form Child",
   dateOfBirth: "2025-06-01",
-  category: "infant",
-  guardianName: "Form Applicant",
+  preferredPeriod: "December 2026",
+  baptismalName: "Welde Mariam",
+  gender: "male",
+  placeOfBirth: "Stockholm",
+  fatherName: "Form Father",
+  motherName: "Form Applicant",
+  godparentName: "Form Godparent",
+  priestName: "",
+  applicantName: "Form Applicant",
+  applicantPhone: "070 123 45 67",
+  applicantEmail: "form@example.org",
   guardianRelationship: "Mother",
   guardianConsent: "on",
-  preferredPeriod: "December 2026",
-  notes: "",
   privacyAccepted: "on",
 };
 const passTurnstile = async () => true;
@@ -55,9 +59,19 @@ describe("baptism request form submission", () => {
     expect(result).toMatchObject({ status: "success", reference: expect.stringMatching(/^BAP-\d{4}-\d{4,}$/) });
     expect(await byReference(result)).toMatchObject({
       status: "new",
-      applicant: { name: "Form Applicant", email: "form@example.org", phone: "070 123 45 67", preferredLocale: "en", parishRelationship: "regular" },
-      // Stockholm midnight on 1 June 2025 (summer time) is 22:00 UTC the day before.
-      candidate: { fullName: "Form Child", dateOfBirth: "2025-05-31T22:00:00.000Z", category: "infant" },
+      applicant: { name: "Form Applicant", email: "form@example.org", phone: "070 123 45 67", preferredLocale: "en" },
+      // Stockholm midnight on 1 June 2025 (summer time) is 22:00 UTC the day before. Child: worked out from the date.
+      candidate: {
+        fullName: "Form Child",
+        dateOfBirth: "2025-05-31T22:00:00.000Z",
+        category: "child",
+        baptismalName: "Welde Mariam",
+        gender: "male",
+        placeOfBirth: "Stockholm",
+      },
+      family: { fatherName: "Form Father", motherName: "Form Applicant", godparentName: "Form Godparent" },
+      priestName: null,
+      // Under 18: the contact person is the consenting parent.
       guardian: { name: "Form Applicant", relationship: "Mother", consentConfirmed: true },
       preferredPeriod: "December 2026",
       privacyAccepted: true,
@@ -66,7 +80,7 @@ describe("baptism request form submission", () => {
   });
 
   it("stores an adult without guardian details, even if some were typed before switching", async () => {
-    const result = await submitBaptismRequest(payload, { ...form, category: "adult", guardianConsent: "" }, context("bap-ip-adult"), {
+    const result = await submitBaptismRequest(payload, { ...form, dateOfBirth: "1990-01-01", guardianConsent: "" }, context("bap-ip-adult"), {
       verify: passTurnstile,
       limiter: freshLimiter(),
     });

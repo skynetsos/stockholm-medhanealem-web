@@ -4,7 +4,7 @@ import { parseContact } from "../../src/lib/forms/contact-schema";
 import { clientIp, createRateLimiter, hashIp, verifyTurnstile } from "../../src/lib/forms/security";
 import { formatReference } from "../../src/lib/reference";
 
-const valid = { name: "Abebe", email: "abebe@example.org", phone: "", message: "Hello, when is Kidase?", privacyAccepted: "on" };
+const valid = { name: "Abebe", email: "abebe@example.org", message: "Hello, when is Kidase?", privacyAccepted: "on" };
 
 describe("contact form validation", () => {
   it("accepts a valid message and trims it", () => {
@@ -13,13 +13,14 @@ describe("contact form validation", () => {
   });
 
   it("returns one error code per field", () => {
-    const result = parseContact({ name: "", email: "not-an-email", phone: "abc", message: "short", privacyAccepted: undefined });
+    const result = parseContact({ name: "", email: "not-an-email", message: "short", privacyAccepted: undefined });
     expect(result).toEqual({
       ok: false,
-      errors: { name: "required", email: "email", phone: "phone", message: "messageShort", privacyAccepted: "privacy" },
+      errors: { name: "required", email: "email", message: "messageShort", privacyAccepted: "privacy" },
     });
     expect(parseContact({ ...valid, message: "x".repeat(4001) })).toMatchObject({ ok: false, errors: { message: "tooLong" } });
-    expect(parseContact({ ...valid, phone: "+46 8 123 45 67" }).ok).toBe(true);
+    // Name, email and message only, as on the reference layout (D-050): a phone sent anyway is ignored.
+    expect(parseContact({ ...valid, phone: "abc" })).toEqual({ ok: true, data: { ...valid, privacyAccepted: true } });
   });
 });
 

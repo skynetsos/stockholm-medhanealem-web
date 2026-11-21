@@ -195,46 +195,34 @@
       "rateLimited": "Too many messages from your connection. Please try again in 10 minutes.",
       "server": "Something went wrong. Please try again later or email the office.",
       "childAge": "Enter an age from 3 to 18.",
-      "interests": "Choose at least one way to help."
+      "interests": "Choose at least one way to help.",
+      "date": "Enter a valid date.",
+      "datePast": "This date has already passed.",
+      "dateFuture": "The date can't be in the future.",
+      "choice": "Please choose one."
     }
   },
   "baptismForm": {
     "title": "Request a baptism",
-    "intro": "Three short steps. The office will contact you after you send the request.",
+    "intro": "Two short steps: your details, then a check before you send. The office will contact you after you send the request.",
     "noScript": "This form needs JavaScript. You can also contact the office:",
     "contactOffice": "Contact the office",
     "progress": "Progress",
     "stepOf": "Step {current} of {total}: {step}",
     "steps": {
-      "applicant": "About you",
-      "candidate": "Who is to be baptised",
+      "details": "Details",
       "review": "Review and send"
     },
     "applicantName": "Your full name",
     "applicantEmail": "Email",
-    "applicantPhone": "Phone (optional)",
-    "parishRelationship": "Your connection to the parish",
-    "relationships": {
-      "member": "Member",
-      "regular": "I attend regularly",
-      "new": "New to the parish"
-    },
+    "applicantPhone": "Phone",
     "candidateName": "Full name of the person to be baptised",
     "dateOfBirth": "Date of birth",
-    "category": "The person to be baptised is",
-    "categories": {
-      "infant": "An infant",
-      "child": "A child",
-      "adult": "An adult"
-    },
-    "guardianTitle": "Parent or guardian",
-    "guardianName": "Name of the parent or guardian",
-    "guardianRelationship": "Relationship to the child",
+    "guardianRelationship": "Your relationship to the child",
     "guardianRelationshipHint": "For example mother, father or guardian.",
     "guardianConsent": "As parent or guardian, I agree to this request.",
-    "preferredPeriod": "Preferred time (optional)",
+    "preferredPeriod": "Preferred date of baptism (optional)",
     "preferredPeriodHint": "For example “December 2026”.",
-    "notes": "Anything else we should know (optional)",
     "reviewIntro": "Please check your details before sending.",
     "change": "Change",
     "privacy": "I agree that the church stores these details to handle this request.",
@@ -262,7 +250,24 @@
       "rateLimited": "Too many requests from your connection. Please try again in an hour.",
       "closed": "Requests are paused at the moment. Please contact the office.",
       "server": "Something went wrong. Please try again later or email the office."
-    }
+    },
+    "groups": {
+      "candidate": "The person to be baptised and the baptism",
+      "contact": "Contact details (so the church can reach you)"
+    },
+    "baptismalName": "Baptismal (Christian) name (optional)",
+    "baptismalNameHint": "If it has already been chosen.",
+    "gender": "Gender",
+    "genders": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "select": "Select…",
+    "placeOfBirth": "Place of birth",
+    "fatherName": "Father's full name",
+    "motherName": "Mother's full name",
+    "godparentName": "Godparent's name (optional)",
+    "priestName": "Priest you would like (optional)"
   },
   "baptismEmails": {
     "greeting": "Hello,",
@@ -298,16 +303,32 @@
       "submit": "Send registration"
     },
     "marriage": {
-      "title": "Ask about marriage",
-      "intro": "Tell us about your plans and the time you have in mind. The office will contact you; a message does not book a date.",
-      "message": "Your message",
-      "submit": "Send message"
+      "title": "Request a wedding",
+      "intro": "Tell us about the couple and the date you have in mind. The office will contact you; a request does not book a date.",
+      "message": "Anything else we should know? (optional)",
+      "submit": "Send request",
+      "steps": {
+        "couple": "The couple",
+        "wedding": "Wedding details"
+      },
+      "name": "Groom's full name",
+      "partnerName": "Bride's full name",
+      "phone": "Groom's phone",
+      "partnerPhone": "Bride's phone",
+      "email": "Email for our reply",
+      "preferredDate": "Preferred wedding date (optional)"
     },
     "funeral": {
-      "title": "Contact us about fitihat",
-      "intro": "Write to us about a prayer for the departed. The office will contact you as soon as possible; if it is urgent, please also call the office.",
-      "message": "Your message",
-      "submit": "Send message"
+      "title": "Request a memorial service (fitihat)",
+      "intro": "Tell us about the departed and the date you would like. The office will contact you as soon as possible; if it is urgent, please also call the office.",
+      "message": "Additional notes (optional)",
+      "submit": "Send request",
+      "name": "Your name",
+      "phone": "Your phone",
+      "email": "Your email",
+      "deceasedName": "Name of the departed",
+      "dateOfPassing": "Date of passing (optional)",
+      "preferredDate": "Date you would like for the service (optional)"
     },
     "volunteer": {
       "title": "Volunteer",
@@ -327,7 +348,36 @@
       "message": "Anything else we should know? (optional)",
       "submit": "Send"
     },
-    "privacySundaySchool": "I agree that the church stores my message, my contact details and my child's name and age to answer me."
+    "privacySundaySchool": "I agree that the church stores my message, my contact details and my child's name and age to answer me.",
+    "progress": "Progress",
+    "stepOf": "Step {current} of {total}: {step}",
+    "next": "Next",
+    "back": "Back",
+    "select": "Select…",
+    "pastoral": {
+      "title": "Prayer request",
+      "intro": "Ask a priest to pray for you, visit you or meet you. The office passes your request on.",
+      "choosePriest": "1. Choose a priest (optional)",
+      "anyPriest": "Any priest",
+      "yourDetails": "2. Your details",
+      "name": "Full name",
+      "phone": "Phone",
+      "email": "Email (optional)",
+      "requestType": "What is your request about?",
+      "types": {
+        "confession": "Confession",
+        "sick": "Prayer for the sick",
+        "home_blessing": "Home visit or holy water blessing",
+        "comfort": "Comfort and counselling",
+        "blessing": "A blessing (wedding, graduation …)",
+        "appointment": "An appointment with a priest",
+        "other": "Something else"
+      },
+      "message": "Details (optional)",
+      "urgent": "For urgent needs, call {phone}.",
+      "privacy": "I agree that the church stores my request and contact details to answer me. Only the office and the clergy can read it.",
+      "submit": "Send prayer request"
+    }
   },
   "pages": {
     "inThisSection": "In this section"

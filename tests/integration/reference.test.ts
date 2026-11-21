@@ -15,18 +15,15 @@ let payload: Payload;
 const N = 20;
 
 const form = {
-  applicantName: "Concurrent Applicant",
-  applicantEmail: "concurrent@example.org",
-  applicantPhone: "",
-  parishRelationship: "member",
   candidateName: "Concurrent Candidate",
   dateOfBirth: "2000-01-01",
-  category: "adult",
-  guardianName: "",
-  guardianRelationship: "",
-  guardianConsent: "",
-  preferredPeriod: "",
-  notes: "",
+  gender: "female",
+  placeOfBirth: "Addis Ababa",
+  fatherName: "Concurrent Father",
+  motherName: "Concurrent Mother",
+  applicantName: "Concurrent Applicant",
+  applicantPhone: "070 000 00 00",
+  applicantEmail: "concurrent@example.org",
   privacyAccepted: "on",
 };
 

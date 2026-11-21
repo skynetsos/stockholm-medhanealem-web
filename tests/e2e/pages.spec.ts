@@ -62,7 +62,8 @@ test("the baptism page shows what to prepare, the notice and the request button"
   await expect(page.getByText("የክርስትና አባት/እናት")).toBeVisible();
 });
 
-for (const path of ["/en/our-faith/unknown", "/en/our-faith/e2e-baptism-guidance", "/en/sacraments/marriage"]) {
+// A sacrament page without guidance is a 404 too (tests/unit/cms-routing.test.ts; the fixtures now have all three).
+for (const path of ["/en/our-faith/unknown", "/en/our-faith/e2e-baptism-guidance"]) {
   test(`${path} without content gets the server-rendered 404`, async ({ request }) => {
     const response = await request.get(path);
     expect(response.status()).toBe(404);
@@ -167,8 +168,9 @@ test("/visit shows the address and loads nothing from map services", async ({ pa
   expect(requests.filter((url) => !url.startsWith("http://localhost"))).toEqual([]);
 });
 
-// Baptism request form (Phase 2 task 4): the whole journey in a browser, with the reference at the end.
-test("a baptism request goes through the three steps and gets a reference", async ({ page, request }) => {
+// Baptism request form (Phase 2 task 4; D-050): the reference layout's two groups, then our review
+// step with the privacy consent, and the reference at the end.
+test("a baptism request goes through details and review and gets a reference", async ({ page, request }) => {
   test.setTimeout(60_000);
   const startedAt = Date.now() - 1000;
   const f = en.baptismForm;
@@ -177,37 +179,48 @@ test("a baptism request goes through the three steps and gets a reference", asyn
   await expect(page).toHaveURL(/\/en\/sacraments\/baptism\/request$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(f.title);
 
-  // Step 1: errors first, then the applicant.
+  // Details: errors first, in the form's order (the group about the child, then the contact person).
   await page.getByRole("button", { name: f.next }).click();
   const summary = page.locator("#baptism-errors");
   await expect(summary).toBeFocused();
   await expect(summary.getByRole("link")).toHaveText([
+    `${f.candidateName}: ${f.errors.required}`,
+    `${f.dateOfBirth}: ${f.errors.required}`,
+    `${f.gender}: ${f.errors.choice}`,
+    `${f.placeOfBirth}: ${f.errors.required}`,
+    `${f.fatherName}: ${f.errors.required}`,
+    `${f.motherName}: ${f.errors.required}`,
     `${f.applicantName}: ${f.errors.required}`,
+    `${f.applicantPhone}: ${f.errors.required}`,
     `${f.applicantEmail}: ${f.errors.required}`,
-    `${f.parishRelationship}: ${f.errors.choice}`,
   ]);
-  await page.getByLabel(f.applicantName).fill("E2E Applicant");
-  await page.getByLabel(f.applicantEmail).fill("e2e-applicant@example.org");
-  await page.getByLabel(f.relationships.regular).check();
-  await page.getByRole("button", { name: f.next }).click();
+  await expect(page.getByRole("group", { name: f.groups.candidate })).toBeVisible();
+  await expect(page.getByRole("group", { name: f.groups.contact })).toBeVisible();
 
-  // Step 2: the guardian appears for a child, not for an adult.
-  await expect(page.getByRole("heading", { level: 2, name: new RegExp(f.steps.candidate) })).toBeFocused();
-  await page.getByLabel(f.categories.adult).check();
-  await expect(page.getByLabel(f.guardianName)).toBeHidden();
-  await page.getByLabel(f.categories.infant).check();
-  await expect(page.getByLabel(f.guardianName)).toBeVisible();
-  await page.getByLabel(f.candidateName).fill("E2E Infant");
+  // The parent's relationship and consent appear for a child, not for an adult.
+  await page.getByLabel(f.dateOfBirth).fill("1990-01-01");
+  await expect(page.getByLabel(f.guardianRelationship)).toBeHidden();
   await page.getByLabel(f.dateOfBirth).fill("2026-05-02");
-  await page.getByLabel(f.guardianName).fill("E2E Applicant");
+  await expect(page.getByLabel(f.guardianRelationship)).toBeVisible();
+  await page.getByLabel(f.candidateName).fill("E2E Infant");
+  await page.getByLabel(f.preferredPeriod).fill("December 2026");
+  await page.getByLabel(f.baptismalName).fill("Welde Mikael");
+  await page.getByLabel(f.gender).selectOption("male");
+  await page.getByLabel(f.placeOfBirth).fill("Stockholm");
+  await page.getByLabel(f.fatherName).fill("E2E Applicant");
+  await page.getByLabel(f.motherName).fill("E2E Mother");
+  await page.getByLabel(f.applicantName).fill("E2E Applicant");
+  await page.getByLabel(f.applicantPhone).fill("070 123 45 67");
+  await page.getByLabel(f.applicantEmail).fill("e2e-applicant@example.org");
   await page.getByLabel(f.guardianRelationship).fill("Father");
   await page.getByLabel(f.guardianConsent).check();
-  await page.getByLabel(f.preferredPeriod).fill("December 2026");
   await page.getByRole("button", { name: f.next }).click();
 
-  // Step 3: review, go back to change something, then consent and send.
-  const review = page.getByRole("region", { name: f.steps.candidate });
+  // Review, go back to change something, then consent and send.
+  await expect(page.getByRole("heading", { level: 2, name: new RegExp(f.steps.review) })).toBeFocused();
+  const review = page.getByRole("region", { name: f.groups.candidate });
   await expect(review).toContainText("E2E Infant");
+  await expect(review).toContainText("Welde Mikael");
   await expect(review).toContainText(/2 May 2026|May 2, 2026/);
   await review.getByRole("button", { name: new RegExp(f.change) }).click();
   await page.getByLabel(f.candidateName).fill("E2E Infant Changed");
@@ -269,13 +282,58 @@ test("someone offers to volunteer", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText(/INQ-\d{4}-\d+/, { timeout: 20_000 });
 });
 
-test("the fitihat page has a contact form under the guidance; join is not a department", async ({ page, request }) => {
+test("the fitihat page has the memorial request form under the guidance (D-050)", async ({ page }) => {
+  const f = en.inquiryForms.funeral;
   await page.goto("/en/sacraments/fitihat");
   await expect(page.getByRole("heading", { level: 2, name: "Fitihat guidance test" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: en.inquiryForms.funeral.title })).toBeVisible();
-  await expect(page.getByRole("button", { name: en.inquiryForms.funeral.submit })).toBeVisible();
-  // Marriage has no guidance in the fixtures: no page, so no form either.
-  expect((await request.get("/en/sacraments/marriage")).status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 2, name: f.title })).toBeVisible();
+  // The reference layout's fields, in order.
+  const form = page.locator('form[aria-labelledby="inquiry-funeral-title"]');
+  await expect(form.locator("label:visible").filter({ hasNotText: en.contact.honeypot })).toHaveText([f.name, f.phone, f.email, f.deceasedName, f.dateOfPassing, f.preferredDate, f.message, new RegExp(en.contact.privacy.slice(0, 20))]);
+  await expect(page.getByRole("button", { name: f.submit })).toBeVisible();
+});
+
+// Wedding request (D-050): two steps as on the reference layout; "Next" checks the first step.
+test("a wedding request goes through two steps and gets a reference", async ({ page }) => {
+  test.setTimeout(60_000);
+  const f = en.inquiryForms.marriage;
+  await page.goto("/en/sacraments/marriage");
+  const form = page.locator('form[aria-labelledby="inquiry-marriage-title"]');
+  await form.getByRole("button", { name: en.inquiryForms.next }).click();
+  await expect(page.locator("#inquiry-marriage-errors")).toBeFocused();
+  await expect(page.locator("#inquiry-marriage-errors").getByRole("link")).toHaveText([
+    `${f.name}: ${en.contact.errors.required}`,
+    `${f.partnerName}: ${en.contact.errors.required}`,
+    `${f.phone}: ${en.contact.errors.required}`,
+    `${f.partnerPhone}: ${en.contact.errors.required}`,
+  ]);
+  await page.getByLabel(f.name).fill("E2E Groom");
+  await page.getByLabel(f.partnerName).fill("E2E Bride");
+  await page.getByLabel(f.phone).fill("070 111 22 33");
+  await page.getByLabel(f.partnerPhone).fill("070 444 55 66");
+  await form.getByRole("button", { name: en.inquiryForms.next }).click();
+  await expect(form.getByRole("heading", { name: new RegExp(f.steps.wedding) })).toBeFocused();
+  await expect(page.getByLabel(f.name)).toBeHidden();
+  await page.getByLabel(f.email).fill("e2e-couple@example.org");
+  await page.getByLabel(en.contact.privacy).check();
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
+  await form.getByRole("button", { name: f.submit }).click();
+  await expect(page.getByRole("status")).toContainText(/INQ-\d{4}-\d+/, { timeout: 20_000 });
+});
+
+// Prayer request (D-050): its own page under Services; phone required, email optional.
+test("a prayer request is sent from its page", async ({ page }) => {
+  test.setTimeout(60_000);
+  const f = en.inquiryForms.pastoral;
+  await page.goto("/en/sacraments/prayer-request");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(f.title);
+  await page.getByLabel(f.name).fill("E2E Prayer");
+  await page.getByLabel(f.phone).fill("070 111 22 33");
+  await page.getByLabel(f.requestType).selectOption("sick");
+  await page.getByLabel(f.privacy).check();
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });
+  await page.getByRole("button", { name: f.submit }).click();
+  await expect(page.getByRole("status")).toContainText(/INQ-\d{4}-\d+/, { timeout: 20_000 });
 });
 
 // Contact form (task 6): sends, shows the reference, and the office gets an email without the message.

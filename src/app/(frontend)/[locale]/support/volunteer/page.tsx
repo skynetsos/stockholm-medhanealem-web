@@ -18,7 +18,7 @@ export default async function VolunteerPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale as Locale); // validated by the [locale] layout
   return (
-    <main id="main" className="mx-auto max-w-3xl px-gutter py-12">
+    <main id="main">
       <InquirySection form="volunteer" heading="h1" />
     </main>
   );

@@ -181,3 +181,31 @@ as on Denver.
   - e2e for dropdowns: keyboard, hover and click, and the mobile accordion;
   - axe on every template;
   - updated nav and footer tests.
+
+---
+
+## 5. Forms (D-050, 2026-11-21)
+
+Biruk asked for every public form Denver has, with the same field groups and field order. The
+private-request rules stay the same for all of them:
+- a server action with zod checks;
+- Turnstile and the shared per-address rate limit;
+- the honeypot field;
+- the admin list, the office email (reference and link only) and the audit log;
+- retention archiving;
+- in production, forms open only once the privacy notice is published.
+
+| Denver form | Ours | Status | Differences from Denver |
+|---|---|---|---|
+| Baptism (`/baptism`) | `/sacraments/baptism/request` | **rebuilt** | Denver's two groups in Denver's field order, then our **review and privacy step**, then the **reference number** (BAP-YYYY-NNNN). Infant, child or adult is worked out from the date of birth. Extra fields: for anyone under 18, the parent's relationship and consent (spec §2.12). Email is **required**, because the acknowledgement and the decision are emailed. Date of birth uses a date picker. |
+| Holy Matrimony (`/wedding`) | form on `/sacraments/marriage` | **rebuilt** | Two steps as on Denver. Step 1: groom, bride and both phones. Step 2: Denver's step 2 was not captured (it would have meant typing into their form), so ours holds the email for our reply, the preferred date, notes and the privacy consent. |
+| Memorial & Funeral (`/memorial`) | form on `/sacraments/fitihat` | **rebuilt** | Same fields and order: name, phone, email, the departed, date of passing, requested service date, notes. |
+| Prayer Request (`/prayer-request`) | `/sacraments/prayer-request` (Services menu) | **new** | Optional priest cards (only when clergy profiles are published), then name, phone, optional email, request type and details. A line with the office phone for urgent needs appears once a phone is entered. Denver's second tab, "Book appointment", is one of the request types. |
+| Contact Us (`/contact`) | `/visit` | **aligned** | Name, email, message (the optional phone field is gone). The details sit in the left column as before; there is no embedded map (spec §8). |
+| Hall Rental (`/hall-rental`) | — | **Not applicable for Stockholm** | We know of no hall the church rents out. Spec Phase 4 is "only if approved". |
+| Newsletter Signup (`/newsletter`) | — | **Not applicable for Stockholm (for now)** | Spec Phase 3 task 7 is optional and needs committee approval and double opt-in. |
+| Donate pledge (`/donate`) | — | **Not applicable for Stockholm (for now)** | No card or pledge handling. Phase 4 means Swish/Bankgiro from Site settings, and the church hasn't decided on showing payment details (GAP D3). |
+| Become a Member and Member Login (`/become-member`, `/member-login`) | — | **Not applicable for Stockholm (for now)** | Phase 4 membership with a separate legal review. There are no public accounts; the only sign-in is the staff admin. |
+
+Our own forms that Denver doesn't have stay as they are: the **Sunday School registration** and
+**volunteer** forms.

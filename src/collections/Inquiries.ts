@@ -1,8 +1,8 @@
-import type { CollectionBeforeChangeHook, CollectionConfig } from "payload";
+import type { CollectionBeforeChangeHook, CollectionConfig, Validate } from "payload";
 
 import { hasRoleAccess, systemOnly } from "../access";
-import { requiredUnlessArchived } from "../fields/archived";
-import { stockholmDateTime } from "../fields/stockholmDate";
+import { isArchived, requiredUnlessArchived } from "../fields/archived";
+import { stockholmDateTime, stockholmDay } from "../fields/stockholmDate";
 import { locales } from "../i18n/locales";
 import { dataRequestEndpoints } from "../lib/cases/data-requests";
 import { logCaseChanges } from "../lib/cases/hooks";
@@ -11,7 +11,7 @@ import { nextReference } from "../lib/reference";
 /** Spec §2.14 inquiry types. Phase 1 uses "contact" (the Visit page form); the others come in Phase 2. */
 export const INQUIRY_TYPES = [
   { value: "contact", label: "Contact form" },
-  { value: "pastoral", label: "Pastoral" },
+  { value: "pastoral", label: "Prayer request" },
   { value: "marriage", label: "Marriage" },
   { value: "sunday_school", label: "Sunday School" },
   { value: "volunteer", label: "Volunteer" },
@@ -21,6 +21,13 @@ export const INQUIRY_TYPES = [
 const setReference: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
   if (operation === "create" && !data.reference) data.reference = await nextReference(req.payload, "INQ", new Date(), req);
   return data;
+};
+
+/** Prayer requests may come with a phone number only (D-050); every other form needs an email. */
+const emailRequired: Validate = (value, { data }) => {
+  const d = data as { type?: string; phone?: string | null } | undefined;
+  if (isArchived(data) || value) return true;
+  return d?.type === "pastoral" && d.phone ? true : "Required.";
 };
 
 /** What the visitor sent: shown to staff, never changed through the admin or API. */
@@ -89,7 +96,7 @@ export const Inquiries: CollectionConfig = {
       type: "row",
       fields: [
         { name: "name", type: "text", validate: requiredUnlessArchived, ...submitted, admin: { ...submitted.admin, width: "34%" } },
-        { name: "email", type: "email", validate: requiredUnlessArchived, ...submitted, admin: { ...submitted.admin, width: "33%" } },
+        { name: "email", type: "email", validate: emailRequired, ...submitted, admin: { ...submitted.admin, width: "33%" } },
         { name: "phone", type: "text", ...submitted, admin: { ...submitted.admin, width: "33%" } },
       ],
     },
@@ -111,6 +118,80 @@ export const Inquiries: CollectionConfig = {
         { name: "childAge", type: "number", min: 0, max: 25, ...submitted },
         { name: "interests", type: "text", hasMany: true, ...submitted },
         { name: "availability", type: "textarea", ...submitted },
+      ],
+    },
+    // D-050: the wedding, memorial and prayer request forms after the reference layout.
+    {
+      type: "collapsible",
+      label: "Wedding details",
+      admin: { condition: (data) => data?.type === "marriage" },
+      fields: [
+        {
+          type: "row",
+          fields: [
+            {
+              name: "partnerName",
+              type: "text",
+              label: "Bride's full name",
+              ...submitted,
+              admin: { ...submitted.admin, width: "50%", description: "The groom is the name above." },
+            },
+            { name: "partnerPhone", type: "text", label: "Bride's phone", ...submitted, admin: { ...submitted.admin, width: "50%" } },
+          ],
+        },
+      ],
+    },
+    {
+      type: "collapsible",
+      label: "Memorial (fitihat) details",
+      admin: { condition: (data) => data?.type === "funeral" },
+      fields: [
+        {
+          type: "row",
+          fields: [
+            { name: "deceasedName", type: "text", label: "Name of the departed", ...submitted, admin: { ...submitted.admin, width: "50%" } },
+            stockholmDay({ name: "dateOfPassing", label: "Date of passing", ...submitted, admin: { ...submitted.admin, width: "50%" } }),
+          ],
+        },
+      ],
+    },
+    stockholmDay({
+      name: "preferredDate",
+      label: "Date asked for",
+      ...submitted,
+      admin: {
+        ...submitted.admin,
+        condition: (data) => ["marriage", "funeral"].includes(data?.type),
+        description: "Wedding date or date of the memorial service, as asked.",
+      },
+    }),
+    {
+      type: "collapsible",
+      label: "Prayer request",
+      admin: { condition: (data) => data?.type === "pastoral" },
+      fields: [
+        {
+          type: "row",
+          fields: [
+            {
+              name: "requestType",
+              type: "select",
+              label: "About",
+              options: [
+                { label: "Confession", value: "confession" },
+                { label: "Prayer for the sick", value: "sick" },
+                { label: "Home visit / holy water", value: "home_blessing" },
+                { label: "Comfort and counselling", value: "comfort" },
+                { label: "A blessing", value: "blessing" },
+                { label: "Appointment with a priest", value: "appointment" },
+                { label: "Something else", value: "other" },
+              ],
+              ...submitted,
+              admin: { ...submitted.admin, width: "50%" },
+            },
+            { name: "priest", type: "relationship", relationTo: "clergy", label: "Priest asked for", ...submitted, admin: { ...submitted.admin, width: "50%" } },
+          ],
+        },
       ],
     },
     // "Age" column in the list (days since the case was sent); nothing in the edit view.

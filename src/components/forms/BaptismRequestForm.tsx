@@ -11,26 +11,27 @@ import {
   type BaptismErrors,
   type BaptismField,
   type BaptismStep,
-  CANDIDATE_CATEGORIES,
+  categoryFor,
   FIELD_STEP,
   firstStepWithError,
-  PARISH_RELATIONSHIPS,
+  GENDERS,
   parseBaptismStep,
 } from "@/lib/forms/baptism-schema";
 
-import { Checkbox, ErrorSummary, Input, RadioGroup, Textarea } from "./Fields";
+import { Checkbox, ErrorSummary, Input, Select } from "./Fields";
 import { Turnstile } from "./Turnstile";
 
 const id = (field: BaptismField) => `bap-${field}`;
-/** Where the error summary sends the visitor: radio groups to their first option. */
-const target = (field: BaptismField) =>
-  field === "parishRelationship" ? `${id(field)}-${PARISH_RELATIONSHIPS[0]}` : field === "category" ? `${id(field)}-${CANDIDATE_CATEGORIES[0]}` : id(field);
+const target = id;
+const isDay = (v: string | undefined) => /^\d{4}-\d{2}-\d{2}$/.test(v ?? "");
 const CHECKBOXES: BaptismField[] = ["guardianConsent", "privacyAccepted"];
 
 type Values = Record<string, string>;
 
 /**
- * Baptism request form (spec Phase 2 task 4): Applicant → Candidate & guardian → Review & consent.
+ * Baptism request form (spec Phase 2 task 4; D-050): one details step in two groups, as on the
+ * reference layout (the person to be baptised and the sacrament; the contact person), then our
+ * review step with the privacy consent; the reference number on success.
  * All fields stay in one form (later steps hidden), so nothing is lost when going back. "Next"
  * checks the step with the same zod schema the server uses; the server checks everything again
  * and, if it refuses, the form opens the first step with an error. Focus moves to the step heading
@@ -48,11 +49,10 @@ export function BaptismRequestForm({
   const t = useTranslations("baptismForm");
   const locale = useLocale();
   const [state, dispatch, pending] = useActionState(sendBaptismRequest, null);
-  const [step, setStep] = useState<BaptismStep>("applicant");
+  const [step, setStep] = useState<BaptismStep>("details");
   const [errors, setErrors] = useState<BaptismErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [relationship, setRelationship] = useState("");
-  const [category, setCategory] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [review, setReview] = useState<Values>({});
   const [active, setActive] = useState(false);
   const form = useRef<HTMLFormElement>(null);
@@ -106,7 +106,7 @@ export function BaptismRequestForm({
     return false;
   };
 
-  // Enter in a field submits the form: on the first two steps that means "Next".
+  // Enter in a field submits the form: on the details step that means "Next".
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!checkStep()) return;
@@ -129,7 +129,8 @@ export function BaptismRequestForm({
   const summaryItems = (Object.keys(errors) as BaptismField[])
     .filter((field) => FIELD_STEP[field] === step)
     .map((field) => ({ id: target(field), text: CHECKBOXES.includes(field) ? error(field)! : `${label(field)}: ${error(field)}` }));
-  const needsGuardian = category === "infant" || category === "child";
+  // Under 18 the contact person is the parent or guardian (relationship and consent).
+  const needsGuardian = isDay(dateOfBirth) && categoryFor(dateOfBirth) !== "adult";
   const today = new Date().toISOString().slice(0, 10);
 
   return (
@@ -155,58 +156,61 @@ export function BaptismRequestForm({
         <input id="bap-website" name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
       </div>
 
-      <div hidden={step !== "applicant"} className="mt-6 flex flex-col gap-5">
-        <Input id={id("applicantName")} name="applicantName" label={t("applicantName")} autoComplete="name" required maxLength={BAPTISM_LIMITS.name} error={error("applicantName")} />
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Input id={id("applicantEmail")} name="applicantEmail" type="email" label={t("applicantEmail")} autoComplete="email" required maxLength={BAPTISM_LIMITS.email} error={error("applicantEmail")} />
-          <Input id={id("applicantPhone")} name="applicantPhone" type="tel" label={t("applicantPhone")} autoComplete="tel" maxLength={BAPTISM_LIMITS.phone} error={error("applicantPhone")} />
-        </div>
-        <RadioGroup
-          id={id("parishRelationship")}
-          name="parishRelationship"
-          label={t("parishRelationship")}
-          options={PARISH_RELATIONSHIPS.map((value) => ({ value, label: t(`relationships.${value}`) }))}
-          value={relationship}
-          onChange={setRelationship}
-          error={error("parishRelationship")}
-        />
-      </div>
-
-      <div hidden={step !== "candidate"} className="mt-6 flex flex-col gap-5">
-        <Input id={id("candidateName")} name="candidateName" label={t("candidateName")} required maxLength={BAPTISM_LIMITS.name} error={error("candidateName")} />
-        <Input id={id("dateOfBirth")} name="dateOfBirth" type="date" label={t("dateOfBirth")} required min="1900-01-01" max={today} error={error("dateOfBirth")} className="sm:max-w-xs" />
-        <RadioGroup
-          id={id("category")}
-          name="category"
-          label={t("category")}
-          options={CANDIDATE_CATEGORIES.map((value) => ({ value, label: t(`categories.${value}`) }))}
-          value={category}
-          onChange={setCategory}
-          error={error("category")}
-        />
-        <fieldset hidden={!needsGuardian} className="flex flex-col gap-5 border-s-4 border-primary ps-4">
-          <legend className="mb-2 text-h4 font-semibold">{t("guardianTitle")}</legend>
-          <Input id={id("guardianName")} name="guardianName" label={t("guardianName")} required={needsGuardian} maxLength={BAPTISM_LIMITS.name} error={error("guardianName")} />
+      <div hidden={step !== "details"} className="mt-6 flex flex-col gap-6">
+        <fieldset className="flex flex-col gap-5 rounded-md border border-primary/15 bg-white p-5 shadow-sm sm:p-6">
+          <legend className="float-left mb-1 w-full border-s-4 border-primary ps-3 font-serif text-h4">{t("groups.candidate")}</legend>
+          <Input id={id("candidateName")} name="candidateName" label={t("candidateName")} required maxLength={BAPTISM_LIMITS.name} error={error("candidateName")} />
           <Input
-            id={id("guardianRelationship")}
-            name="guardianRelationship"
-            label={t("guardianRelationship")}
-            hint={t("guardianRelationshipHint")}
-            required={needsGuardian}
-            maxLength={BAPTISM_LIMITS.relationship}
-            error={error("guardianRelationship")}
+            id={id("dateOfBirth")}
+            name="dateOfBirth"
+            type="date"
+            label={t("dateOfBirth")}
+            required
+            min="1900-01-01"
+            max={today}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            error={error("dateOfBirth")}
+            className="sm:max-w-xs"
           />
-          <Checkbox id={id("guardianConsent")} name="guardianConsent" label={t("guardianConsent")} required={needsGuardian} error={error("guardianConsent")} />
+          <Input id={id("preferredPeriod")} name="preferredPeriod" label={t("preferredPeriod")} hint={t("preferredPeriodHint")} maxLength={BAPTISM_LIMITS.period} error={error("preferredPeriod")} />
+          <Input id={id("baptismalName")} name="baptismalName" label={t("baptismalName")} hint={t("baptismalNameHint")} maxLength={BAPTISM_LIMITS.name} error={error("baptismalName")} />
+          <Select
+            id={id("gender")}
+            name="gender"
+            label={t("gender")}
+            required
+            placeholder={t("select")}
+            options={GENDERS.map((value) => ({ value, label: t(`genders.${value}`) }))}
+            error={error("gender")}
+            className="sm:max-w-xs"
+          />
+          <Input id={id("placeOfBirth")} name="placeOfBirth" label={t("placeOfBirth")} required maxLength={BAPTISM_LIMITS.place} error={error("placeOfBirth")} />
+          <Input id={id("fatherName")} name="fatherName" label={t("fatherName")} required maxLength={BAPTISM_LIMITS.name} error={error("fatherName")} />
+          <Input id={id("motherName")} name="motherName" label={t("motherName")} required maxLength={BAPTISM_LIMITS.name} error={error("motherName")} />
+          <Input id={id("godparentName")} name="godparentName" label={t("godparentName")} maxLength={BAPTISM_LIMITS.name} error={error("godparentName")} />
+          <Input id={id("priestName")} name="priestName" label={t("priestName")} maxLength={BAPTISM_LIMITS.name} error={error("priestName")} />
         </fieldset>
-        <Input
-          id={id("preferredPeriod")}
-          name="preferredPeriod"
-          label={t("preferredPeriod")}
-          hint={t("preferredPeriodHint")}
-          maxLength={BAPTISM_LIMITS.period}
-          error={error("preferredPeriod")}
-        />
-        <Textarea id={id("notes")} name="notes" label={t("notes")} rows={4} maxLength={BAPTISM_LIMITS.notes} error={error("notes")} />
+
+        <fieldset className="flex flex-col gap-5 rounded-md border border-primary/15 bg-white p-5 shadow-sm sm:p-6">
+          <legend className="float-left mb-1 w-full border-s-4 border-primary ps-3 font-serif text-h4">{t("groups.contact")}</legend>
+          <Input id={id("applicantName")} name="applicantName" label={t("applicantName")} autoComplete="name" required maxLength={BAPTISM_LIMITS.name} error={error("applicantName")} />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Input id={id("applicantPhone")} name="applicantPhone" type="tel" label={t("applicantPhone")} autoComplete="tel" required maxLength={BAPTISM_LIMITS.phone} error={error("applicantPhone")} />
+            <Input id={id("applicantEmail")} name="applicantEmail" type="email" label={t("applicantEmail")} autoComplete="email" required maxLength={BAPTISM_LIMITS.email} error={error("applicantEmail")} />
+          </div>
+          <div hidden={!needsGuardian} className="flex flex-col gap-5">
+            <Input
+              id={id("guardianRelationship")}
+              name="guardianRelationship"
+              label={t("guardianRelationship")}
+              hint={t("guardianRelationshipHint")}
+              required={needsGuardian}
+              maxLength={BAPTISM_LIMITS.relationship}
+              error={error("guardianRelationship")}
+            />
+            <Checkbox id={id("guardianConsent")} name="guardianConsent" label={t("guardianConsent")} required={needsGuardian} error={error("guardianConsent")} />
+          </div>
+        </fieldset>
       </div>
 
       <div hidden={step !== "review"} className="mt-6 flex flex-col gap-5">
@@ -248,40 +252,43 @@ function Review({ values, onChange }: { values: Values; onChange: (step: Baptism
   // Dates as elsewhere on the site; the day typed is a calendar day, so format it at UTC midnight.
   const date = (v: string) =>
     /^\d{4}-\d{2}-\d{2}$/.test(v) ? format.dateTime(new Date(`${v}T00:00:00Z`), { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : v;
-  const adult = values.category === "adult";
-  const rows: Record<"applicant" | "candidate", [string, string | undefined][]> = {
-    applicant: [
-      [t("applicantName"), values.applicantName],
-      [t("applicantEmail"), values.applicantEmail],
-      [t("applicantPhone"), values.applicantPhone],
-      [t("parishRelationship"), values.parishRelationship && t(`relationships.${values.parishRelationship as "member"}`)],
-    ],
+  const adult = isDay(values.dateOfBirth) && categoryFor(values.dateOfBirth) === "adult";
+  const rows: Record<"candidate" | "contact", [string, string | undefined][]> = {
     candidate: [
       [t("candidateName"), values.candidateName],
       [t("dateOfBirth"), values.dateOfBirth && date(values.dateOfBirth)],
-      [t("category"), values.category && t(`categories.${values.category as "adult"}`)],
-      [t("guardianName"), adult ? undefined : values.guardianName],
-      [t("guardianRelationship"), adult ? undefined : values.guardianRelationship],
       [t("preferredPeriod"), values.preferredPeriod],
-      [t("notes"), values.notes],
+      [t("baptismalName"), values.baptismalName],
+      [t("gender"), values.gender && t(`genders.${values.gender as "male"}`)],
+      [t("placeOfBirth"), values.placeOfBirth],
+      [t("fatherName"), values.fatherName],
+      [t("motherName"), values.motherName],
+      [t("godparentName"), values.godparentName],
+      [t("priestName"), values.priestName],
+    ],
+    contact: [
+      [t("applicantName"), values.applicantName],
+      [t("applicantPhone"), values.applicantPhone],
+      [t("applicantEmail"), values.applicantEmail],
+      [t("guardianRelationship"), adult ? undefined : values.guardianRelationship],
     ],
   };
 
   return (
     <>
-      {(["applicant", "candidate"] as const).map((step) => (
-        <section key={step} aria-labelledby={`review-${step}`} className="rounded bg-white p-5 shadow-sm">
+      {(["candidate", "contact"] as const).map((group) => (
+        <section key={group} aria-labelledby={`review-${group}`} className="rounded bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-4">
-            <h3 id={`review-${step}`} className="text-h4">
-              {t(`steps.${step}`)}
+            <h3 id={`review-${group}`} className="text-h4">
+              {t(`groups.${group}`)}
             </h3>
-            <button type="button" onClick={() => onChange(step)} className="min-h-11 px-2 font-medium text-primary underline">
+            <button type="button" onClick={() => onChange("details")} className="min-h-11 px-2 font-medium text-primary underline">
               {t("change")}
-              <span className="sr-only">: {t(`steps.${step}`)}</span>
+              <span className="sr-only">: {t(`groups.${group}`)}</span>
             </button>
           </div>
           <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-            {rows[step]
+            {rows[group]
               .filter(([, value]) => value?.trim())
               .map(([term, value]) => (
                 <div key={term} className="contents">

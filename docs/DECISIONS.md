@@ -8,6 +8,34 @@
 
 ## Resolved decisions
 
+### D-050 — Public forms after denvermedhanealem.org (2026-11-21; requested by Biruk)
+- **Requirement:** every public form Denver has, with the same field groups and order, through our existing request pattern. Mapping, differences and the forms not applicable for Stockholm are in `docs/reference/denver/GAP.md` §5.
+- **Baptism request:**
+  - Denver's two groups. First, the person to be baptised and the sacrament: name, date of birth, preferred date, baptismal name, gender, place of birth, father, mother, godparent, priest. Second, the contact person: name, phone, email.
+  - Then our review and privacy step and the reference number.
+  - Category (infant under 1, child under 18, adult) is worked out from the date of birth instead of asked.
+  - For anyone under 18 the contact person gives their relationship and consent (spec §2.12); they are stored as the guardian.
+  - Email stays required (the case emails); phone becomes required.
+  - "Connection to the parish" and the free notes are no longer asked; older cases keep them.
+- **Inquiries:**
+  - The wedding request has two steps, without JavaScript one page: groom, bride, both phones; then email, preferred date, notes.
+  - The memorial (fitihat) request: name, phone, email, the departed, date of passing, requested date, notes.
+  - The **prayer request** is new: type `pastoral`, page `/sacraments/prayer-request` in the Services menu. It has an optional published priest, a request type, and email optional (the only form where it is).
+  - The contact form drops the phone field.
+  - The marriage and fitihat messages are now optional.
+- **Data:** one migration adds the columns.
+  - Baptism: baptismal name, gender, place of birth, father, mother, godparent, priest asked for.
+  - Inquiries: bride's name and phone, the departed, date of passing, requested date, request type, priest. The migration also carries the home-section order change from D-049.
+  - Retention archiving and erasure clear all the new fields; export includes them.
+  - Emails still carry only the reference and a link.
+- **Privacy:**
+  - The baptism form now collects more personal data, and prayer requests are special-category data (GDPR Art. 9, religious and possibly health).
+  - The privacy notice must list these fields before production (CONTENT-CHECKLIST item 32).
+  - Only office staff, clergy and super admins can read requests, as before.
+- **Not built:** hall rental, newsletter, donate pledge, membership and login (GAP §5).
+- **Labels:** the Amharic and Swedish form labels are drafts for review.
+- **Page text from Denver (Part B):** not copied. `docs/reference/denver/TEXT-MAP.md` lists each Denver page with its URL, its subject in our own words, and whether the church has written text on it. Copying Denver's text word for word into the repository would republish another church's work (the repository is public). The church should ask Denver for permission, and Denver can send the text directly.
+
 ### D-049 — Navigation and page layout after denvermedhanealem.org (2026-11-19; requested and mapping approved by Biruk)
 - **Requirement:** the menu and page structure follow denvermedhanealem.org as closely as possible; our content, colours, logo and fonts stay; nothing of Denver's text, images, clergy, times or contacts is used. Capture and mapping: `docs/reference/denver/STRUCTURE.md` and `GAP.md` (screenshots local only, gitignored). Biruk approved the mapping and proposals D1–D9 as written.
 - **Menu:** Home · Our Church ▾ · Our Faith ▾ · Ministries ▾ · Services ▾ · Events ▾ · Connect ▾ · [Give]. Dropdown headings have no page of their own (the link is optional in the Navigation global); a sub-item whose page has no content is hidden, and a dropdown with none left disappears (`src/lib/menu.ts`). Items for pages the church hasn't written yet (Tewahedo history, theology, building project, leadership, holy scriptures, mysteries, the seven sacraments, announcements, livestream, photos) are already in the menu and appear on their own once published.

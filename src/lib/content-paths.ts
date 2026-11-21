@@ -14,6 +14,10 @@ export const BAPTISM_REQUEST_PATH = "/sacraments/baptism/request";
 export const baptismRequestPaths = (paths: readonly string[], requestsOpen: boolean | null | undefined) =>
   requestsOpen && paths.includes("/sacraments/baptism") ? [BAPTISM_REQUEST_PATH] : [];
 
+/** The prayer request form (D-050). */
+const PRAYER_REQUEST_SEGMENT = "prayer-request";
+export const PRAYER_REQUEST_PATH = `/sacraments/${PRAYER_REQUEST_SEGMENT}`;
+
 /** Sunday School registration (Phase 2 task 7); "join" can't be a department's address. */
 export const SUNDAY_SCHOOL_JOIN_PATH = "/sunday-school/join";
 export const RESERVED_DEPARTMENT_SLUGS = ["join"] as const;
@@ -42,7 +46,8 @@ export function isContentGatedPath(path: string): boolean {
     case "news":
       return true;
     case "sacraments":
-      return !second || SACRAMENT_PAGES.some((s) => s.page === second);
+      // The prayer request is a form page: it exists only while forms are open (D-050).
+      return !second || second === PRAYER_REQUEST_SEGMENT || SACRAMENT_PAGES.some((s) => s.page === second);
     case "support":
       // The volunteer form exists only while forms are open (review V-01).
       return second === "volunteer";
@@ -94,7 +99,7 @@ export function sectionPaths({
   // The registration form (Phase 2 task 7) belongs to the Sunday School section.
   if (hasSundaySchoolIntro || shownDepartments.length) paths.push("/sunday-school", ...(formsOpen ? [SUNDAY_SCHOOL_JOIN_PATH] : []));
   // The volunteer form (/support/volunteer) is a page of its own too (V-01).
-  if (formsOpen) paths.push("/support/volunteer");
+  if (formsOpen) paths.push("/support/volunteer", PRAYER_REQUEST_PATH);
   paths.push(...shownDepartments.map((d) => `/sunday-school/${d.slug}`));
   if (posts.length) paths.push("/news", ...posts.map((p) => `/news/${p.slug}`));
   const shownGalleries = galleries.filter((g) => g.hasPublicImage);

@@ -15,7 +15,7 @@ import { clientIp, hashIp } from "@/lib/forms/security";
 export type InquiryState = null | (InquiryResult & { values?: Record<string, string | string[]> });
 
 /**
- * The inquiry forms (contact, Sunday School, marriage, fitihat, volunteer; D-033). The only way the
+ * The inquiry forms (contact, Sunday School, marriage, fitihat, prayer request, volunteer; D-033, D-050). The only way the
  * public can create an inquiry. The form type comes from a hidden field and must be a public form.
  */
 export async function sendInquiry(_previous: InquiryState, form: FormData): Promise<InquiryState> {
@@ -35,7 +35,22 @@ export async function sendInquiry(_previous: InquiryState, form: FormData): Prom
     turnstileToken: typeof token === "string" ? token : null,
   });
   if (result.status === "success") return result;
-  const keep = ["name", "email", "phone", "message", "childName", "childAge", "availability"] as const;
+  const keep = [
+    "name",
+    "email",
+    "phone",
+    "message",
+    "childName",
+    "childAge",
+    "availability",
+    "partnerName",
+    "partnerPhone",
+    "preferredDate",
+    "deceasedName",
+    "dateOfPassing",
+    "requestType",
+    "priest",
+  ] as const;
   return {
     ...result,
     values: {

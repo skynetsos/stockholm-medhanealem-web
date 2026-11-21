@@ -15,7 +15,7 @@ import { type Actor, as, createActor } from "./helpers";
 
 const MAILPIT = process.env.MAILPIT_API_URL ?? "http://localhost:8025";
 const STOCKHOLM = "Europe/Stockholm" as const;
-const PERSONAL = ["Mail Applicant", "mail-applicant@example.org", "Mail Child", "Private note for the office"];
+const PERSONAL = ["Mail Applicant", "mail-applicant@example.org", "Mail Child", "Private place of birth", "Mail Mother", "070 765 43 21"];
 
 let payload: Payload;
 let office: Actor;
@@ -23,18 +23,21 @@ let clergy: Actor;
 const startedAt = Date.now() - 1000;
 
 const form = {
-  applicantName: "Mail Applicant",
-  applicantEmail: "mail-applicant@example.org",
-  applicantPhone: "",
-  parishRelationship: "member",
   candidateName: "Mail Child",
   dateOfBirth: "2025-01-10",
-  category: "child",
-  guardianName: "Mail Applicant",
+  preferredPeriod: "",
+  baptismalName: "",
+  gender: "female",
+  placeOfBirth: "Private place of birth",
+  fatherName: "Mail Applicant",
+  motherName: "Mail Mother",
+  godparentName: "",
+  priestName: "",
+  applicantName: "Mail Applicant",
+  applicantPhone: "070 765 43 21",
+  applicantEmail: "mail-applicant@example.org",
   guardianRelationship: "Father",
   guardianConsent: "on",
-  preferredPeriod: "",
-  notes: "Private note for the office",
   privacyAccepted: "on",
 };
 

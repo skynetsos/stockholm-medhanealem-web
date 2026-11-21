@@ -195,46 +195,34 @@
       "rateLimited": "För många meddelanden från din anslutning. Försök igen om 10 minuter.",
       "server": "Något gick fel. Försök igen senare eller mejla expeditionen.",
       "childAge": "Ange en ålder från 3 till 18.",
-      "interests": "Välj minst ett sätt att hjälpa till."
+      "interests": "Välj minst ett sätt att hjälpa till.",
+      "date": "Ange ett giltigt datum.",
+      "datePast": "Datumet har redan passerat.",
+      "dateFuture": "Datumet kan inte ligga i framtiden.",
+      "choice": "Välj ett alternativ."
     }
   },
   "baptismForm": {
     "title": "Ansök om dop",
-    "intro": "Tre korta steg. Kansliet kontaktar dig när du har skickat förfrågan.",
+    "intro": "Två korta steg: dina uppgifter, sedan en kontroll innan du skickar. Kansliet kontaktar dig när du har skickat förfrågan.",
     "noScript": "Formuläret kräver JavaScript. Du kan också kontakta kansliet:",
     "contactOffice": "Kontakta kansliet",
     "progress": "Förlopp",
     "stepOf": "Steg {current} av {total}: {step}",
     "steps": {
-      "applicant": "Om dig",
-      "candidate": "Den som ska döpas",
+      "details": "Uppgifter",
       "review": "Granska och skicka"
     },
     "applicantName": "Ditt fullständiga namn",
     "applicantEmail": "E-post",
-    "applicantPhone": "Telefon (valfritt)",
-    "parishRelationship": "Din koppling till församlingen",
-    "relationships": {
-      "member": "Medlem",
-      "regular": "Jag kommer regelbundet",
-      "new": "Ny i församlingen"
-    },
+    "applicantPhone": "Telefon",
     "candidateName": "Fullständigt namn på den som ska döpas",
     "dateOfBirth": "Födelsedatum",
-    "category": "Den som ska döpas är",
-    "categories": {
-      "infant": "Ett spädbarn",
-      "child": "Ett barn",
-      "adult": "En vuxen"
-    },
-    "guardianTitle": "Förälder eller vårdnadshavare",
-    "guardianName": "Förälderns eller vårdnadshavarens namn",
-    "guardianRelationship": "Relation till barnet",
+    "guardianRelationship": "Din relation till barnet",
     "guardianRelationshipHint": "Till exempel mamma, pappa eller vårdnadshavare.",
     "guardianConsent": "Som förälder eller vårdnadshavare godkänner jag förfrågan.",
-    "preferredPeriod": "Önskad tid (valfritt)",
+    "preferredPeriod": "Önskat dopdatum (valfritt)",
     "preferredPeriodHint": "Till exempel ”december 2026”.",
-    "notes": "Något mer vi bör veta (valfritt)",
     "reviewIntro": "Kontrollera dina uppgifter innan du skickar.",
     "change": "Ändra",
     "privacy": "Jag godkänner att kyrkan sparar uppgifterna för att hantera förfrågan.",
@@ -262,7 +250,24 @@
       "rateLimited": "För många förfrågningar från din anslutning. Försök igen om en timme.",
       "closed": "Förfrågningar är pausade just nu. Kontakta kansliet.",
       "server": "Något gick fel. Försök igen senare eller mejla kansliet."
-    }
+    },
+    "groups": {
+      "candidate": "Den som ska döpas och dopet",
+      "contact": "Kontaktuppgifter (så att kyrkan kan nå dig)"
+    },
+    "baptismalName": "Dopnamn (valfritt)",
+    "baptismalNameHint": "Om det redan är valt.",
+    "gender": "Kön",
+    "genders": {
+      "male": "Manligt",
+      "female": "Kvinnligt"
+    },
+    "select": "Välj…",
+    "placeOfBirth": "Födelseort",
+    "fatherName": "Faderns fullständiga namn",
+    "motherName": "Moderns fullständiga namn",
+    "godparentName": "Gudförälderns namn (valfritt)",
+    "priestName": "Önskad präst (valfritt)"
   },
   "baptismEmails": {
     "greeting": "Hej,",
@@ -298,16 +303,32 @@
       "submit": "Skicka anmälan"
     },
     "marriage": {
-      "title": "Fråga om vigsel",
-      "intro": "Berätta om era planer och vilken tid ni tänker er. Kansliet kontaktar er; ett meddelande bokar inget datum.",
-      "message": "Ditt meddelande",
-      "submit": "Skicka meddelande"
+      "title": "Förfrågan om vigsel",
+      "intro": "Berätta om paret och vilket datum ni tänker er. Kansliet kontaktar er; en förfrågan bokar inget datum.",
+      "message": "Något mer vi bör veta? (valfritt)",
+      "submit": "Skicka förfrågan",
+      "steps": {
+        "couple": "Paret",
+        "wedding": "Bröllopet"
+      },
+      "name": "Brudgummens fullständiga namn",
+      "partnerName": "Brudens fullständiga namn",
+      "phone": "Brudgummens telefon",
+      "partnerPhone": "Brudens telefon",
+      "email": "E-post för vårt svar",
+      "preferredDate": "Önskat bröllopsdatum (valfritt)"
     },
     "funeral": {
-      "title": "Kontakta oss om fitihat",
-      "intro": "Skriv till oss om bön för en avliden. Kansliet kontaktar dig så snart som möjligt; om det är brådskande, ring också kansliet.",
-      "message": "Ditt meddelande",
-      "submit": "Skicka meddelande"
+      "title": "Förfrågan om minnesbön (fitihat)",
+      "intro": "Berätta om den avlidne och vilket datum du önskar. Kansliet kontaktar dig så snart som möjligt; om det är brådskande, ring också kansliet.",
+      "message": "Övrigt (valfritt)",
+      "submit": "Skicka förfrågan",
+      "name": "Ditt namn",
+      "phone": "Din telefon",
+      "email": "Din e-post",
+      "deceasedName": "Den avlidnes namn",
+      "dateOfPassing": "Dödsdatum (valfritt)",
+      "preferredDate": "Önskat datum för bönen (valfritt)"
     },
     "volunteer": {
       "title": "Bli volontär",
@@ -327,7 +348,36 @@
       "message": "Något mer vi bör veta? (valfritt)",
       "submit": "Skicka"
     },
-    "privacySundaySchool": "Jag godkänner att kyrkan sparar mitt meddelande, mina kontaktuppgifter och mitt barns namn och ålder för att svara mig."
+    "privacySundaySchool": "Jag godkänner att kyrkan sparar mitt meddelande, mina kontaktuppgifter och mitt barns namn och ålder för att svara mig.",
+    "progress": "Förlopp",
+    "stepOf": "Steg {current} av {total}: {step}",
+    "next": "Nästa",
+    "back": "Tillbaka",
+    "select": "Välj…",
+    "pastoral": {
+      "title": "Böneförfrågan",
+      "intro": "Be en präst att be för dig, besöka dig eller träffa dig. Kansliet för vidare din förfrågan.",
+      "choosePriest": "1. Välj en präst (valfritt)",
+      "anyPriest": "Vilken präst som helst",
+      "yourDetails": "2. Dina uppgifter",
+      "name": "Fullständigt namn",
+      "phone": "Telefon",
+      "email": "E-post (valfritt)",
+      "requestType": "Vad gäller din förfrågan?",
+      "types": {
+        "confession": "Bikt",
+        "sick": "Förbön för sjuka",
+        "home_blessing": "Hembesök eller välsignelse med vigvatten",
+        "comfort": "Tröst och samtal",
+        "blessing": "Välsignelse (bröllop, examen …)",
+        "appointment": "Ett möte med en präst",
+        "other": "Något annat"
+      },
+      "message": "Mer information (valfritt)",
+      "urgent": "Vid brådskande behov, ring {phone}.",
+      "privacy": "Jag godkänner att kyrkan sparar min förfrågan och mina kontaktuppgifter för att svara mig. Bara kansliet och prästerna kan läsa den.",
+      "submit": "Skicka böneförfrågan"
+    }
   },
   "pages": {
     "inThisSection": "I detta avsnitt"

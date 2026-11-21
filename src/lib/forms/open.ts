@@ -9,4 +9,4 @@ export function formsOpen(available: readonly string[] | ReadonlySet<string>): b
 }
 
 /** The pages that are a form and nothing else: they exist only while forms are open. */
-export const FORM_PAGES = ["/sunday-school/join", "/support/volunteer"] as const;
+export const FORM_PAGES = ["/sunday-school/join", "/support/volunteer", "/sacraments/prayer-request"] as const;

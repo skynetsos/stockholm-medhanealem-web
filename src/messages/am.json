@@ -195,46 +195,34 @@
       "rateLimited": "ከግንኙነትዎ ብዙ መልእክቶች ተልከዋል። እባክዎ ከ10 ደቂቃ በኋላ እንደገና ይሞክሩ።",
       "server": "ችግር ተፈጥሯል። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለጽ/ቤቱ ኢሜይል ይላኩ።",
       "childAge": "ከ3 እስከ 18 ያለ ዕድሜ ያስገቡ።",
-      "interests": "ቢያንስ አንድ የአገልግሎት ዘርፍ ይምረጡ።"
+      "interests": "ቢያንስ አንድ የአገልግሎት ዘርፍ ይምረጡ።",
+      "date": "ትክክለኛ ቀን ያስገቡ።",
+      "datePast": "ይህ ቀን አልፏል።",
+      "dateFuture": "ቀኑ ወደፊት ሊሆን አይችልም።",
+      "choice": "እባክዎ አንዱን ይምረጡ።"
     }
   },
   "baptismForm": {
     "title": "የክርስትና ጥያቄ",
-    "intro": "ሦስት አጭር ደረጃዎች። ጥያቄውን ከላኩ በኋላ ቢሮው ያገኝዎታል።",
+    "intro": "ሁለት አጭር ደረጃዎች፦ መረጃዎን ይሙሉ፣ ከዚያ አረጋግጠው ይላኩ። ጥያቄውን ከላኩ በኋላ ቢሮው ያገኝዎታል።",
     "noScript": "ይህ ቅጽ JavaScript ያስፈልገዋል። ቢሮውንም ማግኘት ይችላሉ፦",
     "contactOffice": "ቢሮውን ያግኙ",
     "progress": "ሂደት",
     "stepOf": "ደረጃ {current} ከ{total}፦ {step}",
     "steps": {
-      "applicant": "ስለ እርስዎ",
-      "candidate": "የሚጠመቀው ሰው",
+      "details": "መረጃ",
       "review": "አረጋግጠው ይላኩ"
     },
     "applicantName": "ሙሉ ስምዎ",
     "applicantEmail": "ኢሜይል",
-    "applicantPhone": "ስልክ (አማራጭ)",
-    "parishRelationship": "ከደብሩ ጋር ያለዎት ግንኙነት",
-    "relationships": {
-      "member": "አባል",
-      "regular": "በመደበኛነት እመጣለሁ",
-      "new": "ለደብሩ አዲስ ነኝ"
-    },
+    "applicantPhone": "ስልክ",
     "candidateName": "የሚጠመቀው ሰው ሙሉ ስም",
     "dateOfBirth": "የትውልድ ቀን",
-    "category": "የሚጠመቀው ሰው",
-    "categories": {
-      "infant": "ሕፃን",
-      "child": "ልጅ",
-      "adult": "አዋቂ"
-    },
-    "guardianTitle": "ወላጅ ወይም አሳዳጊ",
-    "guardianName": "የወላጅ ወይም የአሳዳጊ ስም",
-    "guardianRelationship": "ከልጁ ጋር ያለው ዝምድና",
+    "guardianRelationship": "ከልጁ ጋር ያለዎት ዝምድና",
     "guardianRelationshipHint": "ለምሳሌ እናት፣ አባት ወይም አሳዳጊ።",
     "guardianConsent": "እንደ ወላጅ ወይም አሳዳጊ በዚህ ጥያቄ እስማማለሁ።",
-    "preferredPeriod": "የሚመርጡት ጊዜ (አማራጭ)",
+    "preferredPeriod": "የሚመርጡት የጥምቀት ቀን (አማራጭ)",
     "preferredPeriodHint": "ለምሳሌ «ታኅሣሥ 2019»።",
-    "notes": "ልናውቀው የሚገባ ሌላ ነገር (አማራጭ)",
     "reviewIntro": "ከመላክዎ በፊት መረጃዎን ያረጋግጡ።",
     "change": "ይቀይሩ",
     "privacy": "ቤተ ክርስቲያኗ ይህን ጥያቄ ለማስተናገድ እነዚህን መረጃዎች እንድታስቀምጥ እስማማለሁ።",
@@ -262,7 +250,24 @@
       "rateLimited": "ከግንኙነትዎ ብዙ ጥያቄዎች ተልከዋል። እባክዎ ከአንድ ሰዓት በኋላ እንደገና ይሞክሩ።",
       "closed": "ጥያቄዎች ለጊዜው ቆመዋል። እባክዎ ቢሮውን ያግኙ።",
       "server": "ችግር ተፈጥሯል። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለቢሮው ኢሜይል ይላኩ።"
-    }
+    },
+    "groups": {
+      "candidate": "የሚጠመቀው ሰውና የጥምቀቱ መረጃ",
+      "contact": "የእርስዎ አድራሻ (ቤተ ክርስቲያን እንድታገኝዎ)"
+    },
+    "baptismalName": "የክርስትና ስም (አማራጭ)",
+    "baptismalNameHint": "አስቀድሞ ከተመረጠ።",
+    "gender": "ጾታ",
+    "genders": {
+      "male": "ወንድ",
+      "female": "ሴት"
+    },
+    "select": "ይምረጡ…",
+    "placeOfBirth": "የትውልድ ቦታ",
+    "fatherName": "የአባት ሙሉ ስም",
+    "motherName": "የእናት ሙሉ ስም",
+    "godparentName": "የክርስትና አባት ወይም እናት ስም (አማራጭ)",
+    "priestName": "የሚፈልጉት ካህን (አማራጭ)"
   },
   "baptismEmails": {
     "greeting": "ሰላም፣",
@@ -298,16 +303,32 @@
       "submit": "ምዝገባውን ላክ"
     },
     "marriage": {
-      "title": "ስለ ጋብቻ ይጠይቁ",
-      "intro": "ስለ ዕቅድዎና ስለሚያስቡት ጊዜ ይንገሩን። ቢሮው ያገኝዎታል፤ መልእክት መላክ ቀን አያስይዝም።",
-      "message": "መልእክትዎ",
-      "submit": "መልእክቱን ላክ"
+      "title": "የጋብቻ ጥያቄ",
+      "intro": "ስለ ተጋቢዎቹና ስለሚያስቡት ቀን ይንገሩን። ቢሮው ያገኝዎታል፤ ጥያቄ መላክ ቀን አያስይዝም።",
+      "message": "ሌላ ማወቅ ያለብን ነገር አለ? (አማራጭ)",
+      "submit": "ጥያቄውን ላክ",
+      "steps": {
+        "couple": "ተጋቢዎች",
+        "wedding": "የሠርጉ መረጃ"
+      },
+      "name": "የሙሽራው ሙሉ ስም",
+      "partnerName": "የሙሽሪት ሙሉ ስም",
+      "phone": "የሙሽራው ስልክ",
+      "partnerPhone": "የሙሽሪት ስልክ",
+      "email": "መልስ የምንልክበት ኢሜይል",
+      "preferredDate": "የሚመርጡት የሠርግ ቀን (አማራጭ)"
     },
     "funeral": {
-      "title": "ስለ ፍትሐት ያግኙን",
-      "intro": "ስለ ፍትሐት ጸሎት ይጻፉልን። ቢሮው በተቻለ ፍጥነት ያገኝዎታል፤ አስቸኳይ ከሆነ እባክዎ ለቢሮውም ይደውሉ።",
-      "message": "መልእክትዎ",
-      "submit": "መልእክቱን ላክ"
+      "title": "የፍትሐት ጥያቄ",
+      "intro": "ስለ ዐረፉት ሰውና ስለሚፈልጉት ቀን ይንገሩን። ቢሮው በተቻለ ፍጥነት ያገኝዎታል፤ አስቸኳይ ከሆነ እባክዎ ለቢሮውም ይደውሉ።",
+      "message": "ተጨማሪ ማስታወሻ (አማራጭ)",
+      "submit": "ጥያቄውን ላክ",
+      "name": "ስምዎ",
+      "phone": "ስልክዎ",
+      "email": "ኢሜይልዎ",
+      "deceasedName": "የዐረፉት ሰው ስም",
+      "dateOfPassing": "ያረፉበት ቀን (አማራጭ)",
+      "preferredDate": "ፍትሐቱ እንዲደረግ የሚፈልጉት ቀን (አማራጭ)"
     },
     "volunteer": {
       "title": "በበጎ ፈቃድ ያገልግሉ",
@@ -327,7 +348,36 @@
       "message": "ልናውቀው የሚገባ ሌላ ነገር? (አማራጭ)",
       "submit": "ላክ"
     },
-    "privacySundaySchool": "ቤተ ክርስቲያኗ መልእክቴን፣ የመገናኛ መረጃዬን እና የልጄን ስምና ዕድሜ እንድትይዝ እስማማለሁ።"
+    "privacySundaySchool": "ቤተ ክርስቲያኗ መልእክቴን፣ የመገናኛ መረጃዬን እና የልጄን ስምና ዕድሜ እንድትይዝ እስማማለሁ።",
+    "progress": "ሂደት",
+    "stepOf": "ደረጃ {current} ከ{total}፦ {step}",
+    "next": "ቀጣይ",
+    "back": "ተመለስ",
+    "select": "ይምረጡ…",
+    "pastoral": {
+      "title": "የጸሎት ጥያቄ",
+      "intro": "ካህን እንዲጸልይልዎ፣ እንዲጎበኝዎ ወይም እንዲያገኝዎ ይጠይቁ። ቢሮው ጥያቄዎን ያደርሳል።",
+      "choosePriest": "1. ካህን ይምረጡ (አማራጭ)",
+      "anyPriest": "ማንኛውም ካህን",
+      "yourDetails": "2. የእርስዎ መረጃ",
+      "name": "ሙሉ ስም",
+      "phone": "ስልክ",
+      "email": "ኢሜይል (አማራጭ)",
+      "requestType": "ጥያቄዎ ስለ ምንድን ነው?",
+      "types": {
+        "confession": "ንስሐ",
+        "sick": "ጸሎት ለሕሙማን",
+        "home_blessing": "የቤት ጉብኝት ወይም ጸበል",
+        "comfort": "መጽናናትና ምክር",
+        "blessing": "ቡራኬ (ለሠርግ፣ ለምረቃ …)",
+        "appointment": "ከካህን ጋር ቀጠሮ",
+        "other": "ሌላ"
+      },
+      "message": "ዝርዝር (አማራጭ)",
+      "urgent": "ለአስቸኳይ ጉዳይ {phone} ይደውሉ።",
+      "privacy": "ቤተ ክርስቲያን ጥያቄዬንና አድራሻዬን እኔን ለመመለስ እንድታስቀምጥ እስማማለሁ። ሊያነቡት የሚችሉት ቢሮውና ካህናት ብቻ ናቸው።",
+      "submit": "የጸሎት ጥያቄውን ላክ"
+    }
   },
   "pages": {
     "inThisSection": "በዚህ ክፍል"

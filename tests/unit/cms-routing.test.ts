@@ -116,9 +116,12 @@ describe("Sunday School, News and Media (D-020)", () => {
       ],
       hasVideos: false,
     });
-    expect(paths.sort()).toEqual(["/media", "/media/galleries/timket", "/news", "/news/first", "/sunday-school", "/sunday-school/join", "/sunday-school/mezmur", "/support/volunteer"].sort());
+    expect(paths.sort()).toEqual(
+      ["/media", "/media/galleries/timket", "/news", "/news/first", "/sacraments/prayer-request", "/sunday-school", "/sunday-school/join", "/sunday-school/mezmur", "/support/volunteer"].sort(),
+    );
     expect(sectionPaths({ hasSundaySchoolIntro: false, departments: [], posts: [], galleries: [], hasVideos: true })).toEqual([
       "/support/volunteer",
+      "/sacraments/prayer-request",
       "/media/videos",
     ]); // /media is the photo page: it exists only with a gallery (D-049)
     // Production without a privacy notice: the form-only pages don't exist (review V-01).

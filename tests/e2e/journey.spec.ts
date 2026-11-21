@@ -55,13 +55,15 @@ test("a baptism case goes from the form to completed, with both applicant emails
 
   // 1. The applicant submits the request.
   await page.goto("/en/sacraments/baptism/request");
-  await page.getByLabel(f.applicantName).fill("E2E Journey Applicant");
-  await page.getByLabel(f.applicantEmail).fill(APPLICANT);
-  await page.getByLabel(f.relationships.regular).check();
-  await page.getByRole("button", { name: f.next }).click();
-  await page.getByLabel(f.categories.adult).check();
   await page.getByLabel(f.candidateName).fill("E2E Journey Candidate");
   await page.getByLabel(f.dateOfBirth).fill("1990-03-14");
+  await page.getByLabel(f.gender).selectOption("male");
+  await page.getByLabel(f.placeOfBirth).fill("Gondar");
+  await page.getByLabel(f.fatherName).fill("E2E Journey Father");
+  await page.getByLabel(f.motherName).fill("E2E Journey Mother");
+  await page.getByLabel(f.applicantName).fill("E2E Journey Applicant");
+  await page.getByLabel(f.applicantPhone).fill("070 123 45 67");
+  await page.getByLabel(f.applicantEmail).fill(APPLICANT);
   await page.getByRole("button", { name: f.next }).click();
   await page.getByLabel(f.privacy).check();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 20_000 });

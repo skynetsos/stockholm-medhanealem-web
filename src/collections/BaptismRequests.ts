@@ -166,12 +166,46 @@ export const BaptismRequests: CollectionConfig = {
                 { label: "Child", value: "child" },
                 { label: "Adult", value: "adult" },
               ],
+              admin: { width: "33%", description: "Worked out from the date of birth (D-050)." },
+            },
+          ],
+        },
+        {
+          type: "row",
+          fields: [
+            { name: "baptismalName", type: "text", label: "Baptismal name", admin: { width: "34%" } },
+            {
+              name: "gender",
+              type: "select",
+              options: [
+                { label: "Male", value: "male" },
+                { label: "Female", value: "female" },
+              ],
               admin: { width: "33%" },
             },
+            { name: "placeOfBirth", type: "text", admin: { width: "33%" } },
           ],
         },
       ],
     },
+    {
+      // Asked since D-050 (the reference layout's baptism form); empty on older cases.
+      name: "family",
+      type: "group",
+      label: "Parents and godparent",
+      ...applicantData,
+      fields: [
+        {
+          type: "row",
+          fields: [
+            { name: "fatherName", type: "text", label: "Father's full name", admin: { width: "34%" } },
+            { name: "motherName", type: "text", label: "Mother's full name", admin: { width: "33%" } },
+            { name: "godparentName", type: "text", label: "Godparent's name", admin: { width: "33%" } },
+          ],
+        },
+      ],
+    },
+    { name: "priestName", type: "text", label: "Priest asked for", ...applicantData, admin: { description: "Optional, as the applicant wrote it." } },
     {
       name: "guardian",
       type: "group",
@@ -188,7 +222,7 @@ export const BaptismRequests: CollectionConfig = {
         },
       ],
     },
-    { name: "preferredPeriod", type: "text", ...applicantData, admin: { description: 'For example "December 2026".' } },
+    { name: "preferredPeriod", type: "text", label: "Preferred date of baptism", ...applicantData, admin: { description: 'As the applicant wrote it, for example "December 2026".' } },
     { name: "notes", type: "textarea", label: "Notes from the applicant", ...applicantData },
     {
       name: "internal",

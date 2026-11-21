@@ -22,7 +22,7 @@ export type BaptismContext = { ipHash: string; locale: Locale; turnstileToken: s
  * contact form (D-022):
  * 1. honeypot filled in → looks like success to the bot, nothing is stored;
  * 2. requests closed in the Baptism page settings → refused (the page may still be open in a tab);
- * 3. validation of all three steps (zod) → field errors;
+ * 3. validation of both steps (zod) → field errors;
  * 4. rate limit per IP hash (valid attempts only); 5. Turnstile;
  * 6. stores the request (status "new", reference BAP-YYYY-NNNN; a "created" audit entry is added by
  *    the collection), then emails the applicant an acknowledgement and the office a notification
@@ -56,21 +56,25 @@ export async function submitBaptismRequest(
         applicant: {
           name: d.applicantName,
           email: d.applicantEmail,
-          phone: d.applicantPhone || null,
+          phone: d.applicantPhone,
           preferredLocale: locale,
-          parishRelationship: d.parishRelationship,
         },
         candidate: {
           fullName: d.candidateName,
           dateOfBirth: stockholmInstant({ year, month, day }).toISOString(),
           dateOfBirth_tz: STOCKHOLM,
           category: d.category,
+          baptismalName: d.baptismalName || null,
+          gender: d.gender,
+          placeOfBirth: d.placeOfBirth,
         },
+        family: { fatherName: d.fatherName, motherName: d.motherName, godparentName: d.godparentName || null },
+        priestName: d.priestName || null,
+        // Under 18: the contact person is the parent or guardian who consents (spec §2.12).
         guardian: adult
           ? { name: null, relationship: null, consentConfirmed: false }
-          : { name: d.guardianName, relationship: d.guardianRelationship, consentConfirmed: true },
+          : { name: d.applicantName, relationship: d.guardianRelationship, consentConfirmed: true },
         preferredPeriod: d.preferredPeriod || null,
-        notes: d.notes || null,
         privacyAccepted: true,
         source: { ipHash, userAgent: userAgent?.slice(0, 300) || null, submittedAt: now().toISOString(), submittedAt_tz: STOCKHOLM },
       },

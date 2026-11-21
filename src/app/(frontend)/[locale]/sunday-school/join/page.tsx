@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { InquirySection } from "@/components/forms/InquirySection";
 import { localeAlternates } from "@/i18n/alternates";
-import { Link } from "@/i18n/navigation";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -23,11 +22,8 @@ export default async function SundaySchoolJoinPage({ params }: Props) {
   setRequestLocale(locale as Locale); // validated by the [locale] layout
   const t = await getTranslations("sundaySchool");
   return (
-    <main id="main" className="mx-auto max-w-3xl px-gutter py-12">
-      <p className="mb-2">
-        <Link href="/sunday-school">{t("title")}</Link>
-      </p>
-      <InquirySection form="sunday_school" heading="h1" />
+    <main id="main">
+      <InquirySection form="sunday_school" heading="h1" back={{ href: "/sunday-school", label: t("title") }} />
     </main>
   );
 }

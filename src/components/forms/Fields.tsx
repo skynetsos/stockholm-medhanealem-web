@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 
 /**
  * Form primitives (spec §5): every field has a visible label; errors and hints are linked with
@@ -63,6 +63,42 @@ export function Textarea({ id, label, error, hint, className, ...props }: Common
         className={`${control} border-muted/40`}
         {...props}
       />
+      <Message id={id} error={error} hint={hint} />
+    </div>
+  );
+}
+
+/** A list to choose from, with an empty first option ("Select…") so nothing is chosen by accident. */
+export function Select({
+  id,
+  label,
+  error,
+  hint,
+  className,
+  options,
+  placeholder,
+  ...props
+}: Common & SelectHTMLAttributes<HTMLSelectElement> & { options: { value: string; label: string }[]; placeholder?: string }) {
+  return (
+    <div className={className}>
+      <label htmlFor={id} className="font-semibold">
+        {label}
+      </label>
+      <select
+        id={id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(id, error, hint)}
+        className={`${control} min-h-11 border-muted/40`}
+        defaultValue={props.defaultValue ?? ""}
+        {...props}
+      >
+        <option value="">{placeholder ?? ""}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
       <Message id={id} error={error} hint={hint} />
     </div>
   );
@@ -158,7 +194,10 @@ export const ErrorSummary = forwardRef<
           <ul className="mt-2 list-disc ps-5">
             {items.map((item) => (
               <li key={item.id}>
-                <a href={`#${item.id}`}>{item.text}</a>
+                {/* At least 24 px high (WCAG 2.2 target size). */}
+                <a href={`#${item.id}`} className="inline-flex min-h-6 items-center">
+                  {item.text}
+                </a>
               </li>
             ))}
           </ul>

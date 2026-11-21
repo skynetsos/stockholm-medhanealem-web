@@ -5,7 +5,26 @@ import type { Locale } from "../../i18n/locales";
 import { logCaseEvent } from "../cases/events";
 import { adminLink, emailSettings, officeRecipients } from "../office-email";
 import { type InquiryErrors, type InquiryForm, parseInquiry } from "./inquiry-schema";
+import { stockholmInstant } from "../stockholm-time";
 import { createRateLimiter, verifyTurnstile } from "./security";
+
+const STOCKHOLM = "Europe/Stockholm" as const;
+const dayParts = (v: string) => {
+  const [year, month, day] = v.split("-").map(Number);
+  return { year, month, day };
+};
+
+/** The id of a published clergy profile, or null. */
+async function publishedClergyId(payload: Payload, id: number): Promise<number | null> {
+  const { docs } = await payload.find({
+    collection: "clergy",
+    overrideAccess: true,
+    depth: 0,
+    limit: 1,
+    where: { and: [{ id: { equals: id } }, { published: { equals: true } }] },
+  });
+  return docs[0]?.id ?? null;
+}
 
 /**
  * At most 5 messages per IP (hash) per 10 minutes (Phase 1 task 6), counted across all inquiry forms
@@ -20,7 +39,7 @@ export type InquiryResult =
 export type InquiryContext = { ipHash: string; locale: Locale; turnstileToken: string | null };
 
 /**
- * Handles one inquiry form submission (contact, Sunday School, marriage, fitihat, volunteer):
+ * Handles one inquiry form submission (contact, Sunday School, marriage, fitihat, prayer request, volunteer):
  * 1. honeypot filled in → looks like success to the bot, nothing is stored or sent;
  * 2. validation (zod, per form) → field errors;
  * 3. rate limit per IP hash (counts valid attempts only, so fixing typos doesn't lock anyone out);
@@ -44,6 +63,11 @@ export async function submitInquiry(
   if (!(await verify(turnstileToken))) return { status: "error", formError: "spam" };
 
   const d = parsed.data;
+  // A priest chosen on the prayer request must be a published clergy profile (anything else is ignored).
+  const priest = d.priest ? await publishedClergyId(payload, Number(d.priest)) : null;
+  const day = (v?: string) => (v ? stockholmInstant(dayParts(v)).toISOString() : null);
+  const preferredDate = day(d.preferredDate);
+  const dateOfPassing = day(d.dateOfPassing);
   try {
     const inquiry = await payload.create({
       collection: "inquiries",
@@ -52,13 +76,22 @@ export async function submitInquiry(
         type: form,
         status: "new",
         name: d.name,
-        email: d.email,
+        email: d.email || null,
         phone: d.phone || null,
         message: d.message || null,
         childName: d.childName || null,
         childAge: d.childAge ?? null,
         interests: d.interests?.length ? d.interests : null,
         availability: d.availability || null,
+        partnerName: d.partnerName || null,
+        partnerPhone: d.partnerPhone || null,
+        preferredDate,
+        ...(preferredDate ? { preferredDate_tz: STOCKHOLM } : {}),
+        deceasedName: d.deceasedName || null,
+        dateOfPassing,
+        ...(dateOfPassing ? { dateOfPassing_tz: STOCKHOLM } : {}),
+        requestType: d.requestType ?? null,
+        priest,
         preferredLocale: locale,
         privacyAccepted: true,
       },

@@ -846,15 +846,30 @@ export interface BaptismRequest {
     fullName?: string | null;
     dateOfBirth?: string | null;
     dateOfBirth_tz?: SupportedTimezones;
+    /**
+     * Worked out from the date of birth (D-050).
+     */
     category: 'infant' | 'child' | 'adult';
+    baptismalName?: string | null;
+    gender?: ('male' | 'female') | null;
+    placeOfBirth?: string | null;
   };
+  family?: {
+    fatherName?: string | null;
+    motherName?: string | null;
+    godparentName?: string | null;
+  };
+  /**
+   * Optional, as the applicant wrote it.
+   */
+  priestName?: string | null;
   guardian?: {
     name?: string | null;
     relationship?: string | null;
     consentConfirmed?: boolean | null;
   };
   /**
-   * For example "December 2026".
+   * As the applicant wrote it, for example "December 2026".
    */
   preferredPeriod?: string | null;
   notes?: string | null;
@@ -922,6 +937,21 @@ export interface Inquiry {
   childAge?: number | null;
   interests?: string[] | null;
   availability?: string | null;
+  /**
+   * The groom is the name above.
+   */
+  partnerName?: string | null;
+  partnerPhone?: string | null;
+  deceasedName?: string | null;
+  dateOfPassing?: string | null;
+  dateOfPassing_tz?: SupportedTimezones;
+  /**
+   * Wedding date or date of the memorial service, as asked.
+   */
+  preferredDate?: string | null;
+  preferredDate_tz?: SupportedTimezones;
+  requestType?: ('confession' | 'sick' | 'home_blessing' | 'comfort' | 'blessing' | 'appointment' | 'other') | null;
+  priest?: (number | null) | Clergy;
   privacyAccepted: boolean;
   /**
    * Set when personal data was removed (retention job or erasure on request).
@@ -1526,7 +1556,18 @@ export interface BaptismRequestsSelect<T extends boolean = true> {
         dateOfBirth?: T;
         dateOfBirth_tz?: T;
         category?: T;
+        baptismalName?: T;
+        gender?: T;
+        placeOfBirth?: T;
       };
+  family?:
+    | T
+    | {
+        fatherName?: T;
+        motherName?: T;
+        godparentName?: T;
+      };
+  priestName?: T;
   guardian?:
     | T
     | {
@@ -1578,6 +1619,15 @@ export interface InquiriesSelect<T extends boolean = true> {
   childAge?: T;
   interests?: T;
   availability?: T;
+  partnerName?: T;
+  partnerPhone?: T;
+  deceasedName?: T;
+  dateOfPassing?: T;
+  dateOfPassing_tz?: T;
+  preferredDate?: T;
+  preferredDate_tz?: T;
+  requestType?: T;
+  priest?: T;
   privacyAccepted?: T;
   archivedAt?: T;
   archivedAt_tz?: T;

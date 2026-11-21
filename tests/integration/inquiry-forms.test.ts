@@ -41,17 +41,40 @@ describe("inquiry forms", () => {
     expect(await stored(result)).toMatchObject({ type: "volunteer", interests: ["choir", "media"], availability: "Saturdays" });
   });
 
-  it("store marriage and fitihat messages with their own type", async () => {
-    const marriage = await submitInquiry(payload, "marriage", { ...contact, message: "We hope to marry next summer." }, context("f-3"), deps());
-    const fitihat = await submitInquiry(payload, "funeral", { ...contact, message: "Prayer for our late father, please." }, context("f-3"), deps());
-    expect((await stored(marriage)).type).toBe("marriage");
-    expect((await stored(fitihat)).type).toBe("funeral");
+  it("store wedding, memorial and prayer requests with their own type and details (D-050)", async () => {
+    const wedding = { name: "Groom Person", partnerName: "Bride Person", phone: "070 111 22 33", partnerPhone: "070 444 55 66", email: "couple@example.org", preferredDate: "2030-06-01", message: "", privacyAccepted: "on" };
+    const marriage = await submitInquiry(payload, "marriage", wedding, context("f-3"), deps());
+    expect(await stored(marriage)).toMatchObject({
+      type: "marriage",
+      name: "Groom Person",
+      partnerName: "Bride Person",
+      partnerPhone: "070 444 55 66",
+      // Stockholm midnight on 1 June 2030 (summer time).
+      preferredDate: "2030-05-31T22:00:00.000Z",
+    });
+    const fitihat = await submitInquiry(
+      payload,
+      "funeral",
+      { name: "Asker", phone: "070 111 22 33", email: "asker@example.org", deceasedName: "Late Father", dateOfPassing: "2026-01-15", privacyAccepted: "on" },
+      context("f-3"),
+      deps(),
+    );
+    expect(await stored(fitihat)).toMatchObject({ type: "funeral", deceasedName: "Late Father", dateOfPassing: "2026-01-14T23:00:00.000Z", preferredDate: null });
+    // A prayer request may come without email; an unknown priest id is dropped.
+    const prayer = await submitInquiry(payload, "pastoral", { name: "Praying Person", phone: "070 111 22 33", requestType: "sick", priest: "999999", privacyAccepted: "on" }, context("f-4"), deps());
+    expect(await stored(prayer)).toMatchObject({ type: "pastoral", email: null, requestType: "sick", priest: null });
   });
 
   it("share one rate limit across all forms", async () => {
     const limiter = createRateLimiter({ limit: 5, windowMs: 600_000 });
     const send = (form: "marriage" | "volunteer") =>
-      submitInquiry(payload, form, { ...contact, message: "A message long enough.", interests: ["events"] }, context("f-busy"), { verify: async () => true, limiter });
+      submitInquiry(
+        payload,
+        form,
+        { ...contact, partnerName: "Partner", phone: "070 111 22 33", partnerPhone: "070 444 55 66", message: "A message long enough.", interests: ["events"] },
+        context("f-busy"),
+        { verify: async () => true, limiter },
+      );
     for (let i = 0; i < 5; i++) expect((await send(i % 2 ? "marriage" : "volunteer")).status).toBe("success");
     expect(await send("marriage")).toEqual({ status: "error", formError: "rateLimited" });
   });
